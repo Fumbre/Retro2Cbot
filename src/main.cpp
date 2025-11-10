@@ -10,13 +10,13 @@ void loop() {
   switch (SETTING_MODE)
   {
   case 0:
-    // to do line
+    // to do followSingleLine
     break;
   case 1:
     // to do mazeLine
     break;
   case 2:
-    // to do maze
+    // to do physicalMaze
     break;  
 
   default:
