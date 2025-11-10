@@ -5,4 +5,4 @@ Bot race
 - Fumbre && Francisco
 - Exenytre && Sunnyaaa001
 - LocalRaven && Uraibixn
-- Carolina (the best solo player)
+- Carolina (personal inspiration)
