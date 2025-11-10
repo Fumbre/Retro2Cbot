@@ -20,6 +20,7 @@ void loop() {
     break;  
 
   default:
+    Serial.print("NO SUCH A PROGRAM");
     break;
   }
 }
