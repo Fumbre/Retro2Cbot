@@ -8,7 +8,7 @@ void moveRight(int speed, int duration);
 void turnLeft();
 void turnRight();
 
-void moveStop();   
+void moveStop();   // stop car
 
 
 
