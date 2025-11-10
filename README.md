@@ -2,7 +2,7 @@
 Bot race
 
 ## Groups
-- Fumbre && Francisco
-- Exenytre && Sunnyaaa001
-- LocalRaven && Uraibixn
+- Fumbre[Valdyslav] && franciscpime[Francisco]
+- Exenytre[Nicolo] && Sunnyaaa001[Sunny]
+- LocalRaven[Aria] && Uraibixn[Uraibe]
 - Carolina (personal inspiration)
