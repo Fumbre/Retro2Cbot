@@ -1,33 +1,45 @@
-void moveForward(int speed, int PIN) {
-    
+#include "movement.h"
 
-}
+void moveForward(bool isPure)
+{
+  if (isPure)
+  {
+    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
+    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
 
-void moveBackward(int speed, int PIN) {
+    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
+    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
 
-}
+    digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
+    digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
+  }
+  else
+  {
+    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
+    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
+  }
+};
 
-void moveLeft(int speed, int PIN) {
+void moveBackward(bool isPure) {
 
-}
+};
 
-void moveRight(int speed, int PIN) {
+void moveRight(bool isPure) {
 
-}
+};
 
-void rotateLeft(int PIN) {
+void moveLeft(bool isPure) {
 
-}
+};
 
-void rotateRight(int PIN) {
+void rotateLeft(bool isPure) {
 
-}
+};
+
+void rotateRight(bool isPure) {
+
+};
 
 void moveStop() {
 
-}
-
-
-
-
-
+};

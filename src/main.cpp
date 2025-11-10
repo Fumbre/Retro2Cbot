@@ -1,12 +1,19 @@
 #include <Arduino.h>
+#include "common/robot/motor/motor.h"
+#include "common/robot/movement/movement.h"
 
 const int SETTING_MODE = 2;
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
+  setupMotor();
+
+  moveForward(true);
 }
 
-void loop() {
+void loop()
+{
   switch (SETTING_MODE)
   {
   case 0:
@@ -17,7 +24,7 @@ void loop() {
     break;
   case 2:
     // to do physicalMaze
-    break;  
+    break;
 
   default:
     Serial.print("NO SUCH A PROGRAM");

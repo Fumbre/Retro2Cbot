@@ -1,14 +1,13 @@
 #pragma once
+#include <Arduino.h>
+#include "common/constant/Robot.h"
 
-void moveForward(int speed, int PIN);
-void moveBackward(int speed, int PIN);
-void moveLeft(int speed, int PIN);
-void moveRight(int speed, int PIN);
-void rotateLeft(int PIN);
-void rotateRight(int PIN);
-void moveStop();   // stop car
+void moveForward(bool isPure);
+void moveBackward(bool isPure);
+void moveRight(bool isPure);
+void moveLeft(bool isPure);
 
+void rotateLeft(bool isPure);
+void rotateRight(bool isPure);
 
-// startMotor for full speed than decline speed to regular one for easier enter
-
-// put to function also a pin where to start
+void moveStop();

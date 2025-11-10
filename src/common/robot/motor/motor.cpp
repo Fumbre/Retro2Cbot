@@ -1,0 +1,22 @@
+#include "motor.h"
+
+void setupMotor()
+{
+  pinMode(WHEEL_RIGHT_FORWARD_PIN, OUTPUT);
+  pinMode(WHEEL_RIGHT_BACKWARD_PIN, OUTPUT);
+
+  pinMode(WHEEL_LEFT_FORWARD_PIN, OUTPUT);
+  pinMode(WHEEL_LEFT_BACKWARD_PIN, OUTPUT);
+
+  pinMode(WHEEL_LEFT_ROTATION_PIN, OUTPUT);
+  pinMode(WHEEL_RIGHT_ROTATION_PIN, OUTPUT);
+
+  digitalWrite(WHEEL_RIGHT_FORWARD_PIN, LOW);
+  digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
+
+  digitalWrite(WHEEL_LEFT_FORWARD_PIN, LOW);
+  digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
+
+  digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
+  digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
+};
