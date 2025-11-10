@@ -11,18 +11,17 @@
  * @author Sunny
  */
 void initWheelsPin(){
-    pinMode(LEFT_SPEED_PIN,OUTPUT);
-    pinMode(RIGHT_SPEED_PIN,OUTPUT);
-    pinMode(LEFT_DIRECTION_PIN1,OUTPUT);
-    pinMode(LEFT_DIRECTION_PIN2,OUTPUT);
-    pinMode(RIGHT_DIRECTIONL_PIN1,OUTPUT);
-    pinMode(RIGHT_DIRECTIONL_PIN2,OUTPUT);
+    int length = sizeof(WHEEL_PIN_ARRAY)/sizeof(WHEEL_PIN_ARRAY[0]);
+    for (int i = 0; i < length; i++){
+      pinMode(WHEEL_PIN_ARRAY[i],OUTPUT);
+    }
+    
 }
 
 // Move forward
 void moveForward(int speed, int duration) {
-  digitalWrite(LEFT_DIRECTION_PIN1, HIGH);
-  digitalWrite(RIGHT_DIRECTIONL_PIN1, HIGH);
+  digitalWrite(LEFT_DIRECTION_FORWARD_PIN, HIGH);
+  digitalWrite(RIGHT_DIRECTIONL_FORWARD_PIN, HIGH);
   analogWrite(LEFT_SPEED_PIN, speed);
   analogWrite(RIGHT_SPEED_PIN, speed);
   delay(duration);
@@ -31,8 +30,8 @@ void moveForward(int speed, int duration) {
 
 // Move backward
 void moveBackward(int speed, int duration) {
-  digitalWrite(LEFT_DIRECTION_PIN1, LOW);
-  digitalWrite(RIGHT_DIRECTIONL_PIN1, LOW);
+  digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
+  digitalWrite(RIGHT_DIRECTIONL_FORWARD_PIN, LOW);
   analogWrite(LEFT_SPEED_PIN, speed);
   analogWrite(RIGHT_SPEED_PIN, speed);
   delay(duration);
@@ -53,11 +52,11 @@ void switchDirection(int leftSpeed ,int rightSpeed){
     //put right speed
     analogWrite(RIGHT_SPEED_PIN,rightSpeed);
     //put left wheel pin
-    digitalWrite(LEFT_DIRECTION_PIN1,HIGH);
-    digitalWrite(LEFT_DIRECTION_PIN2,LOW);
+    digitalWrite(LEFT_DIRECTION_FORWARD_PIN,HIGH);
+    digitalWrite(LEFT_DIRECTION_BACKWARD_PIN,LOW);
     //put right wheel pin
-    digitalWrite(RIGHT_DIRECTIONL_PIN1,HIGH);
-    digitalWrite(RIGHT_DIRECTIONL_PIN2,LOW);
+    digitalWrite(RIGHT_DIRECTIONL_FORWARD_PIN,HIGH);
+    digitalWrite(RIGHT_DIRECTIONL_BACKWARD_PIN,LOW);
 }
 
 

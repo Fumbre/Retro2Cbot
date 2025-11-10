@@ -1,9 +1,12 @@
 #include <Arduino.h>
+#include "common/robot/movement/movement.h"
 
 const int SETTING_MODE = 2;
 
 void setup() {
   Serial.begin(9600);
+  initWheelsPin();
+  moveForward(20,3000);
 }
 
 void loop() {
