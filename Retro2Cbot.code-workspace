@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "retroBot",
+			"path": "../../../../Documents/PlatformIO/Projects/retroBot"
+		},
+		{
+			"name": "retro2cbot",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

@@ -1,0 +1,25 @@
+#include <Arduino.h>
+
+const int SETTING_MODE = 2;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  switch (SETTING_MODE)
+  {
+  case 0:
+    // to do line
+    break;
+  case 1:
+    // to do mazeLine
+    break;
+  case 2:
+    // to do maze
+    break;  
+
+  default:
+    break;
+  }
+}
