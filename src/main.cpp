@@ -30,7 +30,7 @@ void loop() {
   //go forward
   while(true){
     moveForward(80);
-    if(millis() - currentTime > 2000){
+    if(millis() - currentTime > 5000){
       break;
     }
   }
@@ -38,7 +38,7 @@ void loop() {
   //turn left
    while(true){
     switchDirection(20,80);
-    if(millis() - currentTime > 1000){
+    if(millis() - currentTime > 1500){
       break;
     }
   }
@@ -46,7 +46,7 @@ void loop() {
    //go forward
   while(true){
     moveForward(80);
-    if(millis() - currentTime > 2000){
+    if(millis() - currentTime > 5000){
       break;
     }
   }
@@ -54,7 +54,7 @@ void loop() {
   //turn right
   while(true){
     switchDirection(80,20);
-    if(millis() - currentTime > 2000){
+    if(millis() - currentTime > 1500){
       break;
     }
   }
@@ -62,8 +62,10 @@ void loop() {
    //go backward
   while(true){
     moveBackward(80);
-    if(millis() - currentTime > 2000){
+    if(millis() - currentTime > 5000){
       break;
     }
   }
+  stopMotors();
+  delay(2000);
 }

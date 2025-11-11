@@ -16,6 +16,8 @@ int getPWMvalue(int speed);
 
 void initWheelsPin();
 
+float getLeftFactor(int speed);
 
+float getRightFactor(int speed);
 
 
