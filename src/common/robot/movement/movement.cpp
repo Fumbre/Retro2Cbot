@@ -4,31 +4,31 @@ void moveForward(int speed, bool isPure)
 {
   if (isPure)
   {
-    for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+    for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
     {
-      analogWrite(WHEEL_ARRAY[i].PIN, 0);
-      if (WHEEL_ARRAY[i].title == "WHEEL_RIGHT_FORWARD_PIN")
-        analogWrite(WHEEL_RIGHT_FORWARD_PIN, speed);
-      if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_FORWARD_PIN")
-        analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
+      analogWrite(MOTOR_ARRAY[i].PIN, 0);
+      if (MOTOR_ARRAY[i].title == "MOTOR_RIGHT_FORWARD_PIN")
+        analogWrite(MOTOR_RIGHT_FORWARD_PIN, speed);
+      if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_FORWARD_PIN")
+        analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
     }
   }
   else
   {
-    analogWrite(WHEEL_RIGHT_FORWARD_PIN, speed);
-    analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
+    analogWrite(MOTOR_RIGHT_FORWARD_PIN, speed);
+    analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
   }
 };
 
 void moveBackward(int speed)
 {
-  for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+  for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
   {
-    analogWrite(WHEEL_ARRAY[i].PIN, 0);
-    if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_BACKWARD_PIN")
-      analogWrite(WHEEL_LEFT_BACKWARD_PIN, speed);
-    if (WHEEL_ARRAY[i].title == "WHEEL_RIGHT_BACKWARD_PIN")
-      analogWrite(WHEEL_RIGHT_BACKWARD_PIN, speed);
+    analogWrite(MOTOR_ARRAY[i].PIN, 0);
+    if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_BACKWARD_PIN")
+      analogWrite(MOTOR_LEFT_BACKWARD_PIN, speed);
+    if (MOTOR_ARRAY[i].title == "MOTOR_RIGHT_BACKWARD_PIN")
+      analogWrite(MOTOR_RIGHT_BACKWARD_PIN, speed);
   }
 };
 
@@ -44,24 +44,24 @@ void rotateRight(int speed, bool isPure)
 {
   if (isPure)
   {
-    for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+    for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
     {
-      analogWrite(WHEEL_ARRAY[i].PIN, 0);
-      if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_FORWARD_PIN")
-        analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
-      if (WHEEL_ARRAY[i].title == "WHEEL_RIGHT_BACKWARD_PIN")
-        analogWrite(WHEEL_RIGHT_BACKWARD_PIN, speed);
+      analogWrite(MOTOR_ARRAY[i].PIN, 0);
+      if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_FORWARD_PIN")
+        analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
+      if (MOTOR_ARRAY[i].title == "MOTOR_RIGHT_BACKWARD_PIN")
+        analogWrite(MOTOR_RIGHT_BACKWARD_PIN, speed);
 
-      // if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_ROTATION_PIN")
-      // analogWrite(WHEEL_LEFT_ROTATION_PIN, speed);
-      // if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_ROTATION_PIN")
-      // analogWrite(WHEEL_LEFT_ROTATION_PIN, speed);
+      // if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_PULSE_PIN")
+      // analogWrite(MOTOR_LEFT_PULSE_PIN, speed);
+      // if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_PULSE_PIN")
+      // analogWrite(MOTOR_LEFT_PULSE_PIN, speed);
     }
   }
   else
   {
-    analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
-    analogWrite(WHEEL_LEFT_ROTATION_PIN, speed);
+    analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
+    analogWrite(MOTOR_LEFT_PULSE_PIN, speed);
   }
 };
 
@@ -69,15 +69,15 @@ void rotateLeft(int speed) {
 
 };
 
-void moveStop(int wheel_pin)
+void moveStop(int motor_pin)
 {
-  analogWrite(wheel_pin, 0);
+  analogWrite(motor_pin, 0);
 };
 
 void moveStopAll()
 {
-  for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+  for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
   {
-    analogWrite(WHEEL_ARRAY[i].PIN, 0);
+    analogWrite(MOTOR_ARRAY[i].PIN, 0);
   }
 };
