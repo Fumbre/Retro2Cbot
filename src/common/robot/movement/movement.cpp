@@ -6,18 +6,18 @@
 #include "../../constant/Robot.h"
 #include <Arduino.h>
 
-float leftFactor = 1.00;
-float rightFactor = 1.00;
+float leftFactor = 1.00; // stablize left motor
+float rightFactor = 1.00; // stablize right motor
 
-volatile long leftRotationCount = 0;
-volatile long rightRotationCount = 0;
+volatile long leftPulsesCount = 0;
+volatile long rightPulsesCount = 0;
 
 void countleftRotation(){
-  leftRotationCount++;
+  leftPulsesCount++;
 }
 
 void countRightRotation(){
-  rightRotationCount++;
+  rightPulsesCount++;
 }
 
 /**
@@ -43,27 +43,49 @@ void initWheelsPin(){
  * @author Sunny
  * @date 11-11-2025
  * @param speed
+ * 
+ * @details  that function calclulate procantage of speed for analogWrite(255) is max speed is in procatage 
+ * so we will have correcrt procatage based on max value of PWM_VALUE
+ * 
  * @return PWM value
  */
 int getPWMvalue(int speed){
-  speed = constrain(speed, 0, FULL_SPEED);
+  speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
   float value = (float)speed / 100.0;
   return (int)round(value * FULL_PWM_VALUE);
 }
 
+/**
+ * @name getLeftFactor
+ * @author Sunny
+ * @date 11-11-2025
+ * @param speed
+ * @return leftFactor
+ */
 float getLeftFactor(int speed){
   return leftFactor;
 }
 
 /**
- * 
+ * @name  getRightFactor
+ * @author Sunny
+ * @date 11-11-2025 
+ * @param speed // in percentage % between (0 and 100)
+ * @return rightFactor
+ * @details get factor value of right wheel for slow down the speed required for stabilization of two wheels
+ * @example return map(speed,0,FULL_SPEED,10,50) /  100.0; calc ( (50 - 10) * 0.2 + 10   ) / 100 == 0.18
  */
 float getRightFactor(int speed){
-  return map(speed,0,FULL_PWM_VALUE,98,99) / 100.0;
+  return map(speed,0,FULL_SPEED,86,87) / 100.0;  // ( (50 - 10) * 0.2 + 10   ) / 100
 }
 
 
-// Move forward
+/**
+ * @name moveForward
+ * @author Nicolo
+ * @date 10-11-2025
+ * @param speed
+ */
 void moveForward(int speed) {
    int pwmValue = getPWMvalue(speed);
    int leftPWM  = round(pwmValue * getLeftFactor(speed));
@@ -78,9 +100,10 @@ void moveForward(int speed) {
 
 // Move backward
 void moveBackward(int speed) {
+   // get PWM value
    int pwmValue = getPWMvalue(speed);
-   int leftPWM  = round(pwmValue * getLeftFactor(speed));
-   int rightPWM = round(pwmValue * getRightFactor(speed));
+   int rightPWM  = round(pwmValue * getLeftFactor(speed));
+   int leftPWM = round(pwmValue * getRightFactor(speed));
    leftPWM  = constrain(leftPWM, 0, FULL_PWM_VALUE);
    rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
    analogWrite(LEFT_DIRECTION_BACKWARD_PIN,leftPWM);
@@ -125,7 +148,38 @@ void stopMotors(){
   digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN,LOW);
 }
 
-void rotateLeft180(int speed){
-  leftRotationCount = 0;
-  rightRotationCount = 0;
+/**
+ * @name rotate180
+ * @author Sunny
+ * @date 12-11-2025
+ * @param speed
+ * @param direction (left, right)
+ */
+void rotate180(int speed,String direction){
+  //reset encoder count
+  leftPulsesCount = 0;
+  rightPulsesCount = 0;
+  //caculate the max number of rotation of wheels for rotate 180 degrees
+  float turns = (ROBOT_RADUIS * PI) / (2.0 * PI * WHEEL_RADUIS);
+  //caculate the max number of pulses for rotating 180 degrees
+  int targetPulses = round(turns * PPR);
+  //get PWM value
+  int pwmValue = getPWMvalue(speed);
+  if(direction.equalsIgnoreCase("right")){
+       //let right wheel go forward, let left wheel go backward
+       analogWrite(LEFT_DIRECTION_FORWARD_PIN,pwmValue);
+       digitalWrite(LEFT_DIRECTION_BACKWARD_PIN,LOW);
+       analogWrite(RIGHT_DIRECTION_BACKWARD_PIN,pwmValue);
+       digitalWrite(RIGHT_DIRECTION_FORWARD_PIN,LOW);
+  } else if (direction.equalsIgnoreCase("left")){
+       //let right wheel go forward, let left wheel go backward
+       analogWrite(RIGHT_DIRECTION_FORWARD_PIN,pwmValue);
+       digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN,LOW);
+       analogWrite(LEFT_DIRECTION_BACKWARD_PIN,pwmValue);
+       digitalWrite(LEFT_DIRECTION_FORWARD_PIN,LOW);
+  }
+  Serial.println(targetPulses);
+  //waiting rotate finish
+  while(leftPulsesCount<= targetPulses || rightPulsesCount <= targetPulses);
+  stopMotors();
 }

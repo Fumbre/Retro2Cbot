@@ -3,6 +3,7 @@
  * @authors Sunny & Nicolo
  */
 #pragma once
+#include <Arduino.h>
 
 void moveForward(int speed);
 
@@ -19,5 +20,7 @@ void initWheelsPin();
 float getLeftFactor(int speed);
 
 float getRightFactor(int speed);
+
+void rotate180(int speed, String direction);
 
 
