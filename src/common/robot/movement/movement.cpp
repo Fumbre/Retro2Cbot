@@ -1,45 +1,83 @@
 #include "movement.h"
 
-void moveForward(bool isPure)
+void moveForward(int speed, bool isPure)
 {
   if (isPure)
   {
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
-
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-
-    digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-    digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
+    for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+    {
+      analogWrite(WHEEL_ARRAY[i].PIN, 0);
+      if (WHEEL_ARRAY[i].title == "WHEEL_RIGHT_FORWARD_PIN")
+        analogWrite(WHEEL_RIGHT_FORWARD_PIN, speed);
+      if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_FORWARD_PIN")
+        analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
+    }
   }
   else
   {
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
+    analogWrite(WHEEL_RIGHT_FORWARD_PIN, speed);
+    analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
   }
 };
 
-void moveBackward(bool isPure) {
+void moveBackward(int speed)
+{
+  for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+  {
+    analogWrite(WHEEL_ARRAY[i].PIN, 0);
+    if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_BACKWARD_PIN")
+      analogWrite(WHEEL_LEFT_BACKWARD_PIN, speed);
+    if (WHEEL_ARRAY[i].title == "WHEEL_RIGHT_BACKWARD_PIN")
+      analogWrite(WHEEL_RIGHT_BACKWARD_PIN, speed);
+  }
+};
+
+void moveRight(int speed) {
 
 };
 
-void moveRight(bool isPure) {
+void moveLeft(int speed) {
 
 };
 
-void moveLeft(bool isPure) {
+void rotateRight(int speed, bool isPure)
+{
+  if (isPure)
+  {
+    for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+    {
+      analogWrite(WHEEL_ARRAY[i].PIN, 0);
+      if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_FORWARD_PIN")
+        analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
+      if (WHEEL_ARRAY[i].title == "WHEEL_RIGHT_BACKWARD_PIN")
+        analogWrite(WHEEL_RIGHT_BACKWARD_PIN, speed);
+
+      // if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_ROTATION_PIN")
+      // analogWrite(WHEEL_LEFT_ROTATION_PIN, speed);
+      // if (WHEEL_ARRAY[i].title == "WHEEL_LEFT_ROTATION_PIN")
+      // analogWrite(WHEEL_LEFT_ROTATION_PIN, speed);
+    }
+  }
+  else
+  {
+    analogWrite(WHEEL_LEFT_FORWARD_PIN, speed);
+    analogWrite(WHEEL_LEFT_ROTATION_PIN, speed);
+  }
+};
+
+void rotateLeft(int speed) {
 
 };
 
-void rotateLeft(bool isPure) {
-
+void moveStop(int wheel_pin)
+{
+  analogWrite(wheel_pin, 0);
 };
 
-void rotateRight(bool isPure) {
-
-};
-
-void moveStop() {
-
+void moveStopAll()
+{
+  for (int i = 0; i < WHEEL_ARRAY_LENGTH; i++)
+  {
+    analogWrite(WHEEL_ARRAY[i].PIN, 0);
+  }
 };

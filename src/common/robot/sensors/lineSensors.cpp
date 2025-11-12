@@ -1,14 +1,13 @@
 #include "common/robot/sensors/lineSensors.h"
 
-void setupSensors() {
-    pinMode(lineSensorD8, OUTPUT);
-    pinMode(lineSensorD7, OUTPUT);
-    pinMode(lineSensorD6, OUTPUT);
-    pinMode(lineSensorD5, OUTPUT);
-    pinMode(lineSensorD4, OUTPUT);
-    pinMode(lineSensorD3, OUTPUT);
-    pinMode(lineSensorD2, OUTPUT);
-    pinMode(lineSensorD1, OUTPUT);
+void setupSensors()
+{
+    pinMode(LINE_SENSOR_D8, OUTPUT);
+    pinMode(LINE_SENSOR_D7, OUTPUT);
+    pinMode(LINE_SENSOR_D6, OUTPUT);
+    pinMode(LINE_SENSOR_D5, OUTPUT);
+    pinMode(LINE_SENSOR_D4, OUTPUT);
+    pinMode(LINE_SENSOR_D3, OUTPUT);
+    pinMode(LINE_SENSOR_D2, OUTPUT);
+    pinMode(LINE_SENSOR_D1, OUTPUT);
 }
-
-

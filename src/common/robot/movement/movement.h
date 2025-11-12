@@ -2,12 +2,12 @@
 #include <Arduino.h>
 #include "common/constant/Robot.h"
 
-void moveForward(bool isPure);
-void moveBackward(bool isPure);
-void moveRight(bool isPure);
-void moveLeft(bool isPure);
+void moveForward(int speed, bool isPure);
+void moveBackward(int speed);
+void moveRight(int speed);
+void moveLeft(int speed);
 
-void rotateLeft(bool isPure);
-void rotateRight(bool isPure);
+void rotateLeft(int speed, bool isPure);
+void rotateRight(int speed);
 
-void moveStop();
+void moveStop(int wheel_pin);
