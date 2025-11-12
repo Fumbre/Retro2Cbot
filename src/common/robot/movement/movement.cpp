@@ -5,9 +5,6 @@
  */
 #include "common/robot/movement/movement.h"
 
-float leftFactor = 1.00;  // stablize left motor
-float rightFactor = 1.00; // stablize right motor
-
 volatile long leftPulsesCount = 0;
 volatile long rightPulsesCount = 0;
 
@@ -56,33 +53,7 @@ int getPWMvalue(int speed)
 {
   speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
   float value = (float)speed / 100.0;
-  return (int)round(value * FULL_PWM_VALUE);
-}
-
-/**
- * @name getLeftFactor
- * @author Sunny
- * @date 11-11-2025
- * @param speed
- * @return leftFactor
- */
-float getLeftFactor(int speed)
-{
-  return leftFactor;
-}
-
-/**
- * @name  getRightFactor
- * @author Sunny
- * @date 11-11-2025
- * @param speed // in percentage % between (0 and 100)
- * @return rightFactor
- * @details get factor value of right wheel for slow down the speed required for stabilization of two wheels
- * @example return map(speed,0,FULL_SPEED,10,50) /  100.0; calc ( (50 - 10) * 0.2 + 10   ) / 100 == 0.18
- */
-float getRightFactor(int speed)
-{
-  return map(speed, 0, FULL_SPEED, 86, 87) / 100.0; // ( (50 - 10) * 0.2 + 10   ) / 100
+  return (int)round(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
 }
 
 /**
@@ -93,14 +64,14 @@ float getRightFactor(int speed)
  */
 void moveForward(int speed)
 {
-  int pwmValue = getPWMvalue(speed);
-  int leftPWM = round(pwmValue * getLeftFactor(speed));
-  int rightPWM = round(pwmValue * getRightFactor(speed));
-  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
-  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-  analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
+  // int pwmValue = getPWMvalue(speed);
+  // int leftPWM = round(pwmValue * MOTOR_LEFT_FACTOR);
+  // int rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
+  // leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  // rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  analogWrite(LEFT_DIRECTION_FORWARD_PIN, 255);
   digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
-  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
+  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, 245);
   digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
 }
 
@@ -109,8 +80,8 @@ void moveBackward(int speed)
 {
   // get PWM value
   int pwmValue = getPWMvalue(speed);
-  int rightPWM = round(pwmValue * getLeftFactor(speed));
-  int leftPWM = round(pwmValue * getRightFactor(speed));
+  int rightPWM = round(pwmValue * MOTOR_LEFT_FACTOR);
+  int leftPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   analogWrite(LEFT_DIRECTION_BACKWARD_PIN, leftPWM);
@@ -130,8 +101,8 @@ void switchDirection(int leftSpeed, int rightSpeed)
 {
   int leftValue = getPWMvalue(leftSpeed);
   int rightValue = getPWMvalue(rightSpeed);
-  int leftPWM = round(leftValue * getLeftFactor(leftSpeed));
-  int rightPWM = round(rightValue * getRightFactor(rightSpeed));
+  int leftPWM = round(leftValue * MOTOR_LEFT_FACTOR);
+  int rightPWM = round(rightValue * MOTOR_RIGHT_FACTOR);
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   // put left wheel pin

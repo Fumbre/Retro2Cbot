@@ -18,8 +18,4 @@ int getPWMvalue(int speed);
 
 void initWheelsPin();
 
-float getLeftFactor(int speed);
-
-float getRightFactor(int speed);
-
 void rotate180(int speed, String direction);

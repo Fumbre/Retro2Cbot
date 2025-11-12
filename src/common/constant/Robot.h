@@ -27,6 +27,9 @@ const int PPR = 15;
 // the raduis of per wheel unit: cm
 const float WHEEL_RADUIS = 3.6;
 
+const float MOTOR_LEFT_FACTOR = 1.00;          // stablize left motor
+const float MOTOR_RIGHT_FACTOR = 0.9764705882; // stablize right motor 249÷255=0.976470588...
+
 const int WHEEL_PIN_ARRAY[] = {
     LEFT_DIRECTION_FORWARD_PIN,
     LEFT_DIRECTION_BACKWARD_PIN,

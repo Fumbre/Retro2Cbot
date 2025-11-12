@@ -1,15 +1,19 @@
 #include <Arduino.h>
 #include "common/robot/movement/movement.h"
+#include "motors/stability.h"
 
 const int SETTING_MODE = 2;
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
-  initWheelsPin();
+  // initWheelsPin();
+  initRotationPins();
   delay(2000);
 }
 
-void loop() {
+void loop()
+{
   // switch (SETTING_MODE)
   // {
   // case 0:
@@ -20,7 +24,7 @@ void loop() {
   //   break;
   // case 2:
   //   // to do physicalMaze
-  //   break;  
+  //   break;
 
   // default:
   //   Serial.print("NO SUCH A PROGRAM");
@@ -66,12 +70,13 @@ void loop() {
   //     break;
   //   }
   // }
-  delay(2000);
-  rotate180(0,"left");
-  delay(2000);
-  rotate180(50,"right");
+  // delay(2000);
+  testPulses();
+  moveForward(100);
+  // delay(2000);
+  // moveBackward(100);
 
   // moveForward(80);
-  //stopMotors();
-  //delay(2000);
+  // stopMotors();
+  // delay(2000);
 }
