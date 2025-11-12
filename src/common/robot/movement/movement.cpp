@@ -3,20 +3,21 @@
  * @authors Sunny & Nicolo
  * @date 10-11-2025
  */
-#include "../../constant/Robot.h"
-#include <Arduino.h>
+#include "common/robot/movement/movement.h"
 
-float leftFactor = 1.00; // stablize left motor
+float leftFactor = 1.00;  // stablize left motor
 float rightFactor = 1.00; // stablize right motor
 
 volatile long leftPulsesCount = 0;
 volatile long rightPulsesCount = 0;
 
-void countleftRotation(){
+void countleftRotation()
+{
   leftPulsesCount++;
 }
 
-void countRightRotation(){
+void countRightRotation()
+{
   rightPulsesCount++;
 }
 
@@ -25,17 +26,19 @@ void countRightRotation(){
  * @author Sunny
  * @date 10-11-2025
  */
-void initWheelsPin(){
-    //initialize wheels pin
-    int length = sizeof(WHEEL_PIN_ARRAY)/sizeof(WHEEL_PIN_ARRAY[0]);
-    for (int i = 0; i < length; i++){
-      pinMode(WHEEL_PIN_ARRAY[i],OUTPUT);
-    }
-    //initialize rotation sensor pins
-    pinMode(LEFT_ROTATION_PIN,INPUT_PULLUP);
-    pinMode(RIGHT_ROTATION_PIN,INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(LEFT_ROTATION_PIN),countleftRotation,RISING);
-    attachInterrupt(digitalPinToInterrupt(RIGHT_ROTATION_PIN),countRightRotation,RISING);
+void initWheelsPin()
+{
+  // initialize wheels pin
+  int length = sizeof(WHEEL_PIN_ARRAY) / sizeof(WHEEL_PIN_ARRAY[0]);
+  for (int i = 0; i < length; i++)
+  {
+    pinMode(WHEEL_PIN_ARRAY[i], OUTPUT);
+  }
+  // initialize rotation sensor pins
+  pinMode(LEFT_ROTATION_PIN, INPUT_PULLUP);
+  pinMode(RIGHT_ROTATION_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(LEFT_ROTATION_PIN), countleftRotation, RISING);
+  attachInterrupt(digitalPinToInterrupt(RIGHT_ROTATION_PIN), countRightRotation, RISING);
 }
 
 /**
@@ -43,13 +46,14 @@ void initWheelsPin(){
  * @author Sunny
  * @date 11-11-2025
  * @param speed
- * 
- * @details  that function calclulate procantage of speed for analogWrite(255) is max speed is in procatage 
+ *
+ * @details  that function calclulate procantage of speed for analogWrite(255) is max speed is in procatage
  * so we will have correcrt procatage based on max value of PWM_VALUE
- * 
+ *
  * @return PWM value
  */
-int getPWMvalue(int speed){
+int getPWMvalue(int speed)
+{
   speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
   float value = (float)speed / 100.0;
   return (int)round(value * FULL_PWM_VALUE);
@@ -62,23 +66,24 @@ int getPWMvalue(int speed){
  * @param speed
  * @return leftFactor
  */
-float getLeftFactor(int speed){
+float getLeftFactor(int speed)
+{
   return leftFactor;
 }
 
 /**
  * @name  getRightFactor
  * @author Sunny
- * @date 11-11-2025 
+ * @date 11-11-2025
  * @param speed // in percentage % between (0 and 100)
  * @return rightFactor
  * @details get factor value of right wheel for slow down the speed required for stabilization of two wheels
  * @example return map(speed,0,FULL_SPEED,10,50) /  100.0; calc ( (50 - 10) * 0.2 + 10   ) / 100 == 0.18
  */
-float getRightFactor(int speed){
-  return map(speed,0,FULL_SPEED,86,87) / 100.0;  // ( (50 - 10) * 0.2 + 10   ) / 100
+float getRightFactor(int speed)
+{
+  return map(speed, 0, FULL_SPEED, 86, 87) / 100.0; // ( (50 - 10) * 0.2 + 10   ) / 100
 }
-
 
 /**
  * @name moveForward
@@ -86,33 +91,33 @@ float getRightFactor(int speed){
  * @date 10-11-2025
  * @param speed
  */
-void moveForward(int speed) {
-   int pwmValue = getPWMvalue(speed);
-   int leftPWM  = round(pwmValue * getLeftFactor(speed));
-   int rightPWM = round(pwmValue * getRightFactor(speed));
-   leftPWM  = constrain(leftPWM, 0, FULL_PWM_VALUE);
-   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-   analogWrite(LEFT_DIRECTION_FORWARD_PIN,leftPWM);
-   digitalWrite(LEFT_DIRECTION_BACKWARD_PIN,LOW);
-   analogWrite(RIGHT_DIRECTION_FORWARD_PIN,rightPWM);
-   digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN,LOW);
+void moveForward(int speed)
+{
+  int pwmValue = getPWMvalue(speed);
+  int leftPWM = round(pwmValue * getLeftFactor(speed));
+  int rightPWM = round(pwmValue * getRightFactor(speed));
+  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
+  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
+  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
 }
 
 // Move backward
-void moveBackward(int speed) {
-   // get PWM value
-   int pwmValue = getPWMvalue(speed);
-   int rightPWM  = round(pwmValue * getLeftFactor(speed));
-   int leftPWM = round(pwmValue * getRightFactor(speed));
-   leftPWM  = constrain(leftPWM, 0, FULL_PWM_VALUE);
-   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-   analogWrite(LEFT_DIRECTION_BACKWARD_PIN,leftPWM);
-   digitalWrite(LEFT_DIRECTION_FORWARD_PIN,LOW);
-   analogWrite(RIGHT_DIRECTION_BACKWARD_PIN,rightPWM);
-   digitalWrite(RIGHT_DIRECTION_FORWARD_PIN,LOW);
-}  
-
-
+void moveBackward(int speed)
+{
+  // get PWM value
+  int pwmValue = getPWMvalue(speed);
+  int rightPWM = round(pwmValue * getLeftFactor(speed));
+  int leftPWM = round(pwmValue * getRightFactor(speed));
+  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  analogWrite(LEFT_DIRECTION_BACKWARD_PIN, leftPWM);
+  digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
+  analogWrite(RIGHT_DIRECTION_BACKWARD_PIN, rightPWM);
+  digitalWrite(RIGHT_DIRECTION_FORWARD_PIN, LOW);
+}
 
 /**
  * @name switchDirection
@@ -121,19 +126,20 @@ void moveBackward(int speed) {
  * @param leftSpeed
  * @param rightSpeed
  */
-void switchDirection(int leftSpeed ,int rightSpeed){
-    int leftValue = getPWMvalue(leftSpeed);
-    int rightValue = getPWMvalue(rightSpeed);
-    int leftPWM  = round(leftValue * getLeftFactor(leftSpeed));
-    int rightPWM = round(rightValue * getRightFactor(rightSpeed));
-    leftPWM  = constrain(leftPWM, 0, FULL_PWM_VALUE);
-    rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-    //put left wheel pin
-    analogWrite(LEFT_DIRECTION_FORWARD_PIN,leftPWM);
-    digitalWrite(LEFT_DIRECTION_BACKWARD_PIN,LOW);
-    //put right wheel pin
-    analogWrite(RIGHT_DIRECTION_FORWARD_PIN,rightPWM);
-    digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN,LOW);
+void switchDirection(int leftSpeed, int rightSpeed)
+{
+  int leftValue = getPWMvalue(leftSpeed);
+  int rightValue = getPWMvalue(rightSpeed);
+  int leftPWM = round(leftValue * getLeftFactor(leftSpeed));
+  int rightPWM = round(rightValue * getRightFactor(rightSpeed));
+  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  // put left wheel pin
+  analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
+  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+  // put right wheel pin
+  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
+  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
 }
 
 /**
@@ -141,11 +147,12 @@ void switchDirection(int leftSpeed ,int rightSpeed){
  * @author Nicolo
  * @date 10-11-2025
  */
-void stopMotors(){
-  digitalWrite(LEFT_DIRECTION_FORWARD_PIN,LOW);
-  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN,LOW);
-  digitalWrite(RIGHT_DIRECTION_FORWARD_PIN,LOW);
-  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN,LOW);
+void stopMotors()
+{
+  digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
+  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+  digitalWrite(RIGHT_DIRECTION_FORWARD_PIN, LOW);
+  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
 }
 
 /**
@@ -155,31 +162,36 @@ void stopMotors(){
  * @param speed
  * @param direction (left, right)
  */
-void rotate180(int speed,String direction){
-  //reset encoder count
+void rotate180(int speed, String direction)
+{
+  // reset encoder count
   leftPulsesCount = 0;
   rightPulsesCount = 0;
-  //caculate the max number of rotation of wheels for rotate 180 degrees
+  // caculate the max number of rotation of wheels for rotate 180 degrees
   float turns = (ROBOT_RADUIS * PI) / (2.0 * PI * WHEEL_RADUIS);
-  //caculate the max number of pulses for rotating 180 degrees
+  // caculate the max number of pulses for rotating 180 degrees
   int targetPulses = round(turns * PPR);
-  //get PWM value
+  // get PWM value
   int pwmValue = getPWMvalue(speed);
-  if(direction.equalsIgnoreCase("right")){
-       //let right wheel go forward, let left wheel go backward
-       analogWrite(LEFT_DIRECTION_FORWARD_PIN,pwmValue);
-       digitalWrite(LEFT_DIRECTION_BACKWARD_PIN,LOW);
-       analogWrite(RIGHT_DIRECTION_BACKWARD_PIN,pwmValue);
-       digitalWrite(RIGHT_DIRECTION_FORWARD_PIN,LOW);
-  } else if (direction.equalsIgnoreCase("left")){
-       //let right wheel go forward, let left wheel go backward
-       analogWrite(RIGHT_DIRECTION_FORWARD_PIN,pwmValue);
-       digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN,LOW);
-       analogWrite(LEFT_DIRECTION_BACKWARD_PIN,pwmValue);
-       digitalWrite(LEFT_DIRECTION_FORWARD_PIN,LOW);
+  if (direction.equalsIgnoreCase("right"))
+  {
+    // let right wheel go forward, let left wheel go backward
+    analogWrite(LEFT_DIRECTION_FORWARD_PIN, pwmValue);
+    digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+    analogWrite(RIGHT_DIRECTION_BACKWARD_PIN, pwmValue);
+    digitalWrite(RIGHT_DIRECTION_FORWARD_PIN, LOW);
+  }
+  else if (direction.equalsIgnoreCase("left"))
+  {
+    // let right wheel go forward, let left wheel go backward
+    analogWrite(RIGHT_DIRECTION_FORWARD_PIN, pwmValue);
+    digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
+    analogWrite(LEFT_DIRECTION_BACKWARD_PIN, pwmValue);
+    digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
   }
   Serial.println(targetPulses);
-  //waiting rotate finish
-  while(leftPulsesCount<= targetPulses || rightPulsesCount <= targetPulses);
+  // waiting rotate finish
+  while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses)
+    ;
   stopMotors();
 }
