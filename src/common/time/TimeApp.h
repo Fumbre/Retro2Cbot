@@ -7,7 +7,6 @@ const unsigned long APP_START_STAMP = millis();
 // it means that the variable timestamp will be changed!!
 bool isTimePassedOnce(unsigned long *timestamp, unsigned long pass)
 {
-
   Serial.print(*timestamp);
   if (millis() - *timestamp >= pass)
   {
@@ -55,4 +54,12 @@ bool isTimeInterval(unsigned long *timestamp, unsigned long shouldPass, unsigned
 
 // if(millis() - lightStamp > 2000) {
 //     lightStamp = millis();
+// }
+
+// if(millis() - lightStamp > 2000) {
+//  to do
+// if (millis() - lightStamp > 3000) {
+//     lightStamp = millis();
+//
+//}
 // }

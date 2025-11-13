@@ -12,6 +12,20 @@ void setup()
 
   // moveForward(255);
 }
+
+/**
+ * @name rotate180
+ * @author Sunny
+ * @date 12-11-2025
+ * @param speed (0-100) procentage speed for motor
+ * @param direction (left, right)
+ * @details that funciton rotate our bot
+ */
+
+void rotate180
+{
+}
+
 unsigned long Rotatestamp = millis();
 unsigned long Forwardstamp = millis();
 unsigned long stopStamp = millis();
