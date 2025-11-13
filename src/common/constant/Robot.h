@@ -23,7 +23,7 @@ const int FULL_SPEED = 100; // in precentage
 // the distance between robot center and wheels center unit:cm
 const float ROBOT_RADUIS = 9.53;
 // the 20 pulses in per rotation of wheel
-const int PPR = 15;
+const int PPR = 20;
 // the raduis of per wheel unit: cm
 const float WHEEL_RADUIS = 3.6;
 

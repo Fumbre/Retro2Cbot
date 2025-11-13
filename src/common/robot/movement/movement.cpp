@@ -8,6 +8,17 @@
 volatile long leftPulsesCount = 0;
 volatile long rightPulsesCount = 0;
 
+//PID factors
+float Kp = 4.0;    // Proportional
+float Ki = 0.05;    // Integral
+float Kd = 0.8;    // Derivative
+
+long lastError = 0;
+float integral = 0;
+unsigned long lastPIDTime = 0;
+
+const unsigned long PID_INTERVAL = 50;
+
 void countleftRotation()
 {
   leftPulsesCount++;
@@ -64,14 +75,13 @@ int getPWMvalue(int speed)
  */
 void moveForward(int speed)
 {
-  // int pwmValue = getPWMvalue(speed);
-  // int leftPWM = round(pwmValue * MOTOR_LEFT_FACTOR);
-  // int rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
-  // leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
-  // rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-  analogWrite(LEFT_DIRECTION_FORWARD_PIN, 255);
+   int pwmValue = getPWMvalue(speed);
+  int rightPWM = pwmValue;
+  int leftPWM = pwmValue;
+  adjustPWMvalueByPulse(leftPWM,rightPWM);
+  analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
   digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
-  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, 245);
+  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
   digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
 }
 
@@ -80,8 +90,9 @@ void moveBackward(int speed)
 {
   // get PWM value
   int pwmValue = getPWMvalue(speed);
-  int rightPWM = round(pwmValue * MOTOR_LEFT_FACTOR);
-  int leftPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
+  int rightPWM = pwmValue;
+  int leftPWM = pwmValue;
+  adjustPWMvalueByPulse(leftPWM,rightPWM);
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   analogWrite(LEFT_DIRECTION_BACKWARD_PIN, leftPWM);
@@ -130,7 +141,7 @@ void stopMotors()
  * @name rotate180
  * @author Sunny
  * @date 12-11-2025
- * @param speed
+ * @param speed (0-100%)
  * @param direction (left, right)
  */
 void rotate180(int speed, String direction)
@@ -162,7 +173,34 @@ void rotate180(int speed, String direction)
   }
   Serial.println(targetPulses);
   // waiting rotate finish
-  while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses)
-    ;
+  while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses);
   stopMotors();
+}
+
+void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue){
+   unsigned long now = millis();
+  if (now - lastPIDTime < PID_INTERVAL) return;
+
+  // caculate diference
+  long error = leftPulsesCount - rightPulsesCount;
+
+  // caculate PID value
+  integral += error;
+  long derivative = error - lastError;
+  float correction = Kp * error + Ki * integral + Kd * derivative;
+  Serial.println(error);
+  // adjust left and PWM value
+  if (error > 0) { //
+    leftPWMValue  = constrain(leftPWMValue + correction * 0.5, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue - correction, 0, FULL_PWM_VALUE);
+  } else if (error < 0) { // 
+    leftPWMValue  = constrain(leftPWMValue - correction, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue + correction * 0.5, 0, FULL_PWM_VALUE);
+  }
+
+  // update variables
+  lastError = error;
+  leftPulsesCount = 0;
+  rightPulsesCount = 0;
+  lastPIDTime = now;
 }

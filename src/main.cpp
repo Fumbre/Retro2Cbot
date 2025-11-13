@@ -7,7 +7,7 @@ const int SETTING_MODE = 2;
 void setup()
 {
   Serial.begin(9600);
-  // initWheelsPin();
+  initWheelsPin();
   initRotationPins();
   delay(2000);
 }
