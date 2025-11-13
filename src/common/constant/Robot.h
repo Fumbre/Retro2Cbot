@@ -3,9 +3,9 @@
 // =========================BB016==============================
 
 // the pin of directions of wheels BB016
-const int LEFT_DIRECTION_FORWARD_PIN = 5;
-const int LEFT_DIRECTION_BACKWARD_PIN = 9;
-const int RIGHT_DIRECTION_FORWARD_PIN = 10;
+const int LEFT_DIRECTION_FORWARD_PIN = 11;
+const int LEFT_DIRECTION_BACKWARD_PIN = 10;
+const int RIGHT_DIRECTION_FORWARD_PIN = 9;
 const int RIGHT_DIRECTION_BACKWARD_PIN = 6;
 
 // pin for rotation
