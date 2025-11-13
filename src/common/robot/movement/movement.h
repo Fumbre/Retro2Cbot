@@ -18,6 +18,6 @@ int getPWMvalue(int speed);
 
 void initWheelsPin();
 
-void rotate180(int speed, String direction);
+void rotate(int speed, String direction,float angle);
 
 void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue);
