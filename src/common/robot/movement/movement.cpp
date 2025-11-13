@@ -151,7 +151,7 @@ void rotate(int speed, String direction,float angle)
   leftPulsesCount = 0;
   rightPulsesCount = 0;
   // caculate the max number of rotation of wheels for rotate 180 degrees
-  float turns = (angle / 360.0)(2.0*ROBOT_RADUIS * PI) / (2.0 * PI * WHEEL_RADUIS);
+  float turns = ((angle / 360.0)*(2.0*ROBOT_RADUIS * PI)) / (2.0 * PI * WHEEL_RADUIS);
   // caculate the max number of pulses for rotating 180 degrees
   int targetPulses = round(turns * PPR);
   // get PWM value
