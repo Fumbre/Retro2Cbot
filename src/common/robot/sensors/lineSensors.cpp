@@ -1,4 +1,4 @@
-#include "common/robot/sensors/lineSensors.h"
+#include "lineSensors.h"
 
 void setupSensors() {
     pinMode(lineSensorD8, OUTPUT);

@@ -1,173 +1,122 @@
-#include "movement.h"
+#include "common/robot/movement/movement.h"
 
-// Move forward: all wheels move forward
-void moveForward(float distance_m)
+volatile long leftPulsesCount = 0;
+volatile long rightPulsesCount = 0;
+
+void countleftRotation()
 {
-    // Disable rotation motors
-    digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-    digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-
-    // Pure movement: both wheels move forward
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
-
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-
-    delay(distance_m * 2000);
-
-    moveStop();
-};
-
-// Move backward: all wheels move backward
-void moveBackward(float distance_m) 
-{
-    // Disable rotation motors
-    digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-    digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-
-    // Pure movement: both wheels move backward
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, LOW);
-    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, HIGH);
-
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, LOW);
-    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, HIGH);
-
-    delay(distance_m * 2000);
-
-    moveStop();
-};
-
-// Move forward while turning right
-void moveRight() 
-{
-    // Turn wheels to the right
-    digitalWrite(WHEEL_LEFT_ROTATION_PIN, HIGH);
-    digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-
-    // All wheels move forward
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
-
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-
-    moveStop();
-};
-
-// Move forward while turning left
-void moveLeft() 
-{
-    // Turn wheels to the left
-    digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-    digitalWrite(WHEEL_RIGHT_ROTATION_PIN, HIGH);
-    
-    // All wheel move forward
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
-
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
-    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-  
-    moveStop();
-};
-
-// Rotate 90º to the left
-void rotateLeft90()
-{
-  digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-
-  digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);
-  digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
-  digitalWrite(WHEEL_LEFT_FORWARD_PIN, LOW);
-  digitalWrite(WHEEL_LEFT_BACKWARD_PIN, HIGH);
-
-  delay(900); // adjust timing for 90°
-  moveStop();
+  leftPulsesCount++;
 }
 
-// Rotate 90° to the right (in place)
-void rotateRight90()
+void countRightRotation()
 {
-  digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-
-  digitalWrite(WHEEL_RIGHT_FORWARD_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, HIGH);
-  digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
-  digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-
-  delay(900);
-  moveStop();
+  rightPulsesCount++;
 }
 
-// Rotate 180° in place
-void rotate180()
+void initWheelsPin()
 {
-  digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-
-  digitalWrite(WHEEL_RIGHT_FORWARD_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, HIGH);
-  digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);
-  digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-
-  delay(1800);
-  moveStop();
-}
-
-// Stop moving
-void moveStop() 
-{
-  // Disable all movement and rotation pins
-  digitalWrite(WHEEL_RIGHT_FORWARD_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);
-  digitalWrite(WHEEL_LEFT_FORWARD_PIN, LOW);
-  digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);
-  digitalWrite(WHEEL_LEFT_ROTATION_PIN, LOW);
-  digitalWrite(WHEEL_RIGHT_ROTATION_PIN, LOW);
-};
-
-// Move forward until obstacle at given distance
-void moveUntilObstacle(int stopDistance_cm)
-{
-  unsigned long duration;            // Store the time taken for the ultrasonic pulse to return
-  int distance;                      // Store the calculated distance in cm
-  
-  // Ultrasonic pins
-  const int TRIG_PIN = A0; 
-  const int ECHO_PIN = A1;
-
-  pinMode(TRIG_PIN, OUTPUT); // Send the pulse   
-  pinMode(ECHO_PIN, INPUT);  // Receive the pulse
-
-  // Keep moving forward until we detect an obstacle
-  while (true)
+  // initialize wheels pin
+  int length = sizeof(WHEEL_PIN_ARRAY) / sizeof(WHEEL_PIN_ARRAY[0]);
+  for (int i = 0; i < length; i++)
   {
-    // Send ultrasonic pulse
-    digitalWrite(TRIG_PIN, LOW);            // Ensure trigger is LOW
-    delayMicroseconds(2);                   // Short pause to stabilize the signal
-    digitalWrite(TRIG_PIN, HIGH);           // Send a 10 µs pulse to start measurement
-    delayMicroseconds(10);                  // Keep the trigger HIGH for 10 µs
-    digitalWrite(TRIG_PIN, LOW);            // Pull it LOW again to finish the pulse
-
-    duration = pulseIn(ECHO_PIN, HIGH);     // Measure the time the echo pin stays HIGH
-    
-    // Convert time (µs) to distance (cm): sound speed ~ 0.034 cm/µs, divide by 2 (go and return)
-    distance = duration * 0.034 / 2;
-
-    // If the measured distance is less or equal to the limit
-    if (distance <= stopDistance_cm)
-    {
-      moveStop();                     // stop the robot immediately
-      break;
-    }
-
-    // Keep moving forward
-    digitalWrite(WHEEL_RIGHT_FORWARD_PIN, HIGH);  // right wheel forward
-    digitalWrite(WHEEL_RIGHT_BACKWARD_PIN, LOW);  // make sure backward is off
-    digitalWrite(WHEEL_LEFT_FORWARD_PIN, HIGH);   // left wheel forward
-    digitalWrite(WHEEL_LEFT_BACKWARD_PIN, LOW);   // make sure backward is off
+    pinMode(WHEEL_PIN_ARRAY[i], OUTPUT);
   }
+  // initialize rotation sensor pins
+  pinMode(LEFT_ROTATION_PIN, INPUT_PULLUP);
+  pinMode(RIGHT_ROTATION_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(LEFT_ROTATION_PIN), countleftRotation, RISING);
+  attachInterrupt(digitalPinToInterrupt(RIGHT_ROTATION_PIN), countRightRotation, RISING);
+}
+
+int getPWMvalue(int speed)
+{
+  speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
+  float value = (float)speed / 100.0;
+  return (int)round(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
+}
+
+void moveForward(int speed)
+{
+  // int pwmValue = getPWMvalue(speed);
+  // int leftPWM = round(pwmValue * MOTOR_LEFT_FACTOR);
+  // int rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
+  // leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  // rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  analogWrite(LEFT_DIRECTION_FORWARD_PIN, 255);
+  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, 245);
+  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
+}
+
+// Move backward
+void moveBackward(int speed)
+{
+  // get PWM value
+  int pwmValue = getPWMvalue(speed);
+  int rightPWM = round(pwmValue * MOTOR_LEFT_FACTOR);
+  int leftPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
+  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  analogWrite(LEFT_DIRECTION_BACKWARD_PIN, leftPWM);
+  digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
+  analogWrite(RIGHT_DIRECTION_BACKWARD_PIN, rightPWM);
+  digitalWrite(RIGHT_DIRECTION_FORWARD_PIN, LOW);
+}
+
+void switchDirection(int leftSpeed, int rightSpeed)
+{
+  int leftValue = getPWMvalue(leftSpeed);
+  int rightValue = getPWMvalue(rightSpeed);
+  int leftPWM = round(leftValue * MOTOR_LEFT_FACTOR);
+  int rightPWM = round(rightValue * MOTOR_RIGHT_FACTOR);
+  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+  // put left wheel pin
+  analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
+  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+  // put right wheel pin
+  analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
+  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
+}
+
+void stopMotors()
+{
+  digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
+  digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+  digitalWrite(RIGHT_DIRECTION_FORWARD_PIN, LOW);
+  digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
+}
+
+void rotate180(int speed, String direction)
+{
+  // reset encoder count
+  leftPulsesCount = 0;
+  rightPulsesCount = 0;
+  // caculate the max number of rotation of wheels for rotate 180 degrees
+  float turns = (ROBOT_RADUIS * PI) / (2.0 * PI * WHEEL_RADUIS);
+  // caculate the max number of pulses for rotating 180 degrees
+  int targetPulses = round(turns * PPR);
+  // get PWM value
+  int pwmValue = getPWMvalue(speed);
+  if (direction.equalsIgnoreCase("right"))
+  {
+    // let right wheel go forward, let left wheel go backward
+    analogWrite(LEFT_DIRECTION_FORWARD_PIN, pwmValue);
+    digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+    analogWrite(RIGHT_DIRECTION_BACKWARD_PIN, pwmValue);
+    digitalWrite(RIGHT_DIRECTION_FORWARD_PIN, LOW);
+  }
+  else if (direction.equalsIgnoreCase("left"))
+  {
+    // let right wheel go forward, let left wheel go backward
+    analogWrite(RIGHT_DIRECTION_FORWARD_PIN, pwmValue);
+    digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
+    analogWrite(LEFT_DIRECTION_BACKWARD_PIN, pwmValue);
+    digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
+  }
+  Serial.println(targetPulses);
+  // waiting rotate finish
+  while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses)
+    ;
+  stopMotors();
 }

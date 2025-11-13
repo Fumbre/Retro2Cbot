@@ -1,5 +1,5 @@
 #pragma once
-#include "common/constant/sensors.h"
 #include <Arduino.h>
+#include "common/constant/sensors.h"
 
 void setupSensors();

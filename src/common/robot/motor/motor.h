@@ -1,6 +1,2 @@
 #pragma once
-#include <Arduino.h>
-#include "common/constant/Robot.h"
-
-void Motor();
-
+void Motor();   // apenas faz pinMode + LOW inicial
