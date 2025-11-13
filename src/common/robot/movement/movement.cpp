@@ -85,7 +85,12 @@ void moveForward(int speed)
   digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
 }
 
-// Move backward
+/**
+ * @name moveBackward
+ * @author Nicolo
+ * @date 10-11-2025
+ * @param speed
+ */
 void moveBackward(int speed)
 {
   // get PWM value
