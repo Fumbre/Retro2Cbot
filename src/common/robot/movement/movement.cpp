@@ -1,17 +1,30 @@
 #include "common/robot/movement/movement.h"
+#include "movement.h"
 
 volatile long leftPulsesCount = 0;
 volatile long rightPulsesCount = 0;
 
+// ---- Variáveis do controlo automático ----
+volatile long pulsosEsq_intervalo = 0;
+volatile long pulsosDir_intervalo = 0;
+
+int velocidadeBasePWM = 180; // podes ajustar
+float GAIN_CORRECAO_VELOCIDADE = 1.8; // sensibilidade da correção
+unsigned long ultimoTempoControlo = 0;
+const int INTERVALO_CONTROLO = 50; // ms
+
 void countleftRotation()
 {
   leftPulsesCount++;
+  pulsosEsq_intervalo++;
 }
 
 void countRightRotation()
 {
   rightPulsesCount++;
+  pulsosDir_intervalo++;
 }
+
 
 void initWheelsPin()
 {
@@ -119,4 +132,49 @@ void rotate180(int speed, String direction)
   while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses)
     ;
   stopMotors();
+}
+
+void StartSpeedControl()
+{
+}
+void MoveFrontControlled(int speedBase)
+{
+}
+void iniciarControloVelocidade()
+{
+  pulsosEsq_intervalo = 0;
+  pulsosDir_intervalo = 0;
+  ultimoTempoControlo = millis();
+}
+
+void moverFrenteControlado(int velocidadePercent)
+{
+  // converte velocidade percentual em PWM base
+  velocidadeBasePWM = getPWMvalue(velocidadePercent);
+
+  unsigned long agora = millis();
+
+  if (agora - ultimoTempoControlo >= INTERVALO_CONTROLO)
+  {
+    noInterrupts();
+    long esq = pulsosEsq_intervalo;
+    long dir = pulsosDir_intervalo;
+    pulsosEsq_intervalo = 0;
+    pulsosDir_intervalo = 0;
+    interrupts();
+
+    int erro = esq - dir;
+    int correcao = erro * GAIN_CORRECAO_VELOCIDADE;
+
+    int pwmEsq = constrain(velocidadeBasePWM - correcao, 0, FULL_PWM_VALUE);
+    int pwmDir = constrain(velocidadeBasePWM + correcao, 0, FULL_PWM_VALUE);
+
+    analogWrite(LEFT_DIRECTION_FORWARD_PIN, pwmEsq);
+    digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
+
+    analogWrite(RIGHT_DIRECTION_FORWARD_PIN, pwmDir);
+    digitalWrite(RIGHT_DIRECTION_BACKWARD_PIN, LOW);
+
+    ultimoTempoControlo = agora;
+  }
 }

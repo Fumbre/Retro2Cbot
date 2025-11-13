@@ -3,4 +3,4 @@
 
 void initUltrasonic();
 float getDistanceCM();
-bool isObstacleDetected(float threshold_cm = 30.0);
+bool isObstacleDetected(float limit_cm = 30.0);

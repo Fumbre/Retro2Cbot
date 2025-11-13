@@ -15,3 +15,7 @@ int getPWMvalue(int speed);
 void initWheelsPin();
 
 void rotate180(int speed, String direction);
+
+void StartSpeedControl();
+
+void MoveFrontControlled(int speedBase);

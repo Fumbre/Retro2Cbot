@@ -1,5 +1,5 @@
 #pragma once
-/*
+
 // =========================BB016==============================
 
 // the pin of directions of wheels BB016
@@ -25,12 +25,19 @@ const float MOTOR_LEFT_FACTOR = 1.00;          // stablize left motor
 const float MOTOR_RIGHT_FACTOR = 0.9764705882; // stablize right motor 249÷255=0.976470588...
 
 const int WHEEL_PIN_ARRAY[] = {
-    LEFT_DIRECTION_FORWARD_PIN,
-    LEFT_DIRECTION_BACKWARD_PIN,
-    RIGHT_DIRECTION_FORWARD_PIN,
-    RIGHT_DIRECTION_BACKWARD_PIN};
-*/
+  LEFT_DIRECTION_FORWARD_PIN,
+  LEFT_DIRECTION_BACKWARD_PIN,
+  RIGHT_DIRECTION_FORWARD_PIN,
+  RIGHT_DIRECTION_BACKWARD_PIN
+};
+
+const int TRIG_PIN = 12;
+const int ECHO_PIN = 13;
+
 // =========================BB011==============================
+/*
+const int TRIG_PIN = 12;
+const int ECHO_PIN = 13;
 
 const int LEFT_DIRECTION_FORWARD_PIN = 11;
 const int LEFT_DIRECTION_BACKWARD_PIN = 10;
@@ -42,7 +49,7 @@ const int LEFT_ROTATION_PIN = 2;
 const int RIGHT_ROTATION_PIN = 3;
 
 // pin of steering gear
-const int STEERING_GEAR_PIN = 10;
+// const int STEERING_GEAR_PIN = 10;
 
 const int FULL_PWM_VALUE = 255;
 const int FULL_SPEED = 100; // in precentage
@@ -60,9 +67,10 @@ const int WHEEL_PIN_ARRAY[] = {
     LEFT_DIRECTION_FORWARD_PIN,
     LEFT_DIRECTION_BACKWARD_PIN,
     RIGHT_DIRECTION_FORWARD_PIN,
-    RIGHT_DIRECTION_BACKWARD_PIN};
-
-// =========================BB007==============================
+    RIGHT_DIRECTION_BACKWARD_PIN
+  };
+*/
+// =========================BB0046==============================
 
 // Robot BB007
 //  const int LEFT_DIRECTION_FORWARD_PIN = 8;
