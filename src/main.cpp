@@ -22,38 +22,38 @@ void loop()
   // testPulses(1000);
 
   //------------first test------------------
-  if (stampForward.every(1000, 1500))
+  // if (stampForward.every(1000, 1500))
+  // {
+  //   moveBackward(255);
+  // }
+  // else
+  // {
+  //   moveForward(255);
+  // }
+
+  //------------second test------------------
+ if (stampForward.timeout(3000))
   {
-    moveBackward(255);
+    stampForward.hardReset();
+    stampBackward.hardReset();
+    stampRotateLeft.hardReset();
   }
-  else
+
+  if (stampForward.once(0))
   {
     moveForward(255);
   }
 
-  //------------second test------------------
-//  if (stampForward.timeout(3000))
-//   {
-//     stampForward.hardReset();
-//     stampBackward.hardReset();
-//     stampRotateLeft.hardReset();
-//   }
 
-//   if (stampForward.once(0))
-//   {
-//     moveForward(255);
-//   }
+  if (stampBackward.once(1000))
+  {
+    moveBackward(255);
+  }
 
-
-//   if (stampBackward.once(1000))
-//   {
-//     moveBackward(255);
-//   }
-
-//   if (stampRotateLeft.once(2000))
-//   {
-//     rotateLeft(255);
-//   }
+  if (stampRotateLeft.once(2000))
+  {
+    rotateLeft(255);
+  }
 
   switch (SETTING_MODE)
   {
