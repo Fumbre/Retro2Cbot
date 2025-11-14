@@ -18,6 +18,7 @@ const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 const int TRIG_PIN = 12;
 const int ECHO_PIN = 13;
+const int ECHO_PIN1 = 13;
 
 const int PIN_MOTOR_RIGHT_FORWARD = 9;
 const int PIN_MOTOR_RIGHT_BACKWARD = 6;
