@@ -9,9 +9,9 @@ volatile long leftPulsesCount = 0;
 volatile long rightPulsesCount = 0;
 
 //PID factors
-float Kp = 0.55;    // Proportional
-float Ki = 0.005;    // Integral
-float Kd = 0.45;    // Derivative
+float Kp = 0.4;    // Proportional
+float Ki = 0.001;    // Integral
+float Kd = 0.3;    // Derivative
 
 long lastError = 0;
 float integral = 0;
@@ -78,15 +78,13 @@ void moveForward(int speed)
 {
   isMovingForward = true;
   int pwmValue = getPWMvalue(speed);
-  // static int rightPWM = 0;
-  // static int leftPWM = 0;
-  // if (leftPWM == 0 && rightPWM == 0) {
-  //     leftPWM  = round(pwmValue * MOTOR_LEFT_FACTOR);
-  //     rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
-  // }
-  int leftPWM = pwmValue;
-  int rightPWM = pwmValue;
- // adjustPWMvalueByPulse(leftPWM,rightPWM);
+  static int rightPWM = 0;
+  static int leftPWM = 0;
+  if (leftPWM == 0 && rightPWM == 0) {
+      leftPWM  = pwmValue;
+      rightPWM = pwmValue;
+  }
+  adjustPWMvalueByPulse(leftPWM,rightPWM);
   analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
   digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
   analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
@@ -104,15 +102,13 @@ void moveBackward(int speed)
   isMovingForward = false;
   // get PWM value
   int pwmValue = getPWMvalue(speed);
-  // static int rightPWM = 0;
-  // static int leftPWM = 0;
-  // if (leftPWM == 0 && rightPWM == 0) {
-  //       leftPWM  = round(pwmValue * MOTOR_LEFT_FACTOR);
-  //       rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
-  //   }
-  int leftPWM = pwmValue;
-  int rightPWM = pwmValue;
- // adjustPWMvalueByPulse(leftPWM,rightPWM);
+  static int rightPWM = 0;
+  static int leftPWM = 0;
+  if (leftPWM == 0 && rightPWM == 0) {
+        leftPWM  = pwmValue;
+        rightPWM = pwmValue;
+    }
+  adjustPWMvalueByPulse(leftPWM,rightPWM);
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   analogWrite(LEFT_DIRECTION_BACKWARD_PIN, leftPWM);

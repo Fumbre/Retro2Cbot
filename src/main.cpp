@@ -8,7 +8,7 @@ void setup()
 {
   Serial.begin(9600);
   initWheelsPin();
-  initRotationPins();
+  //initRotationPins();
   delay(2000);
 }
 
