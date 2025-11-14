@@ -1,118 +1,144 @@
 #pragma once
 #include <Arduino.h>
 
-const unsigned long APP_START_STAMP = millis();
-
-// & is a reference. It works like pointer for C, but clearer for C++
-// it means that the variable timestamp will be changed!!
-bool isTimePassedOnce(unsigned long *timestamp, unsigned long pass)
-{
-  Serial.print(*timestamp);
-  if (millis() - *timestamp >= pass)
-  {
-    *timestamp = millis();
-    return true;
-  }
-  return false;
-}
-
-bool isTimeInterval(unsigned long *timestamp, unsigned long shouldPass, unsigned long doFor)
-{
-  if (millis() - *timestamp >= shouldPass)
-  {
-    if (millis() - *timestamp >= shouldPass + doFor)
-    {
-      *timestamp = millis();
-    }
-    return true;
-  }
-  return false;
-}
-
-// convert to
-// long lightStamp = millis(); // millis();
-
-// if (isTimePassedFrom(lightStamp, 2000))
-// {
-//   // do something
-//   doABackFlip();
-//   // ando
-// }
-
-// if (isTimePassedBetween(lightStamp, 1000, 500)) // show LED for one second
-
-//  or
-// long lightStamp = getTime();
-
-// if (timeSince(lightStamp) > 2000) {
-//     lightStamp = getTime();
-// }
-
-// from
-
-// long lightStamp = millis();
-
-// if(millis() - lightStamp > 2000) {
-//     lightStamp = millis();
-// }
-
-// if(millis() - lightStamp > 2000) {
-//  to do
-// if (millis() - lightStamp > 3000) {
-//     lightStamp = millis();
-//
-//}
-// }
+/**
+ * @name Timer
+ * @author Fumbre (Vladyslav)
+ * @date 14-11-2025
+ * @details Timer class for easier access to millis calculation
+ */
 
 class Timer
 {
 private:
-  unsigned long lastTime;
-  bool triggered;
+  unsigned long stampEvery = 0;
+  unsigned long stampOnce = 0;
+  bool triggered = false;
+  unsigned long stampTimeout = 0;
 
 public:
-  Timer() : lastTime(0), triggered(false) {}
-
-  bool interval(unsigned long shouldPass, unsigned long doFor = 0)
+  /**
+   * @name Timer().every
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @param waitTime(>=0)miliseconds  how much timer should wait until true
+   * @param workTime(>=0)miliseconds  how long timer should return true
+   * @details Timer.every(500) will return True every 500 miliseconds
+   * @details Timer.every(200, 500) will return true after 200 miliseconds continiously for 500 miliseconds, after 500 will return False.
+   * @details Timer.every(0, 500) WRONG!!! will be returning true all the time
+   * @return bool
+   */
+  bool every(unsigned long waitTime, unsigned long workTime = 0)
   {
+    if (stampEvery == 0)
+      stampEvery = millis();
+
     unsigned long now = millis();
-    if (now - lastTime >= shouldPass)
+    if (now - stampEvery >= waitTime)
     {
-      if (now - lastTime >= shouldPass + doFor)
+      if (now - stampEvery >= waitTime + workTime)
       {
-        lastTime = now;
+        stampEvery = now;
       }
       return true;
     }
     return false;
   }
 
+  /**
+   * @name Timer().once
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @param shouldPass(>=0)miliseconds  after this time return True once
+   * @details Timer.once(500) will return True once and only once! even in a loop it will be executed once after shouldPass time!!
+   * @return bool
+   */
   bool once(unsigned long shouldPass)
   {
     if (triggered)
       return false;
 
+    if (stampOnce == 0)
+      stampOnce = millis();
+
     unsigned long now = millis();
-    if (millis() - lastTime >= shouldPass)
+    if (now - stampOnce >= shouldPass)
     {
+      triggered = true;
       return true;
     }
     return false;
   }
 
+  /**
+   * @name Timer().timeout
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @param shouldPass(>=0)miliseconds  after this time return True all the time
+   * @details Timer.timeout(300) will return True after timeout and keep returning True
+   * @return bool
+   */
   bool timeout(unsigned long shouldPass)
   {
+    if (stampTimeout == 0)
+      stampTimeout = millis();
+
     unsigned long now = millis();
-    if (millis() - lastTime >= shouldPass)
+    if (now - stampTimeout >= shouldPass)
     {
       return true;
     }
     return false;
   }
 
+  /**
+   * @name Timer().hardReset
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @details RESET ALL TIMERS
+   */
   void hardReset()
   {
-    lastTime = millis();
+    unsigned long now = millis();
+
+    stampEvery = now;
+    stampOnce = now;
+    stampTimeout = now;
+
     triggered = false;
+  }
+
+  /**
+   * @name Timer().resetEvery
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @details reset Timer().every timer
+   */
+  void resetEvery()
+  {
+    stampEvery = millis();
+  }
+
+  /**
+   * @name Timer().resetOnce
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @details reset Timer().once timer
+   */
+  void resetOnce()
+  {
+    stampOnce = millis();
+    triggered = false;
+  }
+
+  /**
+   * @name Timer().resetTimeout
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @details reset Timer().timeout timer
+   */
+  void resetTimeout()
+  {
+    stampTimeout = millis();
   }
 };
