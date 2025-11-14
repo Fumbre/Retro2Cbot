@@ -1,34 +1,27 @@
 #include "movement.h"
 
-void moveForward(int speed, bool isPure)
+void moveForward(int speed)
 {
-  if (isPure)
+
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
-    for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
-    {
-      analogWrite(MOTOR_ARRAY[i].PIN, 0);
-      if (MOTOR_ARRAY[i].title == "MOTOR_RIGHT_FORWARD_PIN")
-        analogWrite(MOTOR_RIGHT_FORWARD_PIN, speed);
-      if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_FORWARD_PIN")
-        analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
-    }
-  }
-  else
-  {
-    analogWrite(MOTOR_RIGHT_FORWARD_PIN, speed);
-    analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed);
   }
 };
 
 void moveBackward(int speed)
 {
-  for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
-    analogWrite(MOTOR_ARRAY[i].PIN, 0);
-    if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_BACKWARD_PIN")
-      analogWrite(MOTOR_LEFT_BACKWARD_PIN, speed);
-    if (MOTOR_ARRAY[i].title == "MOTOR_RIGHT_BACKWARD_PIN")
-      analogWrite(MOTOR_RIGHT_BACKWARD_PIN, speed);
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
+      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+      analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speed);
   }
 };
 
@@ -40,33 +33,16 @@ void moveLeft(int speed) {
 
 };
 
-void rotateRight(int speed, bool isPure)
+void rotateLeft(int speed)
 {
-  if (isPure)
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
-    for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
-    {
-      analogWrite(MOTOR_ARRAY[i].PIN, 0);
-      if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_FORWARD_PIN")
-        analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
-      if (MOTOR_ARRAY[i].title == "MOTOR_RIGHT_BACKWARD_PIN")
-        analogWrite(MOTOR_RIGHT_BACKWARD_PIN, speed);
-
-      // if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_PULSE_PIN")
-      // analogWrite(MOTOR_LEFT_PULSE_PIN, speed);
-      // if (MOTOR_ARRAY[i].title == "MOTOR_LEFT_PULSE_PIN")
-      // analogWrite(MOTOR_LEFT_PULSE_PIN, speed);
-    }
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
+      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
   }
-  else
-  {
-    analogWrite(MOTOR_LEFT_FORWARD_PIN, speed);
-    analogWrite(MOTOR_LEFT_PULSE_PIN, speed);
-  }
-};
-
-void rotateLeft(int speed) {
-
 };
 
 void moveStop(int motor_pin)
@@ -76,8 +52,8 @@ void moveStop(int motor_pin)
 
 void moveStopAll()
 {
-  for (int i = 0; i < MOTOR_ARRAY_LENGTH; i++)
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
-    analogWrite(MOTOR_ARRAY[i].PIN, 0);
+    digitalWrite(PINS_MOTOR[i], 0);
   }
 };

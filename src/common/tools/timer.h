@@ -11,7 +11,9 @@
 class Timer
 {
 private:
+  // stamp for timer functions
   unsigned long stampEvery = 0;
+  unsigned long stampEveryImidiately = 0;
   unsigned long stampOnce = 0;
   bool triggered = false;
   unsigned long stampTimeout = 0;
@@ -23,8 +25,8 @@ public:
    * @date 14-11-2025
    * @param waitTime(>=0)miliseconds  how much timer should wait until true
    * @param workTime(>=0)miliseconds  how long timer should return true
-   * @details Timer.every(500) will return True every 500 miliseconds
-   * @details Timer.every(200, 500) will return true after 200 miliseconds continiously for 500 miliseconds, after 500 will return False.
+   * @details Timer.every(500) will return True only after 500 miliseconds
+   * @details Timer.every(200, 500) will return true after 200 miliseconds, than continiously for 500 miliseconds, after 500 will return False.
    * @details Timer.every(0, 500) WRONG!!! will be returning true all the time
    * @return bool
    */
@@ -39,6 +41,38 @@ public:
       if (now - stampEvery >= waitTime + workTime)
       {
         stampEvery = now;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * @name Timer().everyImidiately
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @param waitTime(>=0)miliseconds  how much timer should wait until true
+   * @param workTime(>=0)miliseconds  how long timer should return true
+   * @details Same as every, but for first execution will return True Imidiately
+   * @details Timer.everyImidiately(500) will return True everyImidiately 500 miliseconds
+   * @details Timer.everyImidiately(200, 500) will return true after 200 miliseconds continiously for 500 miliseconds, after 500 will return False.
+   * @details Timer.everyImidiately(0, 500) WRONG!!! will be returning true all the time
+   * @return bool
+   */
+  bool everyImidiately(unsigned long waitTime, unsigned long workTime = 0)
+  {
+    if (stampEveryImidiately == 0)
+    {
+      stampEveryImidiately = millis();
+      return true;
+    }
+
+    unsigned long now = millis();
+    if (now - stampEveryImidiately >= waitTime)
+    {
+      if (now - stampEveryImidiately >= waitTime + workTime)
+      {
+        stampEveryImidiately = now;
       }
       return true;
     }
@@ -102,6 +136,7 @@ public:
     unsigned long now = millis();
 
     stampEvery = now;
+    stampEveryImidiately = now;
     stampOnce = now;
     stampTimeout = now;
 
@@ -117,6 +152,17 @@ public:
   void resetEvery()
   {
     stampEvery = millis();
+  }
+
+  /**
+   * @name Timer().resetEveryImidiately
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @details reset Timer().everyImidiately timer
+   */
+  void resetEveryImidiately()
+  {
+    stampEveryImidiately = millis();
   }
 
   /**

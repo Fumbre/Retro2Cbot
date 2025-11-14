@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include "common/robot/motor/motor.h"
 #include "common/robot/movement/movement.h"
-#include "common/time/TimeApp.h"
+#include "common/tools/timer.h"
+#include "common/tools/tests/test_pulses.h"
 
 const int SETTING_MODE = 2;
 
@@ -9,39 +10,47 @@ void setup()
 {
   Serial.begin(9600);
   setupMotor();
-
-  // moveForward(255);
 }
 
-/**
- * @name rotate180
- * @author Sunny
- * @date 12-11-2025
- * @param speed (0-100) procentage speed for motor
- * @param direction (left, right)
- * @details that funciton rotate our bot
- */
-
-void rotate180
-{
-}
-
-unsigned long Rotatestamp = millis();
-unsigned long Forwardstamp = millis();
-unsigned long stopStamp = millis();
+Timer stampForward;
+Timer stampBackward;
+Timer stampRotateLeft;
 
 void loop()
 {
-  bool rotate = isTimeInterval(&Rotatestamp, 1500, 500);
-  bool goForward = isTimeInterval(&Forwardstamp, 500, 1000);
+  testPulses(1000);
 
-  if (goForward)
+  //------------first test------------------
+  // if (!stampForward.every(1000, 1500))
+  // {
+  //   moveForward(255);
+  // }
+  // else
+  // {
+  //   moveBackward(255);
+  // }
+
+  //------------second test------------------
+
+  if (stampForward.once(0))
   {
-    moveForward(255, true);
+    moveForward(255);
   }
-  if (rotate)
+  if (stampForward.timeout(3000))
   {
-    rotateLeft(255, true);
+    stampForward.hardReset();
+    stampBackward.hardReset();
+    stampRotateLeft.hardReset();
+  }
+
+  if (stampBackward.once(1000))
+  {
+    moveBackward(255);
+  }
+
+  if (stampRotateLeft.once(2000))
+  {
+    rotateLeft(255);
   }
 
   switch (SETTING_MODE)

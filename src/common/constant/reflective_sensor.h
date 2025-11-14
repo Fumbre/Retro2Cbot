@@ -23,4 +23,4 @@ const int PINS_RS[] = {
     PIN_RS_D1,
 };
 
-const int PINS_MOTOR_LENGTH = sizeof(PINS_RS) / PINS_RS[0];
+const int PINS_MOTOR_LENGTH = sizeof(PINS_RS) / sizeof(int);

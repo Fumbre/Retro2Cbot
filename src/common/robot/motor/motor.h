@@ -4,8 +4,10 @@
 
 void setupMotor();
 
-volatile long motor_left_pulses_counter = 0;
-volatile long motor_right_pulses_counter = 0;
+extern volatile long motor_left_pulses_counter;
+extern volatile long motor_right_pulses_counter;
 
 void countLeftPulses();
 void countRightPulses();
+
+// motorStability();

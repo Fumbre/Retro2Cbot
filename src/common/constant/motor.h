@@ -2,14 +2,14 @@
 
 // ======================BB016======================
 
-// const int PIN_MOTOR_RIGHT_FORWARD = 10;
-// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
+const int PIN_MOTOR_RIGHT_FORWARD = 11;
+const int PIN_MOTOR_RIGHT_BACKWARD = 10;
 
-// const int PIN_MOTOR_LEFT_FORWARD = 9;
-// const int PIN_MOTOR_LEFT_BACKWARD = 6;
+const int PIN_MOTOR_LEFT_FORWARD = 6;
+const int PIN_MOTOR_LEFT_BACKWARD = 9;
 
-// const int PIN_MOTOR_LEFT_PULSE = 5;
-// const int PIN_MOTOR_RIGHT_PULSE = 3;
+const int PIN_MOTOR_LEFT_PULSE = 2;
+const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ==================================================
 
@@ -28,14 +28,14 @@
 
 // ======================BB0046======================
 
-const int PIN_MOTOR_RIGHT_FORWARD = 9;
-const int PIN_MOTOR_RIGHT_BACKWARD = 6;
+// const int PIN_MOTOR_RIGHT_FORWARD = 9;
+// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 
-const int PIN_MOTOR_LEFT_FORWARD = 10;
-const int PIN_MOTOR_LEFT_BACKWARD = 11;
+// const int PIN_MOTOR_LEFT_FORWARD = 10;
+// const int PIN_MOTOR_LEFT_BACKWARD = 11;
 
-const int PIN_MOTOR_LEFT_PULSE = 5;
-const int PIN_MOTOR_RIGHT_PULSE = 3;
+// const int PIN_MOTOR_LEFT_PULSE = 2;
+// const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ==================================================
 
@@ -45,8 +45,15 @@ const int PINS_MOTOR[] = {
     PIN_MOTOR_RIGHT_BACKWARD,
     PIN_MOTOR_LEFT_FORWARD,
     PIN_MOTOR_LEFT_BACKWARD,
-    PIN_MOTOR_LEFT_PULSE,
-    PIN_MOTOR_RIGHT_PULSE,
 };
 
-const int PINS_MOTOR_LENGTH = sizeof(PINS_MOTOR) / PINS_MOTOR[0];
+// ----discuss----
+// const int PINS_MOTOR_PULSE[] = {
+//     PIN_MOTOR_LEFT_PULSE,
+//     PIN_MOTOR_RIGHT_PULSE,
+// };
+
+// const int PINS_MOTOR_PULSE_LENGTH = sizeof(PINS_MOTOR_PULSE) / sizeof(int);
+// ----------------------------
+
+const int PINS_MOTOR_LENGTH = sizeof(PINS_MOTOR) / sizeof(int);

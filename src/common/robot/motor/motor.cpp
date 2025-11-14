@@ -1,5 +1,9 @@
 #include "motor.h"
 
+volatile long motor_left_pulses_counter = 0;
+volatile long motor_right_pulses_counter = 0;
+
+// count pulses
 void countLeftPulses() { motor_left_pulses_counter++; }
 void countRightPulses() { motor_right_pulses_counter++; }
 
@@ -14,19 +18,16 @@ void setupMotor()
 {
   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
-    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_PULSE)
-    {
-      pinMode(PIN_MOTOR_LEFT_PULSE, INPUT_PULLUP);
-      attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_LEFT_PULSE), countLeftPulses, RISING);
-      continue;
-    }
-    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_PULSE)
-    {
-      pinMode(PIN_MOTOR_RIGHT_PULSE, INPUT_PULLUP);
-      attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
-      continue;
-    }
     pinMode(PINS_MOTOR[i], OUTPUT);
     digitalWrite(PINS_MOTOR[i], LOW);
   }
+  pinMode(PIN_MOTOR_LEFT_PULSE, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_LEFT_PULSE), countLeftPulses, RISING);
+
+  pinMode(PIN_MOTOR_RIGHT_PULSE, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
 };
+
+void motorStability()
+{
+}
