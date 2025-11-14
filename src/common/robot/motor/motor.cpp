@@ -29,6 +29,20 @@ void setupMotor()
   attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
 };
 
-void motorStability()
+Timer time;
+Stability correctSpeed = {255, 255};
+
+Stability motorStability(int speed)
 {
+  if (motor_left_pulses_counter > motor_right_pulses_counter) {
+    if (time.everyImidiately(20)) {
+      correctSpeed.speedLeft--;
+    }
+  }
+  if (motor_right_pulses_counter > motor_left_pulses_counter) {
+    if (time.everyImidiately(20)) {
+      correctSpeed.speedRight--;
+    }
+  }
+  return correctSpeed;
 }

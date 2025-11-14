@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include "common/constant/motor.h"
+#include "common/robot/motor/motor.h"
 
 void moveForward(int speed);
 void moveBackward(int speed);

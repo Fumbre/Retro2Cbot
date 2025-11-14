@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include "common/tools/timer.h"
 
 void setupMotor();
 
@@ -9,4 +10,9 @@ extern volatile long motor_right_pulses_counter;
 void countLeftPulses();
 void countRightPulses();
 
-// motorStability();
+struct Stability {
+    int speedLeft;
+    int speedRight;
+};
+
+Stability motorStability(int speed);
