@@ -18,30 +18,32 @@ Timer stampRotateLeft;
 
 void loop()
 {
-  testPulses(1000);
+
+  // testPulses(1000);
 
   //------------first test------------------
-  // if (!stampForward.every(1000, 1500))
-  // {
-  //   moveForward(255);
-  // }
-  // else
+  // if (stampForward.every(1000, 1500))
   // {
   //   moveBackward(255);
   // }
+  // else
+  // {
+  //   moveForward(255);
+  // }
 
   //------------second test------------------
-
-  if (stampForward.once(0))
-  {
-    moveForward(255);
-  }
-  if (stampForward.timeout(3000))
+ if (stampForward.timeout(3000))
   {
     stampForward.hardReset();
     stampBackward.hardReset();
     stampRotateLeft.hardReset();
   }
+
+  if (stampForward.once(0))
+  {
+    moveForward(255);
+  }
+
 
   if (stampBackward.once(1000))
   {

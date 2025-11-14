@@ -1,7 +1,8 @@
 #pragma once
 
-// ======================BB016======================
 
+// ======================BB016======================
+/*
 const int PIN_MOTOR_RIGHT_FORWARD = 11;
 const int PIN_MOTOR_RIGHT_BACKWARD = 10;
 
@@ -10,19 +11,22 @@ const int PIN_MOTOR_LEFT_BACKWARD = 9;
 
 const int PIN_MOTOR_LEFT_PULSE = 2;
 const int PIN_MOTOR_RIGHT_PULSE = 3;
-
+*/
 // ==================================================
 
 // ======================BB011======================
 
-// const int PIN_MOTOR_RIGHT_FORWARD = 9;
-// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
+const int TRIG_PIN = 12;
+const int ECHO_PIN = 13;
 
-// const int PIN_MOTOR_LEFT_FORWARD = 11;
-// const int PIN_MOTOR_LEFT_BACKWARD = 10;
+const int PIN_MOTOR_RIGHT_FORWARD = 9;
+const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 
-// const int PIN_MOTOR_LEFT_PULSE = 2;
-// const int PIN_MOTOR_RIGHT_PULSE = 3;
+const int PIN_MOTOR_LEFT_FORWARD = 11;
+const int PIN_MOTOR_LEFT_BACKWARD = 10;
+
+const int PIN_MOTOR_LEFT_PULSE = 2;
+const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ==================================================
 

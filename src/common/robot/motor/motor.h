@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-#include "common/constant/motor.h"
 
 void setupMotor();
 

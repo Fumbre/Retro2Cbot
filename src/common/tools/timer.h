@@ -92,10 +92,11 @@ public:
     if (triggered)
       return false;
 
-    if (stampOnce == 0)
-      stampOnce = millis();
-
     unsigned long now = millis();
+
+    if (stampOnce == 0)
+      stampOnce = now;
+
     if (now - stampOnce >= shouldPass)
     {
       triggered = true;
