@@ -63,3 +63,56 @@ bool isTimeInterval(unsigned long *timestamp, unsigned long shouldPass, unsigned
 //
 //}
 // }
+
+class Timer
+{
+private:
+  unsigned long lastTime;
+  bool triggered;
+
+public:
+  Timer() : lastTime(0), triggered(false) {}
+
+  bool interval(unsigned long shouldPass, unsigned long doFor = 0)
+  {
+    unsigned long now = millis();
+    if (now - lastTime >= shouldPass)
+    {
+      if (now - lastTime >= shouldPass + doFor)
+      {
+        lastTime = now;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  bool once(unsigned long shouldPass)
+  {
+    if (triggered)
+      return false;
+
+    unsigned long now = millis();
+    if (millis() - lastTime >= shouldPass)
+    {
+      return true;
+    }
+    return false;
+  }
+
+  bool timeout(unsigned long shouldPass)
+  {
+    unsigned long now = millis();
+    if (millis() - lastTime >= shouldPass)
+    {
+      return true;
+    }
+    return false;
+  }
+
+  void hardReset()
+  {
+    lastTime = millis();
+    triggered = false;
+  }
+};
