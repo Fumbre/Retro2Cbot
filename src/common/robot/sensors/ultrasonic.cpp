@@ -1,10 +1,9 @@
-
 #include <Arduino.h>
 #include "../../constant/Robot.h"
 #include "ultrasonic.h"
 
 // Initialize ultrasonic pins
-void initUltrasonic() {
+void initializeUltrasonicSensor() {
   pinMode(TRIG_PIN, OUTPUT);   // TRIG pin set as output to send ultrasonic pulses
   pinMode(ECHO_PIN, INPUT);    // ECHO pin set as input to receive reflected signal
 }

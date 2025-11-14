@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
 
-void initUltrasonic();
+void initializeUltrasonicSensor();
 float getDistanceCM();
 bool isObstacleDetected(float limit_cm = 30.0);

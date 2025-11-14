@@ -12,7 +12,7 @@ void setup()
     initWheelsPin();                  // (se estiver a ser usado)
     initRotationPins();               // encoders
     StartSpeedControl();      // controlo PID simples
-    initUltrasonic();                 
+    initializeUltrasonicSensor();                 
 
     delay(2000);
 }
