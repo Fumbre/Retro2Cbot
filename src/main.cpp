@@ -70,13 +70,8 @@ void loop()
   //     break;
   //   }
   // }
-  // delay(2000);
-  testPulses();
-  moveForward(100);
-  // delay(2000);
+  // delay(3000);
+  rotate(100,"left",90);
+  delay(3000);
   // moveBackward(100);
-
-  // moveForward(80);
-  // stopMotors();
-  // delay(2000);
 }

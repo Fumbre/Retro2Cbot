@@ -9,19 +9,20 @@ volatile long leftPulsesCount = 0;
 volatile long rightPulsesCount = 0;
 
 //PID factors
-float Kp = 4.0;    // Proportional
-float Ki = 0.05;    // Integral
-float Kd = 0.8;    // Derivative
+float Kp = 0.55;    // Proportional
+float Ki = 0.005;    // Integral
+float Kd = 0.45;    // Derivative
 
 long lastError = 0;
 float integral = 0;
 unsigned long lastPIDTime = 0;
-
-const unsigned long PID_INTERVAL = 50;
+const unsigned long PID_INTERVAL = 10;
+bool isMovingForward = true;
 
 void countleftRotation()
 {
   leftPulsesCount++;
+  
 }
 
 void countRightRotation()
@@ -75,10 +76,17 @@ int getPWMvalue(int speed)
  */
 void moveForward(int speed)
 {
-   int pwmValue = getPWMvalue(speed);
-  int rightPWM = pwmValue;
+  isMovingForward = true;
+  int pwmValue = getPWMvalue(speed);
+  // static int rightPWM = 0;
+  // static int leftPWM = 0;
+  // if (leftPWM == 0 && rightPWM == 0) {
+  //     leftPWM  = round(pwmValue * MOTOR_LEFT_FACTOR);
+  //     rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
+  // }
   int leftPWM = pwmValue;
-  adjustPWMvalueByPulse(leftPWM,rightPWM);
+  int rightPWM = pwmValue;
+ // adjustPWMvalueByPulse(leftPWM,rightPWM);
   analogWrite(LEFT_DIRECTION_FORWARD_PIN, leftPWM);
   digitalWrite(LEFT_DIRECTION_BACKWARD_PIN, LOW);
   analogWrite(RIGHT_DIRECTION_FORWARD_PIN, rightPWM);
@@ -93,11 +101,18 @@ void moveForward(int speed)
  */
 void moveBackward(int speed)
 {
+  isMovingForward = false;
   // get PWM value
   int pwmValue = getPWMvalue(speed);
-  int rightPWM = pwmValue;
+  // static int rightPWM = 0;
+  // static int leftPWM = 0;
+  // if (leftPWM == 0 && rightPWM == 0) {
+  //       leftPWM  = round(pwmValue * MOTOR_LEFT_FACTOR);
+  //       rightPWM = round(pwmValue * MOTOR_RIGHT_FACTOR);
+  //   }
   int leftPWM = pwmValue;
-  adjustPWMvalueByPulse(leftPWM,rightPWM);
+  int rightPWM = pwmValue;
+ // adjustPWMvalueByPulse(leftPWM,rightPWM);
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   analogWrite(LEFT_DIRECTION_BACKWARD_PIN, leftPWM);
@@ -143,7 +158,7 @@ void stopMotors()
 }
 
 /**
- * @name rotate180
+ * @name rotate
  * @author Sunny
  * @date 12-11-2025
  * @param speed (0-100%)
@@ -156,7 +171,7 @@ void rotate(int speed, String direction,float angle)
   leftPulsesCount = 0;
   rightPulsesCount = 0;
   // caculate the max number of rotation of wheels for rotate 180 degrees
-  angle = constrain(angle,0.0,360.0);
+  angle = constrain(angle,0.0,180.0);
   float turns = ((angle / 360.0)*(2.0*ROBOT_RADUIS * PI)) / (2.0 * PI * WHEEL_RADUIS);
   // caculate the max number of pulses for rotating 180 degrees
   int targetPulses = round(turns * PPR);
@@ -178,7 +193,6 @@ void rotate(int speed, String direction,float angle)
     analogWrite(LEFT_DIRECTION_BACKWARD_PIN, pwmValue);
     digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
   }
-  Serial.println(targetPulses);
   // waiting rotate finish
   while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses);
   stopMotors();
@@ -190,20 +204,20 @@ void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue){
 
   // caculate diference
   long error = leftPulsesCount - rightPulsesCount;
-
+   // adjust PWM values for backward or forward
   // caculate PID value
   integral += error;
+  integral = constrain(integral,-50,50);
   long derivative = error - lastError;
   float correction = Kp * error + Ki * integral + Kd * derivative;
-  Serial.println(error);
-  // adjust left and PWM value
-  if (error > 0) { //
-    leftPWMValue  = constrain(leftPWMValue + correction * 0.5, 0, FULL_PWM_VALUE);
-    rightPWMValue = constrain(rightPWMValue - correction, 0, FULL_PWM_VALUE);
-  } else if (error < 0) { // 
-    leftPWMValue  = constrain(leftPWMValue - correction, 0, FULL_PWM_VALUE);
-    rightPWMValue = constrain(rightPWMValue + correction * 0.5, 0, FULL_PWM_VALUE);
-  }
+
+  if (isMovingForward) {
+    leftPWMValue  = constrain(leftPWMValue  + correction / 4, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue - correction / 4, 0, FULL_PWM_VALUE);
+} else { // Moving backward
+    leftPWMValue  = constrain(leftPWMValue  - correction / 4, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue + correction / 4, 0, FULL_PWM_VALUE);
+}
 
   // update variables
   lastError = error;
