@@ -9,14 +9,14 @@
 // =========================BB016==============================
 
 // the pin of directions of wheels BB016
-const int LEFT_DIRECTION_FORWARD_PIN = 5;
-const int LEFT_DIRECTION_BACKWARD_PIN = 9;
+const int LEFT_DIRECTION_FORWARD_PIN = 9;
+const int LEFT_DIRECTION_BACKWARD_PIN = 6;
 const int RIGHT_DIRECTION_FORWARD_PIN = 10;
-const int RIGHT_DIRECTION_BACKWARD_PIN = 6;
+const int RIGHT_DIRECTION_BACKWARD_PIN = 11;
 
 // pin for rotation
-const int LEFT_ROTATION_PIN = 3;
-const int RIGHT_ROTATION_PIN = 2;
+const int LEFT_ROTATION_PIN = 2;
+const int RIGHT_ROTATION_PIN = 3;
 
 const int FULL_PWM_VALUE = 255;
 const int FULL_SPEED = 100; // in precentage
