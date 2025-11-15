@@ -8,5 +8,6 @@ void moveRight(int speed);
 void moveLeft(int speed);
 
 void rotateLeft(int speed);
+void rotateRight(int speed);
 
 void moveStop(int wheel_pin);

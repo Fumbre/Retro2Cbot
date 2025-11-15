@@ -45,6 +45,20 @@ void rotateLeft(int speed)
   }
 };
 
+void rotateRight(int speed)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed);
+
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+      analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speed);
+  }
+};
+
 void moveStop(int motor_pin)
 {
   analogWrite(motor_pin, 0);

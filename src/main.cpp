@@ -3,6 +3,7 @@
 #include "common/robot/movement/movement.h"
 #include "common/tools/timer.h"
 #include "common/tools/tests/test_pulses.h"
+#include "common/robot/sonar/sonar.h"
 
 const int SETTING_MODE = 2;
 
@@ -10,6 +11,7 @@ void setup()
 {
   Serial.begin(9600);
   setupMotor();
+  initializeUltrasonicSensor();
 }
 
 Timer stampForward;
@@ -22,14 +24,14 @@ void loop()
   // testPulses(1000);
 
   //------------first test------------------
-  if (stampForward.every(1000, 1500))
-  {
-    moveBackward(255);
-  }
-  else
-  {
-    moveForward(255);
-  }
+  // if (stampForward.every(1000, 1500))
+  // {
+  //   moveBackward(255);
+  // }
+  // else
+  // {
+  //   moveForward(255);
+  // }
 
   //------------second test------------------
 //  if (stampForward.timeout(3000))
@@ -55,20 +57,28 @@ void loop()
 //     rotateLeft(255);
 //   }
 
-  switch (SETTING_MODE)
-  {
-  case 0:
-    // to do followSingleLine
-    break;
-  case 1:
-    // to do mazeLine
-    break;
-  case 2:
-    // to do physicalMaze
-    break;
+//   switch (SETTING_MODE)
+//   {
+//   case 0:
+//     // to do followSingleLine
+//     break;
+//   case 1:
+//     // to do mazeLine
+//     break;
+//   case 2:         // to do physicalMaze
+//     if (isObstacleDetected(30.0))
+//   {
+//     moveStopAll();
+//     avoidObstacle();
+//   }
+//   else
+//   {
+//     moveForward(255);
+//   }
+//     break;
 
-  default:
-    Serial.print("NO SUCH A PROGRAM");
-    break;
-  }
+//   default:
+//     Serial.print("NO SUCH A PROGRAM");
+//     break;
+//   }
 }
