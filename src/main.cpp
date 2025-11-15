@@ -6,6 +6,8 @@
 
 const int SETTING_MODE = 2;
 
+Timer doCoolRotation;
+
 void setup()
 {
   Serial.begin(9600);
@@ -15,11 +17,15 @@ void setup()
 Timer stampForward;
 Timer stampBackward;
 Timer stampRotateLeft;
+Timer stampRotateRight;
+
+
+int pass = false;
 
 void loop()
 {
 
-  // testPulses(1000);
+  testPulses(1000);
 
   //------------first test------------------
   // if (stampForward.every(1000, 1500))
@@ -32,28 +38,50 @@ void loop()
   // }
 
   //------------second test------------------
- if (stampForward.timeout(3000))
-  {
-    stampForward.hardReset();
-    stampBackward.hardReset();
-    stampRotateLeft.hardReset();
-  }
+//  if (stampForward.timeout(3000))
+//   {
+//     stampForward.hardReset();
+//     stampBackward.hardReset();
+//     stampRotateLeft.hardReset();
+//   }
 
-  if (stampForward.once(0))
-  {
-    moveForward(255);
-  }
+//   if (stampForward.once(0))
+//   {
+//     moveForward(255);
+//   }
 
 
-  if (stampBackward.once(1000))
-  {
-    moveBackward(255);
-  }
+//   if (stampBackward.once(1000))
+//   {
+//     moveBackward(255);
+//   }
 
-  if (stampRotateLeft.once(2000))
-  {
-    rotateLeft(255);
+//   if (stampRotateLeft.once(2000))
+//   {
+//     rotateLeft(255);
+//   }
+
+
+  //------------three test------------------
+
+
+
+if (!doCoolRotation.timeout(3200)) {
+    if (stampRotateLeft.every(20, 200)) {
+     rotateLeft(255);
+  } else {
+    moveStopAll();
   }
+  if (!stampRotateRight.every(20, 200)) {
+    rotateRight(255);
+  }
+}
+
+if (doCoolRotation.once(3200)) {
+  moveStopAll();
+}
+
+
 
   switch (SETTING_MODE)
   {

@@ -1,18 +1,18 @@
 #include "movement.h"
 
-void moveForward(int speed)
-{
-  Stability dynamicSpeed = motorStability(speed);
+// void moveForward(int speed)
+// {
+//   Stability dynamicSpeed = motorStability(speed);
 
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
-    analogWrite(PINS_MOTOR[i], 0);
-    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
-      analogWrite(PIN_MOTOR_RIGHT_FORWARD, dynamicSpeed.speedRight);
-    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
-      analogWrite(PIN_MOTOR_LEFT_FORWARD, dynamicSpeed.speedLeft);
-  }
-};
+//   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+//   {
+//     analogWrite(PINS_MOTOR[i], 0);
+//     if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+//       analogWrite(PIN_MOTOR_RIGHT_FORWARD, dynamicSpeed.speedRight);
+//     if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+//       analogWrite(PIN_MOTOR_LEFT_FORWARD, dynamicSpeed.speedLeft);
+//   }
+// };
 
 void moveBackward(int speed)
 {
@@ -43,6 +43,18 @@ void rotateLeft(int speed)
       analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
     if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
       analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+  }
+};
+
+void rotateRight(int speed)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+      analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed);
   }
 };
 
