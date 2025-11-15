@@ -168,9 +168,9 @@ void rotate(int speed, String direction,float angle)
   rightPulsesCount = 0;
   // caculate the max number of rotation of wheels for rotate 180 degrees
   angle = constrain(angle,0.0,360.0);
-  float turns = ((angle / 360.0)*(2.0*ROBOT_RADUIS * PI)) / (2.0 * PI * WHEEL_RADUIS);
-  // caculate the max number of pulses for rotating 180 degrees
-  int targetPulses = round(turns * PPR);
+  float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
+  float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
+  int targetPulses = wheelTurns * PPR;
   // get PWM value
   int pwmValue = getPWMvalue(speed);
   if (direction.equalsIgnoreCase("right"))
@@ -190,7 +190,7 @@ void rotate(int speed, String direction,float angle)
     digitalWrite(LEFT_DIRECTION_FORWARD_PIN, LOW);
   }
   // waiting rotate finish
-  while (leftPulsesCount <= targetPulses || rightPulsesCount <= targetPulses);
+  while (leftPulsesCount <= targetPulses && rightPulsesCount <= targetPulses);
   stopMotors();
 }
 
