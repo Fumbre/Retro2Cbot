@@ -1,15 +1,15 @@
-#include <Arduino.h>
 #include "common/robot/motor/motor.h"
 #include "common/robot/movement/movement.h"
-#include "common/tools/timer.h"
 #include "common/tools/tests/test_pulses.h"
+#include "common/tools/timer.h"
+#include <Arduino.h>
 
 const int SETTING_MODE = 2;
 
 Timer doCoolRotation;
+Timer test;
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
   setupMotor();
 }
@@ -19,11 +19,9 @@ Timer stampBackward;
 Timer stampRotateLeft;
 Timer stampRotateRight;
 
-
 int pass = false;
 
-void loop()
-{
+void loop() {
 
   testPulses(1000);
 
@@ -38,53 +36,46 @@ void loop()
   // }
 
   //------------second test------------------
-//  if (stampForward.timeout(3000))
-//   {
-//     stampForward.hardReset();
-//     stampBackward.hardReset();
-//     stampRotateLeft.hardReset();
-//   }
+  //  if (stampForward.timeout(3000))
+  //   {
+  //     stampForward.hardReset();
+  //     stampBackward.hardReset();
+  //     stampRotateLeft.hardReset();
+  //   }
 
-//   if (stampForward.once(0))
-//   {
-//     moveForward(255);
-//   }
+  //   if (stampForward.once(0))
+  //   {
+  //     moveForward(255);
+  //   }
 
+  //   if (stampBackward.once(1000))
+  //   {
+  //     moveBackward(255);
+  //   }
 
-//   if (stampBackward.once(1000))
-//   {
-//     moveBackward(255);
-//   }
-
-//   if (stampRotateLeft.once(2000))
-//   {
-//     rotateLeft(255);
-//   }
-
+  //   if (stampRotateLeft.once(2000))
+  //   {
+  //     rotateLeft(255);
+  //   }
 
   //------------three test------------------
 
+  if (!doCoolRotation.timeout(32000)) {
+    if (test.every(22)) {
+      if (stampRotateLeft.every(20, 20)) {
+        rotateLeft(255);
+      } else {
+        rotateRight(255);
+      }
+      moveForward(255);
+    }
+  }
 
-
-if (!doCoolRotation.timeout(3200)) {
-    if (stampRotateLeft.every(20, 200)) {
-     rotateLeft(255);
-  } else {
+  if (doCoolRotation.once(32000)) {
     moveStopAll();
   }
-  if (!stampRotateRight.every(20, 200)) {
-    rotateRight(255);
-  }
-}
 
-if (doCoolRotation.once(3200)) {
-  moveStopAll();
-}
-
-
-
-  switch (SETTING_MODE)
-  {
+  switch (SETTING_MODE) {
   case 0:
     // to do followSingleLine
     break;

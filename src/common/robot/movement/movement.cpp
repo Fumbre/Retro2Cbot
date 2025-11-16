@@ -1,23 +1,19 @@
 #include "movement.h"
 
-// void moveForward(int speed)
-// {
-//   Stability dynamicSpeed = motorStability(speed);
+void moveForward(int speed) {
+  // Stability dynamicSpeed = motorStability(speed);
 
-//   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-//   {
-//     analogWrite(PINS_MOTOR[i], 0);
-//     if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
-//       analogWrite(PIN_MOTOR_RIGHT_FORWARD, dynamicSpeed.speedRight);
-//     if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
-//       analogWrite(PIN_MOTOR_LEFT_FORWARD, dynamicSpeed.speedLeft);
-//   }
-// };
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed);
+  }
+};
 
-void moveBackward(int speed)
-{
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
+void moveBackward(int speed) {
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
     analogWrite(PINS_MOTOR[i], 0);
     if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
       analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
@@ -34,10 +30,8 @@ void moveLeft(int speed) {
 
 };
 
-void rotateLeft(int speed)
-{
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
+void rotateLeft(int speed) {
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
     analogWrite(PINS_MOTOR[i], 0);
     if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
       analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
@@ -46,10 +40,8 @@ void rotateLeft(int speed)
   }
 };
 
-void rotateRight(int speed)
-{
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
+void rotateRight(int speed) {
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
     analogWrite(PINS_MOTOR[i], 0);
     if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
       analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speed);
@@ -58,15 +50,10 @@ void rotateRight(int speed)
   }
 };
 
-void moveStop(int motor_pin)
-{
-  analogWrite(motor_pin, 0);
-};
+void moveStop(int motor_pin) { analogWrite(motor_pin, 0); };
 
-void moveStopAll()
-{
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
+void moveStopAll() {
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
     digitalWrite(PINS_MOTOR[i], 0);
   }
 };
