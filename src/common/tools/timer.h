@@ -66,7 +66,6 @@ public:
     if (timestampIntervalStart == 0)
     {
       timestampIntervalStart = millis();
-      Serial.print("ts");
       return true;
     }
 
@@ -113,8 +112,8 @@ public:
    * @name timeout
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @param milliseconds returns true after specific time forever
-   * @details Timer.timeout(300) will return True after timeout and keep returning True
+   * @param milliseconds use time in milliseconds
+   * @details Timer.timeout(300) returns true forever after 300 milliseconds
    * @return bool
    */
   bool timeout(unsigned long shouldPass)
