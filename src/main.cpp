@@ -19,9 +19,9 @@ Timer stampRotateLeft;
 void loop()
 {
 
-  // testPulses(1000);
-
-  //------------first test------------------
+  testPulses(1000);
+  moveForward(255);
+  // ------------first test------------------
   // if (stampForward.every(1000, 1500))
   // {
   //   moveBackward(255);
@@ -32,28 +32,27 @@ void loop()
   // }
 
   //------------second test------------------
- if (stampForward.timeout(3000))
-  {
-    stampForward.hardReset();
-    stampBackward.hardReset();
-    stampRotateLeft.hardReset();
-  }
+  //  if (stampForward.timeout(3000))
+  //   {
+  //     stampForward.hardReset();
+  //     stampBackward.hardReset();
+  //     stampRotateLeft.hardReset();
+  //   }
 
-  if (stampForward.once(0))
-  {
-    moveForward(255);
-  }
+  //   if (stampForward.once(0))
+  //   {
+  //     moveForward(255);
+  //   }
 
+  //   if (stampBackward.once(1000))
+  //   {
+  //     moveBackward(255);
+  //   }
 
-  if (stampBackward.once(1000))
-  {
-    moveBackward(255);
-  }
-
-  if (stampRotateLeft.once(2000))
-  {
-    rotateLeft(255);
-  }
+  //   if (stampRotateLeft.once(2000))
+  //   {
+  //     rotateLeft(255);
+  //   }
 
   switch (SETTING_MODE)
   {

@@ -2,14 +2,15 @@
 
 void moveForward(int speed)
 {
+  MotorSpeed dynamicalPower = motorStability(speed);
 
   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
     analogWrite(PINS_MOTOR[i], 0);
     if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
-      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, dynamicalPower.speedRight); // dynamicalPower.speedRight
     if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
-      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed);
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, dynamicalPower.speedLeft); //  dynamicalPower.speedLeft
   }
 };
 

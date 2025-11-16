@@ -4,6 +4,8 @@
 volatile long motor_left_pulses_counter = 0;
 volatile long motor_right_pulses_counter = 0;
 
+MotorSpeed correctSpeed = {255, 255};
+
 // count pulses
 void countLeftPulses() { motor_left_pulses_counter++; }
 void countRightPulses() { motor_right_pulses_counter++; }
@@ -29,6 +31,24 @@ void setupMotor()
   attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
 };
 
-void motorStability()
+Timer test;
+
+MotorSpeed motorStability(int speed)
 {
+
+  if (motor_left_pulses_counter > motor_right_pulses_counter)
+  {
+    if (test.every(1000))
+    {
+      correctSpeed.speedLeft--;
+    }
+  }
+  else if (motor_right_pulses_counter > motor_left_pulses_counter)
+  {
+    if (test.every(1000))
+    {
+      correctSpeed.speedRight--;
+    }
+  }
+  return correctSpeed;
 }
