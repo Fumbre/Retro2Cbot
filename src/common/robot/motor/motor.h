@@ -12,10 +12,10 @@ extern struct MotorSpeed correctSpeed;
 void countLeftPulses();
 void countRightPulses();
 
-struct MotorSpeed
+struct Stability
 {
   int speedLeft;
   int speedRight;
 };
 
-MotorSpeed motorStability(int speed);
+Stability motorStability(int speed);

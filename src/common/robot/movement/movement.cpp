@@ -2,15 +2,15 @@
 
 void moveForward(int speed)
 {
-  MotorSpeed dynamicalPower = motorStability(speed);
+  // Stability dynamicSpeed = motorStability(speed);
 
   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
     analogWrite(PINS_MOTOR[i], 0);
     if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
-      analogWrite(PIN_MOTOR_RIGHT_FORWARD, dynamicalPower.speedRight); // dynamicalPower.speedRight
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed); // dynamicalPower.speedRight
     if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
-      analogWrite(PIN_MOTOR_LEFT_FORWARD, dynamicalPower.speedLeft); //  dynamicalPower.speedLeft
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed); //  dynamicalPower.speedLeft
   }
 };
 
@@ -46,10 +46,19 @@ void rotateLeft(int speed)
   }
 };
 
-void moveStop(int motor_pin)
+void rotateRight(int speed)
 {
-  analogWrite(motor_pin, 0);
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+      analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_FORWARD, speed);
+  }
 };
+
+void moveStop(int motor_pin) { analogWrite(motor_pin, 0); };
 
 void moveStopAll()
 {

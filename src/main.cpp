@@ -1,10 +1,13 @@
-#include <Arduino.h>
 #include "common/robot/motor/motor.h"
 #include "common/robot/movement/movement.h"
-#include "common/tools/timer.h"
 #include "common/tools/tests/test_pulses.h"
+#include "common/tools/timer.h"
+#include <Arduino.h>
 
 const int SETTING_MODE = 2;
+
+Timer doCoolRotation;
+Timer test;
 
 void setup()
 {
@@ -15,13 +18,16 @@ void setup()
 Timer stampForward;
 Timer stampBackward;
 Timer stampRotateLeft;
+Timer stampRotateRight;
+
+int pass = false;
 
 void loop()
 {
 
   testPulses(1000);
-  moveForward(255);
-  // ------------first test------------------
+
+  //------------first test------------------
   // if (stampForward.every(1000, 1500))
   // {
   //   moveBackward(255);
@@ -53,6 +59,29 @@ void loop()
   //   {
   //     rotateLeft(255);
   //   }
+
+  //------------three test------------------
+
+  if (!doCoolRotation.timeout(32000))
+  {
+    if (test.every(20))
+    {
+      if (stampRotateLeft.every(25, 20))
+      {
+        rotateLeft(255);
+      }
+      else
+      {
+        rotateRight(255);
+      }
+      moveForward(200);
+    }
+  }
+
+  if (doCoolRotation.once(32000))
+  {
+    moveStopAll();
+  }
 
   switch (SETTING_MODE)
   {
