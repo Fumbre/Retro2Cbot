@@ -61,13 +61,13 @@ void loop() {
   //------------three test------------------
 
   if (!doCoolRotation.timeout(32000)) {
-    if (test.every(22)) {
-      if (stampRotateLeft.every(20, 20)) {
+    if (test.every(20)) {
+      if (stampRotateLeft.every(25, 20)) {
         rotateLeft(255);
       } else {
         rotateRight(255);
       }
-      moveForward(255);
+      moveForward(200);
     }
   }
 
