@@ -2,6 +2,7 @@
 #include "common/robot/movement/movement.h"
 #include "common/tools/tests/test_pulses.h"
 #include "common/tools/timer.h"
+#include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
 
 const int SETTING_MODE = 2;
@@ -25,7 +26,7 @@ int pass = false;
 void loop()
 {
 
-  testPulses(1000);
+  // testPulses(1000);
 
   //------------first test------------------
   // if (stampForward.interval(1000, 1500))
@@ -62,27 +63,27 @@ void loop()
 
   //------------three test------------------
 
-  if (!doCoolRotation.timeout(32000))
-  {
-    if (test.interval(25))
-    {
+  // if (!doCoolRotation.timeout(32000))
+  // {
+  //   if (test.interval(25))
+  //   {
 
-      if (stampRotateLeft.interval(20, 20))
-      {
-        rotateLeft(255);
-      }
-      else
-      {
-        rotateRight(255);
-      }
-      moveForward(255);
-    }
-  }
+  //     if (stampRotateLeft.interval(20, 20))
+  //     {
+  //       rotateLeft(255);
+  //     }
+  //     else
+  //     {
+  //       rotateRight(255);
+  //     }
+  //     moveForward(255);
+  //   }
+  // }
 
-  if (doCoolRotation.executeOnce(32000))
-  {
-    moveStopAll();
-  }
+  // if (doCoolRotation.executeOnce(32000))
+  // {
+  //   moveStopAll();
+  // }
 
   //------------four test------------------
 

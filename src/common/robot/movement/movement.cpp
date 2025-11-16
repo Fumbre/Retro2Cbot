@@ -58,7 +58,7 @@ void rotateRight(int speed)
   }
 };
 
-void moveStop(int motor_pin) { analogWrite(motor_pin, 0); };
+void moveStop(int motor_pin) { digitalWrite(motor_pin, 0); };
 
 void moveStopAll()
 {
