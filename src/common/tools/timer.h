@@ -11,36 +11,37 @@
 class Timer
 {
 private:
-  // stamp for timer functions
-  unsigned long stampEvery = 0;
-  unsigned long stampEveryImidiately = 0;
-  unsigned long stampOnce = 0;
-  bool triggered = false;
-  unsigned long stampTimeout = 0;
+  // timestamp for timer methods
+  unsigned long timestampInterval = 0;
+  unsigned long timestampIntervalStart = 0;
+  unsigned long timestampExecuteOnce = 0;
+  bool isTriggeredExecuteOnce = false;
+  unsigned long timestampTimeout = 0;
 
 public:
   /**
-   * @name Timer().every
+   * @name interval
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @param waitTime(>=0)miliseconds  how much timer should wait until true
-   * @param workTime(>=0)miliseconds  how long timer should return true
-   * @details Timer.every(500) will return True only after 500 miliseconds
-   * @details Timer.every(200, 500) will return true after 200 miliseconds, than continiously for 500 miliseconds, after 500 will return False.
-   * @details Timer.every(0, 500) WRONG!!! will be returning true all the time
+   * @param milliseconds how much time should pass to return true
+   * @param executionTime how long it returns true
+   * @details Timer.interval(500) returns True every 500 milliseconds, otherwise False
+   * @details Timer.interval(200, 500) wait 200 milliseconds and return True for 500 milliseconds
+   * @details Timer.interval(0, 500) WRONG!!! RETURNS FOREVER TRUE
+   * @details !Timer.interval(500) use ! to start immidiately
    * @return bool
    */
-  bool every(unsigned long waitTime, unsigned long workTime = 0)
+  bool interval(unsigned long milliseconds, unsigned long executionTime = 0)
   {
-    if (stampEvery == 0)
-      stampEvery = millis();
+    if (timestampInterval == 0)
+      timestampInterval = millis();
 
     unsigned long now = millis();
-    if (now - stampEvery >= waitTime)
+    if (now - timestampInterval >= milliseconds)
     {
-      if (now - stampEvery >= waitTime + workTime)
+      if (now - timestampInterval >= milliseconds + executionTime)
       {
-        stampEvery = now;
+        timestampInterval = now;
       }
       return true;
     }
@@ -48,31 +49,34 @@ public:
   }
 
   /**
-   * @name Timer().everyImidiately
+   * @name intervalStart
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @param waitTime(>=0)miliseconds  how much timer should wait until true
-   * @param workTime(>=0)miliseconds  how long timer should return true
-   * @details Same as every, but for first execution will return True Imidiately
-   * @details Timer.everyImidiately(500) will return True everyImidiately 500 miliseconds
-   * @details Timer.everyImidiately(200, 500) will return true after 200 miliseconds continiously for 500 miliseconds, after 500 will return False.
-   * @details Timer.everyImidiately(0, 500) WRONG!!! will be returning true all the time
+   * @param milliseconds how much time should pass to return true
+   * @param executionTime how long it returns true
+   * @details When executed for first time returns True immidiately
+   * @details Timer.interval(500) returns True every 500 milliseconds, otherwise False
+   * @details Timer.interval(200, 500) wait 200 milliseconds and return True for 500 milliseconds
+   * @details Timer.interval(0, 500) WRONG!!! RETURNS FOREVER TRUE
+   * @details !Timer.interval(500) use ! to start immidiately
    * @return bool
    */
-  bool everyImidiately(unsigned long waitTime, unsigned long workTime = 0)
+  bool intervalStart(unsigned long milliseconds, unsigned long executionTime = 0)
   {
-    if (stampEveryImidiately == 0)
+    if (timestampIntervalStart == 0)
     {
-      stampEveryImidiately = millis();
+      timestampIntervalStart = millis();
+      Serial.print("ts");
       return true;
     }
 
     unsigned long now = millis();
-    if (now - stampEveryImidiately >= waitTime)
+
+    if (now - timestampIntervalStart >= milliseconds)
     {
-      if (now - stampEveryImidiately >= waitTime + workTime)
+      if (now - timestampIntervalStart >= milliseconds + executionTime)
       {
-        stampEveryImidiately = now;
+        timestampIntervalStart = now;
       }
       return true;
     }
@@ -80,46 +84,46 @@ public:
   }
 
   /**
-   * @name Timer().once
+   * @name executeOnce
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @param shouldPass(>=0)miliseconds  after this time return True once
-   * @details Timer.once(500) will return True once and only once! even in a loop it will be executed once after shouldPass time!!
+   * @param milliseconds returns true after milliseconds only once
+   * @details Timer.executeOnce(500) will return True once and only once! even in a loop it will be executed once after n milliseconds!!
    * @return bool
    */
-  bool once(unsigned long shouldPass)
+  bool executeOnce(unsigned long milliseconds)
   {
-    if (triggered)
+    if (isTriggeredExecuteOnce)
       return false;
 
     unsigned long now = millis();
 
-    if (stampOnce == 0)
-      stampOnce = now;
+    if (timestampExecuteOnce == 0)
+      timestampExecuteOnce = now;
 
-    if (now - stampOnce >= shouldPass)
+    if (now - timestampExecuteOnce >= milliseconds)
     {
-      triggered = true;
+      isTriggeredExecuteOnce = true;
       return true;
     }
     return false;
   }
 
   /**
-   * @name Timer().timeout
+   * @name timeout
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @param shouldPass(>=0)miliseconds  after this time return True all the time
+   * @param milliseconds returns true after specific time forever
    * @details Timer.timeout(300) will return True after timeout and keep returning True
    * @return bool
    */
   bool timeout(unsigned long shouldPass)
   {
-    if (stampTimeout == 0)
-      stampTimeout = millis();
+    if (timestampTimeout == 0)
+      timestampTimeout = millis();
 
     unsigned long now = millis();
-    if (now - stampTimeout >= shouldPass)
+    if (now - timestampTimeout >= shouldPass)
     {
       return true;
     }
@@ -127,65 +131,55 @@ public:
   }
 
   /**
-   * @name Timer().hardReset
+   * @name hardReset
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
    * @details RESET ALL TIMERS
    */
   void hardReset()
   {
-    unsigned long now = millis();
+    timestampInterval = 0;
+    timestampExecuteOnce = 0;
+    timestampTimeout = 0;
 
-    stampEvery = now;
-    stampEveryImidiately = now;
-    stampOnce = now;
-    stampTimeout = now;
-
-    triggered = false;
+    isTriggeredExecuteOnce = false;
   }
 
   /**
-   * @name Timer().resetEvery
+   * @name resetInterval
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @details reset Timer().every timer
+   * @details reset interval timer
    */
-  void resetEvery()
+  void resetInterval()
   {
-    stampEvery = millis();
+    timestampInterval = 0;
   }
 
+  void resetIntervalStart()
+  {
+    timestampIntervalStart = 0;
+  }
   /**
-   * @name Timer().resetEveryImidiately
+   * @name resetExecuteOnce
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @details reset Timer().everyImidiately timer
+   * @details reset executeOnce timer
    */
-  void resetEveryImidiately()
+  void resetExecuteOnce()
   {
-    stampEveryImidiately = millis();
+    timestampExecuteOnce = 0;
+    isTriggeredExecuteOnce = false;
   }
 
   /**
-   * @name Timer().resetOnce
+   * @name resetTimeout
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
-   * @details reset Timer().once timer
-   */
-  void resetOnce()
-  {
-    stampOnce = millis();
-    triggered = false;
-  }
-
-  /**
-   * @name Timer().resetTimeout
-   * @author Fumbre (Vladyslav)
-   * @date 14-11-2025
-   * @details reset Timer().timeout timer
+   * @details reset timeout timer
    */
   void resetTimeout()
   {
-    stampTimeout = millis();
+    timestampTimeout = 0;
   }
 };

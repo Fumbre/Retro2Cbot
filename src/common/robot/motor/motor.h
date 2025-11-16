@@ -7,7 +7,7 @@ void setupMotor();
 extern volatile long motor_left_pulses_counter;
 extern volatile long motor_right_pulses_counter;
 
-extern struct MotorSpeed correctSpeed;
+// extern struct MotorSpeed correctSpeed;
 
 void countLeftPulses();
 void countRightPulses();

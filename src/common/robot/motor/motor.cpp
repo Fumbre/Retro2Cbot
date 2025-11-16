@@ -4,7 +4,7 @@
 volatile long motor_left_pulses_counter = 0;
 volatile long motor_right_pulses_counter = 0;
 
-MotorSpeed correctSpeed = {255, 255};
+// MotorSpeed correctSpeed = {255, 255};
 
 // count pulses
 void countLeftPulses() { motor_left_pulses_counter++; }
@@ -38,14 +38,14 @@ Stability motorStability(int speed)
 {
   if (motor_left_pulses_counter > motor_right_pulses_counter)
   {
-    if (time.everyImidiately(20))
+    if (time.intervalStart(20))
     {
       correctSpeed.speedLeft--;
     }
   }
   if (motor_right_pulses_counter > motor_left_pulses_counter)
   {
-    if (time.everyImidiately(20))
+    if (time.intervalStart(20))
     {
       correctSpeed.speedRight--;
     }

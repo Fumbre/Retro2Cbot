@@ -28,7 +28,7 @@ void loop()
   testPulses(1000);
 
   //------------first test------------------
-  // if (stampForward.every(1000, 1500))
+  // if (stampForward.interval(1000, 1500))
   // {
   //   moveBackward(255);
   // }
@@ -45,17 +45,17 @@ void loop()
   //     stampRotateLeft.hardReset();
   //   }
 
-  //   if (stampForward.once(0))
+  //   if (stampForward.executeOnce(0))
   //   {
   //     moveForward(255);
   //   }
 
-  //   if (stampBackward.once(1000))
+  //   if (stampBackward.executeOnce(1000))
   //   {
   //     moveBackward(255);
   //   }
 
-  //   if (stampRotateLeft.once(2000))
+  //   if (stampRotateLeft.executeOnce(2000))
   //   {
   //     rotateLeft(255);
   //   }
@@ -64,9 +64,10 @@ void loop()
 
   if (!doCoolRotation.timeout(32000))
   {
-    if (test.every(20))
+    if (test.interval(25))
     {
-      if (stampRotateLeft.every(25, 20))
+
+      if (stampRotateLeft.interval(20, 20))
       {
         rotateLeft(255);
       }
@@ -74,14 +75,42 @@ void loop()
       {
         rotateRight(255);
       }
-      moveForward(200);
+      moveForward(255);
     }
   }
 
-  if (doCoolRotation.once(32000))
+  if (doCoolRotation.executeOnce(32000))
   {
     moveStopAll();
   }
+
+  //------------four test------------------
+
+  // if (!doCoolRotation.timeout(32000))
+  // {
+  //   // if (test.interval(20))
+  //   // {
+  //   if (test.executeOnce(0))
+  //   {
+  //     moveForward(255);
+  //   }
+  //   if (stampRotateLeft.interval(25, 15))
+  //   {
+  //     analogWrite(PIN_MOTOR_LEFT_BACKWARD, 0);
+  //     // rotateLeft(255);
+  //   }
+  //   // else
+  //   // {
+  //   //   // rotateRight(255);
+  //   // }
+  //   moveForward(255);
+  //   // }
+  // }
+
+  // if (doCoolRotation.executeOnce(32000))
+  // {
+  //   moveStopAll();
+  // }
 
   switch (SETTING_MODE)
   {

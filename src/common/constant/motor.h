@@ -39,19 +39,6 @@ const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ==================================================
 
-// ======================BB046=======================
-
-const int PIN_MOTOR_RIGHT_FORWARD = 9;
-const int PIN_MOTOR_RIGHT_BACKWARD = 6;
-
-const int PIN_MOTOR_LEFT_FORWARD = 10;
-const int PIN_MOTOR_LEFT_BACKWARD = 11;
-
-const int PIN_MOTOR_LEFT_PULSE = 3;
-const int PIN_MOTOR_RIGHT_PULSE = 2;
-
-// ==================================================
-
 // DISCUSS PIN_MOTOR_ARRAY and PIN_MOTOR_ARRAY_LENGTH
 const int PINS_MOTOR[] = {
     PIN_MOTOR_RIGHT_FORWARD,

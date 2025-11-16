@@ -4,7 +4,7 @@ Timer pulseStamp;
 
 void testPulses(int updateTime)
 {
-  if (pulseStamp.everyImidiately(updateTime))
+  if (pulseStamp.intervalStart(updateTime))
   {
     Serial.print("Left pulses: ");
     Serial.print(motor_left_pulses_counter);
