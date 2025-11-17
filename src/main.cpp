@@ -25,7 +25,16 @@ int pass = false;
 
 void loop()
 {
-
+  switch (SETTING_MODE)
+  {
+  case 0:
+    // to do followSingleLine
+    break;
+  case 1:
+    // to do mazeLine
+    break;
+  case 2:
+    
   // testPulses(1000);
 
   //------------first test------------------
@@ -112,17 +121,6 @@ void loop()
   // {
   //   moveStopAll();
   // }
-
-  switch (SETTING_MODE)
-  {
-  case 0:
-    // to do followSingleLine
-    break;
-  case 1:
-    // to do mazeLine
-    break;
-  case 2:
-    // to do physicalMaze
     break;
 
   default:
