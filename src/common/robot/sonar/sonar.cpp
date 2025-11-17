@@ -8,11 +8,11 @@
  * @details TRIG is set as OUTPUT and is responsible for sending ultrasonic pulses.
  * @details ECHO is set as INPUT and is responsible for receiving the reflected signal.
  * @details Must be executed inside setup() before calling any distance-reading functions.
- */
+*/
 void setupSonar()
 {
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // TRIG pin set as output to send ultrasonic pulses
-  pinMode(PIN_SONAR_ECHO, INPUT);  // ECHO pin set as input to receive reflected signal
+  pinMode(PIN_SONAR_TRIG, OUTPUT); // TRIG pin set as output 
+  pinMode(PIN_SONAR_ECHO, INPUT);  // ECHO pin set as input 
 }
 
 /**
@@ -26,28 +26,18 @@ void setupSonar()
  * because the pulse travels to the obstacle and back.
  * @details The returned value corresponds to the estimated distance to the nearest
  * object directly in front of the sensor.
- * @return float  Distance in centimeters
- */
+ * @return float: Distance in centimeters
+*/
 float getDistanceCM()
 {
-  digitalWrite(PIN_SONAR_TRIG, LOW); // Ensure TRIG is low to start clean pulse
+  digitalWrite(PIN_SONAR_TRIG, LOW);            // Ensure TRIG is low to start clean pulse
+  delayMicroseconds(2);                         // Short delay to stabilize the pin
+  digitalWrite(PIN_SONAR_TRIG, HIGH);           // Send a HIGH pulse to trigger the ultrasonic burst
+  delayMicroseconds(10);                        // Pulse duration: 10 microseconds (required by HC-SR04)
+  digitalWrite(PIN_SONAR_TRIG, LOW);            // Stop the trigger pulse
 
-  // TODO test and Check without using delay
-  delayMicroseconds(2); // Short delay to stabilize the pin
+  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH);   // Measure the time until echo is received (in microseconds)
 
-  digitalWrite(PIN_SONAR_TRIG, HIGH); // Send a HIGH pulse to trigger the ultrasonic burst
-
-  // TODO test and Check without using delay
-  delayMicroseconds(10); // Pulse duration: 10 microseconds (required by HC-SR04)
-
-  digitalWrite(PIN_SONAR_TRIG, LOW); // Stop the trigger pulse
-
-  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH); // Measure the time until echo is received (in microseconds)
-
-  // Convert time to distance:
-  // speed of sound ≈ 0.034 cm/ms
-  // divide by 2 because signal travels to the object and back
-  // Return the distance in centimeters
   float distance = duration * 0.034 / 2;
   return distance;
 }
@@ -62,7 +52,7 @@ float getDistanceCM()
  * @details If the measured distance is less than or equal to limit_cm and greater
  * than 0 (valid reading), the function considers that an obstacle is present.
  * @return true if an obstacle is detected, false otherwise
- */
+*/
 bool isObstacleDetected(float limit_cm)
 {
   float distance = getDistanceCM();              // Read current distance from ultrasonic sensor
@@ -70,53 +60,101 @@ bool isObstacleDetected(float limit_cm)
 }
 
 /**
- * @name avoidObstacle
+ * @name startAvoidObstacle
  * @author Francisco
- * @date 15-11-2025
- * @details Function responsible for executing a predefined sequence of movements
- * whenever an obstacle is detected by the ultrasonic sensor.
- * @details The sequence is as follows:
- *  1) turn left
- *  2) move forward slightly
- *  3) turn right
- *  4) move forward for ~5s
- *  5) turn right again
- *  6) move forward slightly
- *  7) turn left
- *  8) continue straight ahead
- * @details This routine allows the robot to navigate around simple obstacles in a physical environment.
+ * @date 16-11-2025
+ * @details Starts the obstacle avoidance sequence using a non-blocking state machine.
  * @return nothing
- */
-void avoidObstacle()
+*/
+
+int currentAvoidsStatus = -1;     // -1 = noAction, 0-6 = active steps
+Timer durationCurrentPhase;
+
+void startAvoidObstacle()
 {
-  // turn left
-  rotateLeft(200);
-  delay(600);
+  currentAvoidsStatus = 0;                    // Start avoidance sequence at phase 0
+  durationCurrentPhase.hardReset();           // Reset timer for the first phase
+}
 
-  // move forward slightly
-  moveForward(200);
-  delay(700);
+/**
+ * @name avoidObstacleStep
+ * @author Francisco
+ * @date 16-11-2025
+ * @details Executes one step of the non-blocking obstacle avoidance routine.
+ * @return bool: True if the robot is currently avoiding an obstacle.
+ */
 
-  // turn right
-  rotateRight(200);
-  delay(600);
+bool avoidObstacleStep()
+{
+  // If status is negative, no avoidance is active
+  if (currentAvoidsStatus < 0)
+    return false;                                     // Not avoiding
 
-  // move forward for ~5s
-  moveForward(200);
-  delay(5000);
+  switch (currentAvoidsStatus)
+  {
+    case 0:
+      rotateLeft(200);                                // Phase 0: rotate left
+      if (durationCurrentPhase.timeout(600))          // After 600 ms, move to next phase
+      {
+        currentAvoidsStatus = 1;
+        durationCurrentPhase.hardReset();             // Restart timer for next phase
+      }
+      return true;
 
-  // turn right again
-  rotateRight(200);
-  delay(600);
+    case 1:
+      moveForward(200);                               // Phase 1: move forward shortly
+      if (durationCurrentPhase.timeout(700))
+      {
+        currentAvoidsStatus = 2;
+        durationCurrentPhase.hardReset();
+      }
+      return true;
 
-  // move forward slightly
-  moveForward(200);
-  delay(700);
+    case 2:
+      rotateRight(200);                               // Phase 2: rotate right
+      if (durationCurrentPhase.timeout(600))
+      {
+        currentAvoidsStatus = 3;
+        durationCurrentPhase.hardReset();
+      }
+      return true;
 
-  // turn left
-  rotateLeft(200);
-  delay(600);
+    case 3:
+      moveForward(200);                               // Phase 3: long forward movement
+      if (durationCurrentPhase.timeout(5000))
+      {
+        currentAvoidsStatus = 4;
+        durationCurrentPhase.hardReset();
+      }
+      return true;
 
-  // continue staright ahead
-  moveForward(200);
+    case 4:
+      rotateRight(200);                               // Phase 4: rotate right again
+      if (durationCurrentPhase.timeout(600))
+      {
+        currentAvoidsStatus = 5;
+        durationCurrentPhase.hardReset();
+      }
+      return true;
+
+    case 5:
+      moveForward(200);                               // Phase 5: short forward movement
+      if (durationCurrentPhase.timeout(700))
+      {
+        currentAvoidsStatus = 6;
+        durationCurrentPhase.hardReset();
+      }
+      return true;
+
+    case 6:
+      rotateLeft(200);                                // Final phase: rotate left
+      if (durationCurrentPhase.timeout(600))
+      {
+        currentAvoidsStatus = -1;                     // Sequence finished, return to normal mode
+        durationCurrentPhase.hardReset();
+      }
+      return true;
+  }
+
+  return false;         
 }

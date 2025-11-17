@@ -5,6 +5,15 @@
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
 
+// Stop robot using your existing moveStop()
+void stopRobot()
+{
+  moveStop(PIN_MOTOR_LEFT_FORWARD);
+  moveStop(PIN_MOTOR_LEFT_BACKWARD);
+  moveStop(PIN_MOTOR_RIGHT_FORWARD);
+  moveStop(PIN_MOTOR_RIGHT_BACKWARD);
+}
+
 const int SETTING_MODE = 2;
 
 Timer doCoolRotation;
@@ -14,6 +23,7 @@ void setup()
 {
   Serial.begin(9600);
   setupMotor();
+  setupSonar();
 }
 
 Timer stampForward;
@@ -34,6 +44,24 @@ void loop()
     // to do mazeLine
     break;
   case 2:
+
+    // If avoiding obstacle, state machine takes full control
+      if (avoidObstacleStep())
+        break;
+
+      // Detect obstacle
+      if (isObstacleDetected(30.0))
+      {
+        stopRobot();
+        startAvoidObstacle();
+      }
+      else
+      {
+        moveForward(200);
+      }
+
+      break;
+  }
     
   // testPulses(1000);
 
@@ -121,10 +149,8 @@ void loop()
   // {
   //   moveStopAll();
   // }
-    break;
 
-  default:
-    Serial.print("NO SUCH A PROGRAM");
-    break;
-  }
+  // default:
+  //   Serial.print("NO SUCH A PROGRAM");
+  //   break;
 }

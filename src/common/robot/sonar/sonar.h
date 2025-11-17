@@ -6,4 +6,5 @@
 void setupSonar();
 float getDistanceCM();
 bool isObstacleDetected(float limit_cm = 30.0);
-void avoidObstacle();
+bool avoidObstacleStep();
+void startAvoidObstacle();
