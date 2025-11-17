@@ -31,7 +31,7 @@ void setupSonar()
 float getDistanceCM()
 {
   digitalWrite(PIN_SONAR_TRIG, LOW);            // Ensure TRIG is low to start clean pulse
-  delayMicroseconds(2);                         // Short delay to stabilize the pin
+  delayMicroseconds(2);                         // Makes sure the pin is low
   digitalWrite(PIN_SONAR_TRIG, HIGH);           // Send a HIGH pulse to trigger the ultrasonic burst
   delayMicroseconds(10);                        // Pulse duration: 10 microseconds (required by HC-SR04)
   digitalWrite(PIN_SONAR_TRIG, LOW);            // Stop the trigger pulse
@@ -50,13 +50,13 @@ float getDistanceCM()
  * @details Calls getDistanceCM() to obtain the current measured distance and
  * compares it to the user-defined threshold.
  * @details If the measured distance is less than or equal to limit_cm and greater
- * than 0 (valid reading), the function considers that an obstacle is present.
+ * than 2 (valid reading), the function considers that an obstacle is present.
  * @return true if an obstacle is detected, false otherwise
 */
 bool isObstacleDetected(float limit_cm)
 {
   float distance = getDistanceCM();              // Read current distance from ultrasonic sensor
-  return (distance <= limit_cm && distance > 0); // True if within limit and a valid reading (>0)
+  return (distance <= limit_cm && distance > 2); // True if within limit and a valid reading (>2)
 }
 
 /**
@@ -93,8 +93,8 @@ bool avoidObstacleStep()
   switch (currentAvoidsStatus)
   {
     case 0:
-      rotateLeft(200);                                // Phase 0: rotate left
-      if (durationCurrentPhase.timeout(600))          // After 600 ms, move to next phase
+      rotateLeft(255);                                // Phase 0: rotate left
+      if (durationCurrentPhase.timeout(1000))          // After 600 ms, move to next phase
       {
         currentAvoidsStatus = 1;
         durationCurrentPhase.hardReset();             // Restart timer for next phase
@@ -102,8 +102,8 @@ bool avoidObstacleStep()
       return true;
 
     case 1:
-      moveForward(200);                               // Phase 1: move forward shortly
-      if (durationCurrentPhase.timeout(700))
+      moveForward(255);                               // Phase 1: move forward shortly
+      if (durationCurrentPhase.timeout(1000))
       {
         currentAvoidsStatus = 2;
         durationCurrentPhase.hardReset();
@@ -111,8 +111,8 @@ bool avoidObstacleStep()
       return true;
 
     case 2:
-      rotateRight(200);                               // Phase 2: rotate right
-      if (durationCurrentPhase.timeout(600))
+      rotateRight(255);                               // Phase 2: rotate right
+      if (durationCurrentPhase.timeout(1000))
       {
         currentAvoidsStatus = 3;
         durationCurrentPhase.hardReset();
@@ -120,7 +120,7 @@ bool avoidObstacleStep()
       return true;
 
     case 3:
-      moveForward(200);                               // Phase 3: long forward movement
+      moveForward(255);                               // Phase 3: long forward movement
       if (durationCurrentPhase.timeout(5000))
       {
         currentAvoidsStatus = 4;
@@ -129,8 +129,8 @@ bool avoidObstacleStep()
       return true;
 
     case 4:
-      rotateRight(200);                               // Phase 4: rotate right again
-      if (durationCurrentPhase.timeout(600))
+      rotateRight(255);                               // Phase 4: rotate right again
+      if (durationCurrentPhase.timeout(1000))
       {
         currentAvoidsStatus = 5;
         durationCurrentPhase.hardReset();
@@ -138,8 +138,8 @@ bool avoidObstacleStep()
       return true;
 
     case 5:
-      moveForward(200);                               // Phase 5: short forward movement
-      if (durationCurrentPhase.timeout(700))
+      moveForward(255);                               // Phase 5: short forward movement
+      if (durationCurrentPhase.timeout(1000))
       {
         currentAvoidsStatus = 6;
         durationCurrentPhase.hardReset();
@@ -147,8 +147,8 @@ bool avoidObstacleStep()
       return true;
 
     case 6:
-      rotateLeft(200);                                // Final phase: rotate left
-      if (durationCurrentPhase.timeout(600))
+      rotateLeft(255);                                // Final phase: rotate left
+      if (durationCurrentPhase.timeout(1000))
       {
         currentAvoidsStatus = -1;                     // Sequence finished, return to normal mode
         durationCurrentPhase.hardReset();

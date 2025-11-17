@@ -5,15 +5,6 @@
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
 
-// Stop robot using your existing moveStop()
-void stopRobot()
-{
-  moveStop(PIN_MOTOR_LEFT_FORWARD);
-  moveStop(PIN_MOTOR_LEFT_BACKWARD);
-  moveStop(PIN_MOTOR_RIGHT_FORWARD);
-  moveStop(PIN_MOTOR_RIGHT_BACKWARD);
-}
-
 const int SETTING_MODE = 2;
 
 Timer doCoolRotation;
@@ -45,20 +36,21 @@ void loop()
     break;
   case 2:
 
-    // If avoiding obstacle, state machine takes full control
+      // If robot is currently performing the avoidance sequence,
+      //    avoidObstacleStep() takes full control of movement.
       if (avoidObstacleStep())
-        break;
+        return;           // DO NOT execute the code below
 
-      // Detect obstacle
+      // If NOT avoiding, check if a new obstacle appears
       if (isObstacleDetected(30.0))
       {
-        stopRobot();
-        startAvoidObstacle();
+        moveStopAll();            // Stop everything clean
+        startAvoidObstacle();  // Start the whole sequence again
+        return;
       }
-      else
-      {
-        moveForward(200);
-      }
+
+      // If no obstacle and not avoiding, move forward normally
+      moveForward(200);
 
       break;
   }

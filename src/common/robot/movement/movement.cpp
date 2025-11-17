@@ -57,3 +57,11 @@ void rotateRight(int speed)
 };
 
 void moveStop(int motor_pin) { digitalWrite(motor_pin, 0); };
+
+void moveStopAll()
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    digitalWrite(PINS_MOTOR[i], 0);
+  }
+};
