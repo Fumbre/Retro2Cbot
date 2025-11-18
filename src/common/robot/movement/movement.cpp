@@ -7,7 +7,7 @@
 
 // PID factors
 float Kp = 0.02;  // Proportional
-float Ki = 0.009; // Integral
+float Ki = 0.015; // Integral
 float Kd = 0.05;  // Derivative
 
 float lastError = 0;
@@ -19,6 +19,9 @@ bool pidStarted = false;
 
 int leftPWM = 0;
 int rightPWM = 0;
+
+float theta = 0.0;
+float Ktheta = 2.0 * PI * WHEEL_RADUIS / (PPR * ROBOT_RADUIS);
 
 /**
  * @name getPWMvalue
@@ -172,24 +175,13 @@ void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
   if (dt < PID_INTERVAL)
     return;
 
-  // 1. Calculate wheel speeds from encoder pulses
-  float leftSpeed = (float)motor_left_pulses_counter / dt * 1000.0;
-  float rightSpeed = (float)motor_right_pulses_counter / dt * 1000.0;
-
-  // 2. Calculate speed error (same formula for forward/backward)
-  float error = leftSpeed - rightSpeed;
-
-  // 3. Handle first PID update (initialize state)
-  if (!pidStarted)
-  {
-    lastError = error;
-    pidStarted = true;
-    lastPIDTime = now;
-    motor_left_pulses_counter = 0;
-    motor_right_pulses_counter = 0;
-    return;
-  }
-
+  // 1. get current pulses count
+  long dL = motor_left_pulses_counter;
+  long dR = motor_right_pulses_counter;
+  // 2. caculate angular velcoity increment
+  float dTheta = Ktheta * (float)(dL - dR);
+  theta += dTheta;
+  float error = theta;
   // 4. Integrate error (I term)
   integral += error * (dt / 1000.0);
   integral = constrain(integral, -20, 20);

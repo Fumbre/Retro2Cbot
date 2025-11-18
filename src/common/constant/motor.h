@@ -8,14 +8,14 @@ const int PPR = 20;
 
 // ======================BB016======================
 
-const int PIN_MOTOR_RIGHT_FORWARD = 10;
-const int PIN_MOTOR_RIGHT_BACKWARD = 6;
+// const int PIN_MOTOR_RIGHT_FORWARD = 10;
+// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 
-const int PIN_MOTOR_LEFT_FORWARD = 5;
-const int PIN_MOTOR_LEFT_BACKWARD = 9;
+// const int PIN_MOTOR_LEFT_FORWARD = 5;
+// const int PIN_MOTOR_LEFT_BACKWARD = 9;
 
-const int PIN_MOTOR_LEFT_PULSE = 2;
-const int PIN_MOTOR_RIGHT_PULSE = 3;
+// const int PIN_MOTOR_LEFT_PULSE = 2;
+// const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ==================================================
 
@@ -34,14 +34,14 @@ const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ======================BB0046======================
 
-// const int PIN_MOTOR_RIGHT_FORWARD = 9;
-// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
+const int PIN_MOTOR_RIGHT_FORWARD = 9;
+const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 
-// const int PIN_MOTOR_LEFT_FORWARD = 10;
-// const int PIN_MOTOR_LEFT_BACKWARD = 11;
+const int PIN_MOTOR_LEFT_FORWARD = 10;
+const int PIN_MOTOR_LEFT_BACKWARD = 11;
 
-// const int PIN_MOTOR_LEFT_PULSE = 2;
-// const int PIN_MOTOR_RIGHT_PULSE = 3;
+const int PIN_MOTOR_LEFT_PULSE = 2;
+const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // ==================================================
 

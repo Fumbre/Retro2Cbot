@@ -6,17 +6,17 @@ volatile long motor_right_pulses_counter = 0;
 
 // MotorSpeed correctSpeed = {255, 255};
 
-Timer timestamp;
+Timer timestampOne;
+Timer timestampTwo;
 Timer timestampRight;
 Timer timestampLeft;
 
 // count pulses
 void countLeftPulses()
 {
-  if (timestamp.interval(20))
+  if (timestampOne.interval(20, 1))
   {
     timestampRight.resetExecuteOnce();
-    timestampLeft.resetExecuteOnce();
   }
   if (timestampLeft.executeOnce(0))
   {
@@ -25,10 +25,9 @@ void countLeftPulses()
 }
 void countRightPulses()
 {
-  if (timestamp.interval(20))
+  if (timestampTwo.interval(20, 1))
   {
     timestampRight.resetExecuteOnce();
-    timestampLeft.resetExecuteOnce();
   }
   if (timestampRight.executeOnce(0))
   {
