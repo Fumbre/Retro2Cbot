@@ -7,8 +7,8 @@
 
 // PID factors
 float Kp = 0.02;  // Proportional
-float Ki = 0.015; // Integral
-float Kd = 0.05;  // Derivative
+float Ki = 0.01; // Integral
+float Kd = 0.04;  // Derivative
 
 float lastError = 0;
 float integral = 0;
@@ -179,12 +179,18 @@ void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
   long dL = motor_left_pulses_counter;
   long dR = motor_right_pulses_counter;
   // 2. caculate angular velcoity increment
+  if (!isMovingForward) {
+    dL = -dL;
+    dR = -dR;
+}
+ 
   float dTheta = Ktheta * (float)(dL - dR);
   theta += dTheta;
   float error = theta;
   // 4. Integrate error (I term)
   integral += error * (dt / 1000.0);
   integral = constrain(integral, -20, 20);
+  theta = constrain(theta, -PI/4, PI/4);
 
   // 5. Derivative term (D term)
   float derivative = (error - lastError) / (dt / 1000.0);

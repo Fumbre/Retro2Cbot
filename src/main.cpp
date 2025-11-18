@@ -28,7 +28,7 @@ void loop()
 {
   // // moveForward(255);
 
-  testPulses(20);
+  // testPulses(20);
 
   // //------------some test------------------
 
@@ -46,7 +46,7 @@ void loop()
 
   //   // stopMotors();
   // }
-  moveForward(100);
+  moveBackward(100);
 
   //------------first test------------------
   // if (stampForward.interval(1000, 1500))
