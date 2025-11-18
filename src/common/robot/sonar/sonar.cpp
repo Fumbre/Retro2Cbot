@@ -87,36 +87,36 @@ bool isObstacleDetected(float limit_cm)
  * @details This routine allows the robot to navigate around simple obstacles in a physical environment.
  * @return nothing
  */
-void avoidObstacle()
-{
-  // turn left
-  rotateLeft(200);
-  delay(600);
+// void avoidObstacle()
+// {
+//   // turn left
+//   rotateLeft(200);
+//   delay(600);
 
-  // move forward slightly
-  moveForward(200);
-  delay(700);
+//   // move forward slightly
+//   moveForward(200);
+//   delay(700);
 
-  // turn right
-  rotateRight(200);
-  delay(600);
+//   // turn right
+//   rotateRight(200);
+//   delay(600);
 
-  // move forward for ~5s
-  moveForward(200);
-  delay(5000);
+//   // move forward for ~5s
+//   moveForward(200);
+//   delay(5000);
 
-  // turn right again
-  rotateRight(200);
-  delay(600);
+//   // turn right again
+//   rotateRight(200);
+//   delay(600);
 
-  // move forward slightly
-  moveForward(200);
-  delay(700);
+//   // move forward slightly
+//   moveForward(200);
+//   delay(700);
 
-  // turn left
-  rotateLeft(200);
-  delay(600);
+//   // turn left
+//   rotateLeft(200);
+//   delay(600);
 
-  // continue staright ahead
-  moveForward(200);
-}
+//   // continue staright ahead
+//   moveForward(200);
+// }

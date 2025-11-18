@@ -21,12 +21,31 @@ Timer stampBackward;
 Timer stampRotateLeft;
 Timer stampRotateRight;
 
-int pass = false;
+Timer sadness;
+Timer sadness1;
 
 void loop()
 {
+  // moveForward(255);
 
-  // testPulses(1000);
+  testPulses(20);
+
+  //------------some test------------------
+
+  if (sadness.executeOnce(0))
+  {
+    moveForward(100);
+  }
+
+  if (sadness1.executeOnce(2000))
+  {
+    // rotate(100, "left", 180);
+    // rotate(100, "right", 180);
+    sadness.resetExecuteOnce();
+    sadness1.resetExecuteOnce();
+
+    // stopMotors();
+  }
 
   //------------first test------------------
   // if (stampForward.interval(1000, 1500))
@@ -39,27 +58,32 @@ void loop()
   // }
 
   //------------second test------------------
-  //  if (stampForward.timeout(3000))
-  //   {
-  //     stampForward.hardReset();
-  //     stampBackward.hardReset();
-  //     stampRotateLeft.hardReset();
-  //   }
+  // if (stampForward.interval(4500))
+  // {
+  //   stampForward.hardReset();
+  //   stampBackward.hardReset();
+  //   stampRotateLeft.hardReset();
+  // }
 
-  //   if (stampForward.executeOnce(0))
-  //   {
-  //     moveForward(255);
-  //   }
+  // if (stampForward.executeOnce(0))
+  // {
+  //   moveForward(255);
+  // }
 
-  //   if (stampBackward.executeOnce(1000))
-  //   {
-  //     moveBackward(255);
-  //   }
+  // if (stampBackward.executeOnce(1000))
+  // {
+  //   moveBackward(255);
+  // }
 
-  //   if (stampRotateLeft.executeOnce(2000))
-  //   {
-  //     rotateLeft(255);
-  //   }
+  // if (stampRotateLeft.executeOnce(2000))
+  // {
+  //   rotateLeft(255);
+  // }
+
+  // if (stampRotateLeft.executeOnce(3500))
+  // {
+  //   rotateRight(255);
+  // }
 
   //------------three test------------------
 

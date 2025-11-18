@@ -6,9 +6,35 @@ volatile long motor_right_pulses_counter = 0;
 
 // MotorSpeed correctSpeed = {255, 255};
 
+Timer timestamp;
+Timer timestampRight;
+Timer timestampLeft;
+
 // count pulses
-void countLeftPulses() { motor_left_pulses_counter++; }
-void countRightPulses() { motor_right_pulses_counter++; }
+void countLeftPulses()
+{
+  if (timestamp.interval(20))
+  {
+    timestampRight.resetExecuteOnce();
+    timestampLeft.resetExecuteOnce();
+  }
+  if (timestampLeft.executeOnce(0))
+  {
+    motor_left_pulses_counter++;
+  }
+}
+void countRightPulses()
+{
+  if (timestamp.interval(20))
+  {
+    timestampRight.resetExecuteOnce();
+    timestampLeft.resetExecuteOnce();
+  }
+  if (timestampRight.executeOnce(0))
+  {
+    motor_right_pulses_counter++;
+  }
+}
 
 /**
  * @name setupMotor
@@ -31,24 +57,24 @@ void setupMotor()
   attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
 };
 
-Timer time;
-Stability correctSpeed = {255, 255};
+// Timer time;
+// Stability correctSpeed = {255, 255};
 
-Stability motorStability(int speed)
-{
-  if (motor_left_pulses_counter > motor_right_pulses_counter)
-  {
-    if (time.intervalStart(20))
-    {
-      correctSpeed.speedLeft--;
-    }
-  }
-  if (motor_right_pulses_counter > motor_left_pulses_counter)
-  {
-    if (time.intervalStart(20))
-    {
-      correctSpeed.speedRight--;
-    }
-  }
-  return correctSpeed;
-}
+// Stability motorStability(int speed)
+// {
+//   if (motor_left_pulses_counter > motor_right_pulses_counter)
+//   {
+//     if (time.intervalStart(20))
+//     {
+//       correctSpeed.speedLeft--;
+//     }
+//   }
+//   if (motor_right_pulses_counter > motor_left_pulses_counter)
+//   {
+//     if (time.intervalStart(20))
+//     {
+//       correctSpeed.speedRight--;
+//     }
+//   }
+//   return correctSpeed;
+// }
