@@ -26,6 +26,7 @@ Timer sadness1;
 
 void loop()
 {
+  moveBackward(100);
   // // moveForward(255);
 
   // testPulses(20);
@@ -46,7 +47,6 @@ void loop()
 
   //   // stopMotors();
   // }
-  moveBackward(100);
 
   //------------first test------------------
   // if (stampForward.interval(1000, 1500))

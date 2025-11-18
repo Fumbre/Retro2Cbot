@@ -14,7 +14,7 @@ Timer timestampLeft;
 // count pulses
 void countLeftPulses()
 {
-  if (timestampOne.interval(20, 1))
+  if (timestampOne.interval(20))
   {
     timestampRight.resetExecuteOnce();
   }
@@ -25,7 +25,7 @@ void countLeftPulses()
 }
 void countRightPulses()
 {
-  if (timestampTwo.interval(20, 1))
+  if (timestampTwo.interval(20))
   {
     timestampRight.resetExecuteOnce();
   }
