@@ -26,12 +26,13 @@ Timer sadness1;
 
 void loop()
 {
-  moveBackward(100);
-  // // moveForward(255);
-
-  // testPulses(20);
-
-  // //------------some test------------------
+  Serial.println("TEST: forward 2s then backward 2s");
+moveForward(100);
+// delay(2000);
+// moveBackward(100);
+// delay(2000);
+// stopMotors();
+//   // //------------some test------------------
 
   // if (sadness.executeOnce(0))
   // {
