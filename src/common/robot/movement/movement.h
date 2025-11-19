@@ -28,8 +28,8 @@ void switchDirection(int leftSpeed, int rightSpeed);
 
 void stopMotors();
 
-int getPWMvalue(int speed);
+float getPWMvalue(int speed);
 
 void rotate(int speed, String direction, float angle);
 
-void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue);
+void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue);

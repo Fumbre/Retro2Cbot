@@ -13,8 +13,8 @@ const unsigned long PID_INTERVAL = 10;
 bool isMovingForward = true;
 bool pidStarted = false;
 
-int leftPWM = 0;
-int rightPWM = 0;
+float leftPWM = 0;
+float rightPWM = 0;
 
 float theta = 0.0;
 float Ktheta = 2.0 * PI * WHEEL_RADUIS / (PPR * ROBOT_RADUIS);
@@ -30,11 +30,11 @@ float Ktheta = 2.0 * PI * WHEEL_RADUIS / (PPR * ROBOT_RADUIS);
  *
  * @return PWM value
  */
-int getPWMvalue(int speed)
+float getPWMvalue(int speed)
 {
   speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
   float value = (float)speed / 100.0;
-  return (int)round(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
+  return roundf(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
 }
 
 /**
@@ -46,7 +46,7 @@ int getPWMvalue(int speed)
 void moveForward(int speed)
 {
   isMovingForward = true;
-  int pwmValue = getPWMvalue(speed);
+  float pwmValue = getPWMvalue(speed);
   leftPWM = pwmValue;
   rightPWM = pwmValue;
   adjustPWMvalueByPulse(leftPWM, rightPWM);
@@ -161,7 +161,7 @@ void rotate(int speed, String direction, float angle)
   stopMotors();
 }
 
-void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
+void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
 {
   unsigned long now = millis();
   unsigned long dt = now - lastPIDTime;
@@ -170,11 +170,9 @@ void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
   if (dt < PID_INTERVAL)
     return;
 
-  // 1. get current pulses count
-  long dL = motor_left_pulses_counter;
-  long dR = motor_right_pulses_counter;
+
   // 2. caculate angular velcoity increment
-  float dTheta = Ktheta * (float)(dL - dR);
+  float dTheta = Ktheta * (motor_left_pulses_counter - motor_right_pulses_counter);
   theta += dTheta;
   float error = dTheta;
   // 4. Integrate error (I term)
@@ -185,19 +183,30 @@ void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
   float derivative = (error - lastError) / (dt / 1000.0);
 
   // 6. PID output value
-  float correction = Kp * error + Ki * integral + Kd * derivative;
+  float correction ;
+  if(isMovingForward){
+    correction = Kp_f * error + Ki_f * integral + Kd_f * derivative;
+  }else{
+    correction = Kp_b * error + Ki_b * integral + Kd_b * derivative;
+  }
 
   // 8. Apply correction to the PWM values
   if (isMovingForward)
   {
-    leftPWMValue = constrain(leftPWMValue - correction, 0, FULL_PWM_VALUE);
-    rightPWMValue = constrain(rightPWMValue + correction, 0, FULL_PWM_VALUE);
+    leftPWMValue = constrain(leftPWMValue - correction * 2, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue + correction * 2, 0, FULL_PWM_VALUE);
   }
   else
   {
-    leftPWMValue = constrain(leftPWMValue + correction, 0, FULL_PWM_VALUE);
-    rightPWMValue = constrain(rightPWMValue - correction, 0, FULL_PWM_VALUE);
+    leftPWMValue = constrain(leftPWMValue + correction * 2, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue - correction * 2, 0, FULL_PWM_VALUE);
   }
+  Serial.print("correction:  ");
+  Serial.println(correction);
+  Serial.print("left:  ");
+  Serial.println(leftPWM);
+  Serial.print("right:  ");
+  Serial.println(rightPWM);
   // 9. Update PID state
   lastError = error;
   motor_left_pulses_counter = 0;
