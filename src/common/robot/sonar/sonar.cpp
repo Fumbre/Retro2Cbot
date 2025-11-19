@@ -11,8 +11,11 @@
 */
 void setupSonar()
 {
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // TRIG pin set as output 
-  pinMode(PIN_SONAR_ECHO, INPUT);  // ECHO pin set as input 
+  pinMode(PIN_SONAR_TRIG_1, OUTPUT); // TRIG pin set as output 
+  pinMode(PIN_SONAR_ECHO_1, INPUT);  // ECHO pin set as input 
+
+    pinMode(PIN_SONAR_TRIG_2, OUTPUT); // TRIG pin set as output 
+    pinMode(PIN_SONAR_ECHO_2, INPUT);  // ECHO pin set as input 
 }
 
 /**
@@ -30,13 +33,13 @@ void setupSonar()
 */
 float getDistanceCM()
 {
-  digitalWrite(PIN_SONAR_TRIG, LOW);            // Ensure TRIG is low to start clean pulse
+  digitalWrite(PIN_SONAR_TRIG_1, LOW);            // Ensure TRIG is low to start clean pulse
   delayMicroseconds(2);                         // Makes sure the pin is low
-  digitalWrite(PIN_SONAR_TRIG, HIGH);           // Send a HIGH pulse to trigger the ultrasonic burst
+  digitalWrite(PIN_SONAR_TRIG_1, HIGH);           // Send a HIGH pulse to trigger the ultrasonic burst
   delayMicroseconds(10);                        // Pulse duration: 10 microseconds (required by HC-SR04)
-  digitalWrite(PIN_SONAR_TRIG, LOW);            // Stop the trigger pulse
+  digitalWrite(PIN_SONAR_TRIG_1, LOW);            // Stop the trigger pulse
 
-  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH);   // Measure the time until echo is received (in microseconds)
+  unsigned long duration = pulseIn(PIN_SONAR_ECHO_1, HIGH);   // Measure the time until echo is received (in microseconds)
 
   float distance = duration * 0.034 / 2;
   return distance;
