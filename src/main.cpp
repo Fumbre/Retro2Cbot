@@ -4,6 +4,7 @@
 #include "common/tools/timer.h"
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
+#include "common/tools/tests/test_basicMovements.h"
 
 const int SETTING_MODE = 2;
 
@@ -14,6 +15,7 @@ void setup()
 {
   Serial.begin(9600);
   setupMotor();
+  setupSonar();
 }
 
 Timer stampForward;
@@ -26,17 +28,28 @@ Timer sadness1;
 
 void loop()
 {
-testPulses(20);
-if (sadness.executeOnce(0))
-{
- moveBackward(100);
-}
- 
-// delay(2000);
-// moveBackward(100);
-// delay(2000);
-// stopMotors();
-//   // //------------some test------------------
+  if (!avoiding)
+  {
+    moveForward(255);
+  }
+
+  if (isObstacleDetected(30))
+  {
+    avoidObstacleSmoothNonBlocking(255);
+  }
+
+  if (avoiding)
+  {
+    avoidObstacleSmoothNonBlocking(255);
+  }
+  // // moveForward(255);
+
+  testBasicMovement();
+
+  // moveBackward(100);
+  // delay(2000);
+  // stopMotors();
+  //   // //------------some test------------------
 
   // if (sadness.executeOnce(0))
   // {
@@ -143,20 +156,20 @@ if (sadness.executeOnce(0))
   //   moveStopAll();
   // }
 
-  switch (SETTING_MODE)
-  {
-  case 0:
-    // to do followSingleLine
-    break;
-  case 1:
-    // to do mazeLine
-    break;
-  case 2:
-    // to do physicalMaze
-    break;
+  // switch (SETTING_MODE)
+  // {
+  // case 0:
+  //   // to do followSingleLine
+  //   break;
+  // case 1:
+  //   // to do mazeLine
+  //   break;
+  // case 2:
+  //   // to do physicalMaze
+  //   break;
 
-  default:
-    Serial.print("NO SUCH A PROGRAM");
-    break;
-  }
+  // default:
+  //   Serial.print("NO SUCH A PROGRAM");
+  //   break;
+  // }
 }

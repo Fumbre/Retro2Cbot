@@ -7,3 +7,6 @@ void setupSonar();
 float getDistanceCM();
 bool isObstacleDetected(float limit_cm = 30.0);
 void avoidObstacle();
+void avoidObstacleSmoothNonBlocking(int speed);
+
+extern bool avoiding;
