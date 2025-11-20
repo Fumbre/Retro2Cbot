@@ -14,6 +14,7 @@ void setup()
 {
   Serial.begin(9600);
   setupMotor();
+  setupSonar();
 }
 
 Timer stampForward;
@@ -26,7 +27,17 @@ Timer sadness1;
 
 void loop()
 {
-  moveBackward(100);
+  if (!avoiding) {
+    moveForward(150);
+}
+
+if (isObstacleDetected(30)) {
+    avoidObstacleSmoothNonBlocking(150);
+}
+
+if (avoiding) {
+    avoidObstacleSmoothNonBlocking(150);  
+}
   // // moveForward(255);
 
   // testPulses(20);
@@ -138,20 +149,20 @@ void loop()
   //   moveStopAll();
   // }
 
-  switch (SETTING_MODE)
-  {
-  case 0:
-    // to do followSingleLine
-    break;
-  case 1:
-    // to do mazeLine
-    break;
-  case 2:
-    // to do physicalMaze
-    break;
+  // switch (SETTING_MODE)
+  // {
+  // case 0:
+  //   // to do followSingleLine
+  //   break;
+  // case 1:
+  //   // to do mazeLine
+  //   break;
+  // case 2:
+  //   // to do physicalMaze
+  //   break;
 
-  default:
-    Serial.print("NO SUCH A PROGRAM");
-    break;
-  }
+  // default:
+  //   Serial.print("NO SUCH A PROGRAM");
+  //   break;
+  // }
 }

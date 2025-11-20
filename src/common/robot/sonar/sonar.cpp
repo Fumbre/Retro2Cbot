@@ -9,8 +9,7 @@
  * @details ECHO is set as INPUT and is responsible for receiving the reflected signal.
  * @details Must be executed inside setup() before calling any distance-reading functions.
  */
-void setupSonar()
-{
+void setupSonar() {
   pinMode(PIN_SONAR_TRIG, OUTPUT); // TRIG pin set as output to send ultrasonic pulses
   pinMode(PIN_SONAR_ECHO, INPUT);  // ECHO pin set as input to receive reflected signal
 }
@@ -28,8 +27,7 @@ void setupSonar()
  * object directly in front of the sensor.
  * @return float  Distance in centimeters
  */
-float getDistanceCM()
-{
+float getDistanceCM() {
   digitalWrite(PIN_SONAR_TRIG, LOW); // Ensure TRIG is low to start clean pulse
 
   // TODO test and Check without using delay
@@ -63,8 +61,7 @@ float getDistanceCM()
  * than 0 (valid reading), the function considers that an obstacle is present.
  * @return true if an obstacle is detected, false otherwise
  */
-bool isObstacleDetected(float limit_cm)
-{
+bool isObstacleDetected(float limit_cm) {
   float distance = getDistanceCM();              // Read current distance from ultrasonic sensor
   return (distance <= limit_cm && distance > 0); // True if within limit and a valid reading (>0)
 }
@@ -87,36 +84,59 @@ bool isObstacleDetected(float limit_cm)
  * @details This routine allows the robot to navigate around simple obstacles in a physical environment.
  * @return nothing
  */
-// void avoidObstacle()
-// {
-//   // turn left
-//   rotateLeft(200);
-//   delay(600);
 
-//   // move forward slightly
-//   moveForward(200);
-//   delay(700);
+// Timers for non-blocking obstacle avoidance
+Timer avoidTimer;
+bool avoiding = false;  
+int avoidStep = 0;
 
-//   // turn right
-//   rotateRight(200);
-//   delay(600);
+void avoidObstacleSmoothNonBlocking(int speed) {
+  if (!avoiding) {
+      avoiding = true;
+      avoidStep = 0;
+      avoidTimer.resetInterval();
+  }
 
-//   // move forward for ~5s
-//   moveForward(200);
-//   delay(5000);
+  // PARAMETERS — change here to tune behavior
+  int curveTime = 700;        // how long to curve each side (ms)
+  float curveStrength = 0.25;  // how much slower one wheel goes (0.0–1.0)
+  int forwardTime = 400;      // time to go straight between curves
 
-//   // turn right again
-//   rotateRight(200);
-//   delay(600);
+  switch (avoidStep) {
 
-//   // move forward slightly
-//   moveForward(200);
-//   delay(700);
+    case 0: // Step 1: turn LEFT
+      switchDirection(speed * curveStrength, speed);
+      
+      if (avoidTimer.interval(curveTime)) {
+          avoidStep = 1;
+          avoidTimer.resetInterval();
+      }
+      break;
 
-//   // turn left
-//   rotateLeft(200);
-//   delay(600);
+    case 1: // Step 2: forward a little
+      moveForward(speed);
 
-//   // continue staright ahead
-//   moveForward(200);
-// }
+      if (avoidTimer.interval(forwardTime)) {
+          avoidStep = 2;
+          avoidTimer.resetInterval();
+      }
+      break;
+
+    case 2: // Step 3: turn RIGHT (exact mirror of left)
+      switchDirection(speed, speed * curveStrength);
+
+      if (avoidTimer.interval(curveTime)) {
+          avoidStep = 3;
+          avoidTimer.resetInterval();
+      }
+      break;
+
+    case 3: // Step 4: resume normal movement
+      moveForward(speed);
+      avoiding = false;   // finished the bypass
+      break;
+  }
+}
+
+
+
