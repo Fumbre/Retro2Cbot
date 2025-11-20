@@ -47,8 +47,8 @@ void moveForward(int speed)
 {
   isMovingForward = true;
   float pwmValue = getPWMvalue(speed);
-  leftPWM = pwmValue;
-  rightPWM = pwmValue;
+  leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
+  rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
   adjustPWMvalueByPulse(leftPWM, rightPWM);
   analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
   digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
@@ -68,8 +68,8 @@ void moveBackward(int speed)
 
   // get PWM value
   int pwmValue = getPWMvalue(speed);
-  leftPWM = pwmValue;
-  rightPWM = pwmValue;
+  leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
+  rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
   adjustPWMvalueByPulse(leftPWM, rightPWM);
 
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
@@ -78,6 +78,8 @@ void moveBackward(int speed)
   digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
   analogWrite(PIN_MOTOR_RIGHT_BACKWARD, rightPWM);
   digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
+
+
 }
 
 /**
@@ -161,6 +163,12 @@ void rotate(int speed, String direction, float angle)
   stopMotors();
 }
 
+/**
+ * @name adjustPWMvalueByPulse
+ * @author Sunny
+ * @date 15-11-2025
+ * @details use PID 
+ */
 void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
 {
   unsigned long now = millis();
@@ -173,11 +181,11 @@ void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
 
   // 2. caculate angular velcoity increment
   float dTheta = Ktheta * (motor_left_pulses_counter - motor_right_pulses_counter);
-  theta += dTheta;
+    theta += dTheta;
   float error = dTheta;
   // 4. Integrate error (I term)
   integral += error * (dt / 1000.0);
-  integral = constrain(integral, -20, 20);
+  integral = constrain(integral, -20, 20); // -20, 20
 
   // 5. Derivative term (D term)
   float derivative = (error - lastError) / (dt / 1000.0);
@@ -201,13 +209,6 @@ void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
     leftPWMValue = constrain(leftPWMValue + correction * 2, 0, FULL_PWM_VALUE);
     rightPWMValue = constrain(rightPWMValue - correction * 2, 0, FULL_PWM_VALUE);
   }
-  Serial.print("correction:  ");
-  Serial.println(correction);
-  Serial.print("left:  ");
-  Serial.println(leftPWM);
-  Serial.print("right:  ");
-  Serial.println(rightPWM);
-  // 9. Update PID state
   lastError = error;
   motor_left_pulses_counter = 0;
   motor_right_pulses_counter = 0;
