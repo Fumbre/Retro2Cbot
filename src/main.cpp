@@ -27,10 +27,11 @@ Timer sadness1;
 
 void loop()
 {
+  moveForward(50);
   moveBackward(100);
   // // moveForward(255);
 
-  // testPulses(20);
+  testPulses(20);
 
   // //------------some test------------------
 
