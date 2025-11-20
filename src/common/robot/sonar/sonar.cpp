@@ -9,48 +9,37 @@ int avoidStep = 0;
  * @name setupSonar
  * @author Francisco
  * @date 15-11-2025
- * @details Configures the TRIG and ECHO pins of the ultrasonic sensor (HC-SR04).
- * @details TRIG is set as OUTPUT and is responsible for sending ultrasonic pulses.
- * @details ECHO is set as INPUT and is responsible for receiving the reflected signal.
- * @details Must be executed inside setup() before calling any distance-reading functions.
- */
+ * @details Initializes the ultrasonic sensor (HC-SR04) by configuring the TRIG
+ * pin as OUTPUT and the ECHO pin as INPUT. This setup enables the robot to send
+ * ultrasonic pulses and detect their reflections for distance measurement.
+*/
+
 void setupSonar() {
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // TRIG pin set as output to send ultrasonic pulses
-  pinMode(PIN_SONAR_ECHO, INPUT);  // ECHO pin set as input to receive reflected signal
+  pinMode(PIN_SONAR_TRIG, OUTPUT);            // send ultrasonic pulses
+  pinMode(PIN_SONAR_ECHO, INPUT);             // receive reflected signal
 }
 
 /**
  * @name getDistanceCM
  * @author Francisco
  * @date 15-11-2025
- * @details Sends an ultrasonic trigger pulse through the TRIG pin and measures
- * the time it takes for the echo to return through the ECHO pin.
- * @details The measured duration (in microseconds) is converted into a distance (cm)
- * using the approximate speed of sound (≈0.034 cm/µs) and dividing by 2
- * because the pulse travels to the obstacle and back.
- * @details The returned value corresponds to the estimated distance to the nearest
- * object directly in front of the sensor.
- * @return float  Distance in centimeters
- */
+ * @details Sends a trigger pulse to the ultrasonic sensor and measures the time
+ * taken for the reflected echo to return. This duration is then converted into
+ * an estimated distance in centimeters based on the speed of sound.
+ * @details The result represents the distance to the nearest object directly
+ * in front of the sensor. A value of 0 usually indicates an invalid or missing echo.
+ * @return float  Estimated distance in centimeters
+*/
+
 float getDistanceCM() {
-  digitalWrite(PIN_SONAR_TRIG, LOW); // Ensure TRIG is low to start clean pulse
+  digitalWrite(PIN_SONAR_TRIG, LOW);                  // Ensure TRIG is low to start clean pulse
+  delayMicroseconds(2);                               // Short delay to stabilize the pin
+  digitalWrite(PIN_SONAR_TRIG, HIGH);                 // Send a HIGH pulse to trigger the ultrasonic burst
+  delayMicroseconds(10);                              // Pulse duration: 10 microseconds (required by HC-SR04)
+  digitalWrite(PIN_SONAR_TRIG, LOW);                  // Stop the trigger pulse
 
-  // TODO test and Check without using delay
-  delayMicroseconds(2); // Short delay to stabilize the pin
+  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH);     // Measure the time until echo is received (in microseconds)
 
-  digitalWrite(PIN_SONAR_TRIG, HIGH); // Send a HIGH pulse to trigger the ultrasonic burst
-
-  // TODO test and Check without using delay
-  delayMicroseconds(10); // Pulse duration: 10 microseconds (required by HC-SR04)
-
-  digitalWrite(PIN_SONAR_TRIG, LOW); // Stop the trigger pulse
-
-  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH); // Measure the time until echo is received (in microseconds)
-
-  // Convert time to distance:
-  // speed of sound ≈ 0.034 cm/ms
-  // divide by 2 because signal travels to the object and back
-  // Return the distance in centimeters
   float distance = duration * 0.034 / 2;
   return distance;
 }
@@ -59,13 +48,14 @@ float getDistanceCM() {
  * @name isObstacleDetected
  * @author Francisco
  * @date 15-11-2025
- * @param limit_cm  Maximum distance (in cm) considered as an obstacle
- * @details Calls getDistanceCM() to obtain the current measured distance and
- * compares it to the user-defined threshold.
- * @details If the measured distance is less than or equal to limit_cm and greater
- * than 0 (valid reading), the function considers that an obstacle is present.
- * @return true if an obstacle is detected, false otherwise
- */
+ * @param limit_cm  Maximum distance (in cm) used to define what counts as an obstacle
+ * @details Reads the current distance using getDistanceCM() and compares it with
+ * the user-defined threshold. If the measured distance is positive and less than
+ * or equal to the limit, the function considers that an obstacle is present.
+ * @return bool: true if an obstacle is detected, false otherwise
+*/
+
+
 bool isObstacleDetected(float limit_cm) {
   float distance = getDistanceCM();              // Read current distance from ultrasonic sensor
   return (distance <= limit_cm && distance > 0); // True if within limit and a valid reading (>0)
@@ -88,9 +78,9 @@ bool isObstacleDetected(float limit_cm) {
 
 void avoidObstacleSmoothNonBlocking(int speed) {
   if (!avoiding) {
-      avoiding = true;
-      avoidStep = 0;
-      avoidTimer.resetInterval();
+    avoiding = true;
+    avoidStep = 0;
+    avoidTimer.resetInterval();
   }
 
   int curveTime = 900;          // time of each curve
