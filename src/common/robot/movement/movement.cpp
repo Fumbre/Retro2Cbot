@@ -5,7 +5,6 @@
  */
 #include "common/robot/movement/movement.h"
 
-
 float lastError = 0;
 float integral = 0;
 unsigned long lastPIDTime = 0;
@@ -115,6 +114,42 @@ void stopMotors()
 }
 
 /**
+ * @name rotateLeft
+ * @author Fumbre (Vladyslav)
+ * @date 19-11-2025
+ * @param speed (0-255)
+ */
+void rotateLeft(int speed)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
+      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+  }
+};
+
+/**
+ * @name rotateLeft
+ * @author Fumbre (Vladyslav)
+ * @date 19-11-2025
+ * @param speed (0-255)
+ */
+void rotateRight(int speed)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+  }
+};
+
+/**
  * @name rotate
  * @author Sunny
  * @date 12-11-2025
@@ -170,7 +205,6 @@ void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
   if (dt < PID_INTERVAL)
     return;
 
-
   // 2. caculate angular velcoity increment
   float dTheta = Ktheta * (motor_left_pulses_counter - motor_right_pulses_counter);
   theta += dTheta;
@@ -183,10 +217,13 @@ void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
   float derivative = (error - lastError) / (dt / 1000.0);
 
   // 6. PID output value
-  float correction ;
-  if(isMovingForward){
+  float correction;
+  if (isMovingForward)
+  {
     correction = Kp_f * error + Ki_f * integral + Kd_f * derivative;
-  }else{
+  }
+  else
+  {
     correction = Kp_b * error + Ki_b * integral + Kd_b * derivative;
   }
 
