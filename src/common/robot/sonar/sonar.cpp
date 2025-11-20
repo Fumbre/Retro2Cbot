@@ -97,15 +97,15 @@ void avoidObstacleSmoothNonBlocking(int speed) {
       avoidTimer.resetInterval();
   }
 
-  // PARAMETERS — change here to tune behavior
-  int curveTime = 700;        // how long to curve each side (ms)
-  float curveStrength = 0.25;  // how much slower one wheel goes (0.0–1.0)
-  int forwardTime = 400;      // time to go straight between curves
+  int curveTime = 900;          // time of each curve
+  float curveStrengthL = 0.15;  // left curve strength
+  float curveStrengthR = 0.10;  // right curve stronger 
+  int forwardTime = 500;        // straight segment
 
   switch (avoidStep) {
 
-    case 0: // Step 1: turn LEFT
-      switchDirection(speed * curveStrength, speed);
+    case 0: // left curve
+      switchDirection(speed * curveStrengthL, speed);
       
       if (avoidTimer.interval(curveTime)) {
           avoidStep = 1;
@@ -113,7 +113,7 @@ void avoidObstacleSmoothNonBlocking(int speed) {
       }
       break;
 
-    case 1: // Step 2: forward a little
+    case 1: // forward
       moveForward(speed);
 
       if (avoidTimer.interval(forwardTime)) {
@@ -122,8 +122,8 @@ void avoidObstacleSmoothNonBlocking(int speed) {
       }
       break;
 
-    case 2: // Step 3: turn RIGHT (exact mirror of left)
-      switchDirection(speed, speed * curveStrength);
+    case 2: // right curve
+      switchDirection(speed, speed * curveStrengthR);
 
       if (avoidTimer.interval(curveTime)) {
           avoidStep = 3;
@@ -131,12 +131,13 @@ void avoidObstacleSmoothNonBlocking(int speed) {
       }
       break;
 
-    case 3: // Step 4: resume normal movement
+    case 3: // done
       moveForward(speed);
-      avoiding = false;   // finished the bypass
+      avoiding = false;
       break;
   }
 }
+
 
 
 

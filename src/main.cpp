@@ -28,15 +28,15 @@ Timer sadness1;
 void loop()
 {
   if (!avoiding) {
-    moveForward(150);
+    moveForward(255);
 }
 
 if (isObstacleDetected(30)) {
-    avoidObstacleSmoothNonBlocking(150);
+    avoidObstacleSmoothNonBlocking(255);
 }
 
 if (avoiding) {
-    avoidObstacleSmoothNonBlocking(150);  
+    avoidObstacleSmoothNonBlocking(255);  
 }
   // // moveForward(255);
 
