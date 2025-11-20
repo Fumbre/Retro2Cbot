@@ -28,7 +28,6 @@ public:
    * @details Timer.interval(500) returns True every 500 milliseconds, otherwise False
    * @details Timer.interval(200, 500) wait 200 milliseconds and return True for 500 milliseconds
    * @details Timer.interval(0, 500) WRONG!!! RETURNS FOREVER TRUE
-   * @details !Timer.interval(500) use ! to start immidiately
    * @return bool
    */
   bool interval(unsigned long milliseconds, unsigned long executionTime = 0)
@@ -55,10 +54,9 @@ public:
    * @param milliseconds how much time should pass to return true
    * @param executionTime how long it returns true
    * @details When executed for first time returns True immidiately
-   * @details Timer.interval(500) returns True every 500 milliseconds, otherwise False
-   * @details Timer.interval(200, 500) wait 200 milliseconds and return True for 500 milliseconds
-   * @details Timer.interval(0, 500) WRONG!!! RETURNS FOREVER TRUE
-   * @details !Timer.interval(500) use ! to start immidiately
+   * @details Timer.intervalStart(500) returns True every 500 milliseconds, otherwise False
+   * @details Timer.intervalStart(200, 500) wait 200 milliseconds and return True for 500 milliseconds
+   * @details Timer.intervalStart(0, 500) WRONG!!! RETURNS FOREVER TRUE
    * @return bool
    */
   bool intervalStart(unsigned long milliseconds, unsigned long executionTime = 0)

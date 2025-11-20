@@ -68,96 +68,37 @@ bool isObstacleDetected(float limit_cm)
  * @date 16-11-2025
  * @details Starts the obstacle avoidance sequence using a non-blocking state machine.
  * @return nothing
-*/
-
-int currentAvoidsStatus = -1;     // -1 = noAction, 0-6 = active steps
-Timer durationCurrentPhase;
-
-void startAvoidObstacle()
-{
-  currentAvoidsStatus = 0;                    // Start avoidance sequence at phase 0
-  durationCurrentPhase.hardReset();           // Reset timer for the first phase
-}
-
-/**
- * @name avoidObstacleStep
- * @author Francisco
- * @date 16-11-2025
- * @details Executes one step of the non-blocking obstacle avoidance routine.
- * @return bool: True if the robot is currently avoiding an obstacle.
  */
+// void avoidObstacle()
+// {
+//   // turn left
+//   rotateLeft(200);
+//   delay(600);
 
-bool avoidObstacleStep()
-{
-  // If status is negative, no avoidance is active
-  if (currentAvoidsStatus < 0)
-    return false;                                     // Not avoiding
+//   // move forward slightly
+//   moveForward(200);
+//   delay(700);
 
-  switch (currentAvoidsStatus)
-  {
-    case 0:
-      rotateLeft(255);                                // Phase 0: rotate left
-      if (durationCurrentPhase.timeout(1000))          // After 600 ms, move to next phase
-      {
-        currentAvoidsStatus = 1;
-        durationCurrentPhase.hardReset();             // Restart timer for next phase
-      }
-      return true;
+//   // turn right
+//   rotateRight(200);
+//   delay(600);
 
-    case 1:
-      moveForward(255);                               // Phase 1: move forward shortly
-      if (durationCurrentPhase.timeout(1000))
-      {
-        currentAvoidsStatus = 2;
-        durationCurrentPhase.hardReset();
-      }
-      return true;
+//   // move forward for ~5s
+//   moveForward(200);
+//   delay(5000);
 
-    case 2:
-      rotateRight(255);                               // Phase 2: rotate right
-      if (durationCurrentPhase.timeout(1000))
-      {
-        currentAvoidsStatus = 3;
-        durationCurrentPhase.hardReset();
-      }
-      return true;
+//   // turn right again
+//   rotateRight(200);
+//   delay(600);
 
-    case 3:
-      moveForward(255);                               // Phase 3: long forward movement
-      if (durationCurrentPhase.timeout(5000))
-      {
-        currentAvoidsStatus = 4;
-        durationCurrentPhase.hardReset();
-      }
-      return true;
+//   // move forward slightly
+//   moveForward(200);
+//   delay(700);
 
-    case 4:
-      rotateRight(255);                               // Phase 4: rotate right again
-      if (durationCurrentPhase.timeout(1000))
-      {
-        currentAvoidsStatus = 5;
-        durationCurrentPhase.hardReset();
-      }
-      return true;
+//   // turn left
+//   rotateLeft(200);
+//   delay(600);
 
-    case 5:
-      moveForward(255);                               // Phase 5: short forward movement
-      if (durationCurrentPhase.timeout(1000))
-      {
-        currentAvoidsStatus = 6;
-        durationCurrentPhase.hardReset();
-      }
-      return true;
-
-    case 6:
-      rotateLeft(255);                                // Final phase: rotate left
-      if (durationCurrentPhase.timeout(1000))
-      {
-        currentAvoidsStatus = -1;                     // Sequence finished, return to normal mode
-        durationCurrentPhase.hardReset();
-      }
-      return true;
-  }
-
-  return false;         
-}
+//   // continue staright ahead
+//   moveForward(200);
+// }

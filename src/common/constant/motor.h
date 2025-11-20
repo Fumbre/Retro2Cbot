@@ -1,16 +1,22 @@
 #pragma once
 
+const int FULL_PWM_VALUE = 255;
+const int FULL_SPEED = 100; // in precentage
+
+// the 20 pulses in per rotation of wheel
+const int PPR = 20;
+
 // ======================BB016======================
-/*
-const int PIN_MOTOR_RIGHT_FORWARD = 11;
-const int PIN_MOTOR_RIGHT_BACKWARD = 10;
 
-const int PIN_MOTOR_LEFT_FORWARD = 6;
-const int PIN_MOTOR_LEFT_BACKWARD = 9;
+// const int PIN_MOTOR_RIGHT_FORWARD = 10;
+// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 
-const int PIN_MOTOR_LEFT_PULSE = 2;
-const int PIN_MOTOR_RIGHT_PULSE = 3;
-*/
+// const int PIN_MOTOR_LEFT_FORWARD = 5;
+// const int PIN_MOTOR_LEFT_BACKWARD = 9;
+
+// const int PIN_MOTOR_LEFT_PULSE = 2;
+// const int PIN_MOTOR_RIGHT_PULSE = 3;
+
 // ==================================================
 
 // ======================BB011======================
