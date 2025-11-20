@@ -1,5 +1,10 @@
 #include "sonar.h"
 
+// Timers for non-blocking obstacle avoidance
+Timer avoidTimer;
+bool avoiding = false;  
+int avoidStep = 0;
+
 /**
  * @name setupSonar
  * @author Francisco
@@ -67,28 +72,19 @@ bool isObstacleDetected(float limit_cm) {
 }
 
 /**
- * @name avoidObstacle
+ * @name avoidObstacleSmoothNonBlocking
  * @author Francisco
- * @date 15-11-2025
- * @details Function responsible for executing a predefined sequence of movements
- * whenever an obstacle is detected by the ultrasonic sensor.
- * @details The sequence is as follows:
- *  1) turn left
- *  2) move forward slightly
- *  3) turn right
- *  4) move forward for ~5s
- *  5) turn right again
- *  6) move forward slightly
- *  7) turn left
- *  8) continue straight ahead
- * @details This routine allows the robot to navigate around simple obstacles in a physical environment.
- * @return nothing
- */
-
-// Timers for non-blocking obstacle avoidance
-Timer avoidTimer;
-bool avoiding = false;  
-int avoidStep = 0;
+ * @date 20-11-2025
+ * @details Executes a smooth, non-blocking obstacle avoidance maneuver using
+ * timed stages. The function progresses through each step based on interval
+ * checks, allowing the robot to keep responding to other events while the
+ * maneuver is running.
+ * @details The avoidance sequence is as follows:
+ *  1. perform a smooth left curve for a defined duration
+ *  2. move forward for a short straight segment
+ *  3. perform a smooth right curve for the same duration
+ *  4. resume normal forward movement and finish the avoidance
+*/
 
 void avoidObstacleSmoothNonBlocking(int speed) {
   if (!avoiding) {
@@ -102,42 +98,41 @@ void avoidObstacleSmoothNonBlocking(int speed) {
   float curveStrengthR = 0.10;  // right curve stronger 
   int forwardTime = 500;        // straight segment
 
-  switch (avoidStep) {
-
-    case 0: // left curve
-      switchDirection(speed * curveStrengthL, speed);
-      
-      if (avoidTimer.interval(curveTime)) {
-          avoidStep = 1;
-          avoidTimer.resetInterval();
+  switch (avoidStep) {                         
+    
+    // left curve
+    case 0:                       
+      switchDirection(speed * curveStrengthL, speed);  // Set left motor speed lower 
+                                  
+      if (avoidTimer.interval(curveTime)) {            // If the time allocated for the left curve has passed
+          avoidStep = 1;                               // move to the next step
+          avoidTimer.resetInterval();                  // reset the timer for the next phase
       }
-      break;
+      break;                                   
+  
+    // forward
+    case 1:                          
+      moveForward(speed);                              // Drive both motors forward at the given speed
 
-    case 1: // forward
-      moveForward(speed);
-
-      if (avoidTimer.interval(forwardTime)) {
-          avoidStep = 2;
-          avoidTimer.resetInterval();
+      if (avoidTimer.interval(forwardTime)) {          // If the forward interval has elapsed
+          avoidStep = 2;                               // move to the next step 
+          avoidTimer.resetInterval();                  // reset timer for the next phase
       }
-      break;
-
-    case 2: // right curve
-      switchDirection(speed, speed * curveStrengthR);
-
-      if (avoidTimer.interval(curveTime)) {
-          avoidStep = 3;
-          avoidTimer.resetInterval();
+      break;                                   
+    
+    // right curve 
+    case 2:                     
+      switchDirection(speed, speed * curveStrengthR);     // Lower right motor speed 
+      if (avoidTimer.interval(curveTime)) {               // If the time allocated for the right curve has passed
+          avoidStep = 3;                                  // move to the final step
+          avoidTimer.resetInterval();                     // reset timer 
       }
-      break;
+      break;                                   
 
-    case 3: // done
-      moveForward(speed);
-      avoiding = false;
-      break;
+    case 3:                             
+      moveForward(speed);                                 // Continue moving straight ahead at normal speed
+      avoiding = false;                                   // Mark that the robot is no longer in avoidance mode
+      break;                                   
   }
-}
-
-
-
+}                                             
 
