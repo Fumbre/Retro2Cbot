@@ -16,20 +16,12 @@ void countLeftPulses()
 {
   if (timestampOne.interval(20))
   {
-    timestampRight.resetExecuteOnce();
-  }
-  if (timestampLeft.executeOnce(0))
-  {
-    motor_left_pulses_counter++;
+     motor_left_pulses_counter++;
   }
 }
 void countRightPulses()
 {
   if (timestampTwo.interval(20))
-  {
-    timestampRight.resetExecuteOnce();
-  }
-  if (timestampRight.executeOnce(0))
   {
     motor_right_pulses_counter++;
   }

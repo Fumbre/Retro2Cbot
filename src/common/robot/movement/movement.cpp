@@ -5,11 +5,6 @@
  */
 #include "common/robot/movement/movement.h"
 
-// PID factors
-float Kp = 0.02;  // Proportional
-float Ki = 0.01; // Integral
-float Kd = 0.04;  // Derivative
-
 float lastError = 0;
 float integral = 0;
 unsigned long lastPIDTime = 0;
@@ -17,8 +12,8 @@ const unsigned long PID_INTERVAL = 10;
 bool isMovingForward = true;
 bool pidStarted = false;
 
-int leftPWM = 0;
-int rightPWM = 0;
+float leftPWM = 0;
+float rightPWM = 0;
 
 float theta = 0.0;
 float Ktheta = 2.0 * PI * WHEEL_RADUIS / (PPR * ROBOT_RADUIS);
@@ -34,11 +29,11 @@ float Ktheta = 2.0 * PI * WHEEL_RADUIS / (PPR * ROBOT_RADUIS);
  *
  * @return PWM value
  */
-int getPWMvalue(int speed)
+float getPWMvalue(int speed)
 {
   speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
   float value = (float)speed / 100.0;
-  return (int)round(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
+  return roundf(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
 }
 
 /**
@@ -50,10 +45,9 @@ int getPWMvalue(int speed)
 void moveForward(int speed)
 {
   isMovingForward = true;
-  int pwmValue = getPWMvalue(speed);
-
-  leftPWM = pwmValue;
-  rightPWM = pwmValue;
+  float pwmValue = getPWMvalue(speed);
+  leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
+  rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
   adjustPWMvalueByPulse(leftPWM, rightPWM);
   analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
   digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
@@ -73,16 +67,18 @@ void moveBackward(int speed)
 
   // get PWM value
   int pwmValue = getPWMvalue(speed);
-
-  leftPWM = pwmValue;
-  rightPWM = pwmValue;
+  leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
+  rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
   adjustPWMvalueByPulse(leftPWM, rightPWM);
+
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   analogWrite(PIN_MOTOR_LEFT_BACKWARD, leftPWM);
   digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
   analogWrite(PIN_MOTOR_RIGHT_BACKWARD, rightPWM);
   digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
+
+
 }
 
 /**
@@ -118,6 +114,42 @@ void stopMotors()
     digitalWrite(PINS_MOTOR[i], LOW);
   }
 }
+
+/**
+ * @name rotateLeft
+ * @author Fumbre (Vladyslav)
+ * @date 19-11-2025
+ * @param speed (0-255)
+ */
+void rotateLeft(int speed)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
+      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+  }
+};
+
+/**
+ * @name rotateLeft
+ * @author Fumbre (Vladyslav)
+ * @date 19-11-2025
+ * @param speed (0-255)
+ */
+void rotateRight(int speed)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], 0);
+    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+  }
+};
 
 /**
  * @name rotate
@@ -166,7 +198,13 @@ void rotate(int speed, String direction, float angle)
   stopMotors();
 }
 
-void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
+/**
+ * @name adjustPWMvalueByPulse
+ * @author Sunny
+ * @date 15-11-2025
+ * @details use PID 
+ */
+void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
 {
   unsigned long now = millis();
   unsigned long dt = now - lastPIDTime;
@@ -175,34 +213,39 @@ void adjustPWMvalueByPulse(int &leftPWMValue, int &rightPWMValue)
   if (dt < PID_INTERVAL)
     return;
 
-  // 1. get current pulses count
-  long dL = motor_left_pulses_counter;
-  long dR = motor_right_pulses_counter;
   // 2. caculate angular velcoity increment
-  if (!isMovingForward) {
-    dL = -dL;
-    dR = -dR;
-}
- 
-  float dTheta = Ktheta * (float)(dL - dR);
-  theta += dTheta;
-  float error = theta;
+  float dTheta = Ktheta * (motor_left_pulses_counter - motor_right_pulses_counter);
+    theta += dTheta;
+  float error = dTheta;
   // 4. Integrate error (I term)
   integral += error * (dt / 1000.0);
-  integral = constrain(integral, -20, 20);
-  theta = constrain(theta, -PI/4, PI/4);
+  integral = constrain(integral, -20, 20); // -20, 20
 
   // 5. Derivative term (D term)
   float derivative = (error - lastError) / (dt / 1000.0);
 
   // 6. PID output value
-  float correction = Kp * error + Ki * integral + Kd * derivative;
+  float correction;
+  if (isMovingForward)
+  {
+    correction = Kp_f * error + Ki_f * integral + Kd_f * derivative;
+  }
+  else
+  {
+    correction = Kp_b * error + Ki_b * integral + Kd_b * derivative;
+  }
 
   // 8. Apply correction to the PWM values
-  leftPWMValue = constrain(leftPWMValue - correction, 0, FULL_PWM_VALUE);
-  rightPWMValue = constrain(rightPWMValue + correction, 0, FULL_PWM_VALUE);
-
-  // 9. Update PID state
+  if (isMovingForward)
+  {
+    leftPWMValue = constrain(leftPWMValue - correction * 2, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue + correction * 2, 0, FULL_PWM_VALUE);
+  }
+  else
+  {
+    leftPWMValue = constrain(leftPWMValue + correction * 2, 0, FULL_PWM_VALUE);
+    rightPWMValue = constrain(rightPWMValue - correction * 2, 0, FULL_PWM_VALUE);
+  }
   lastError = error;
   motor_left_pulses_counter = 0;
   motor_right_pulses_counter = 0;

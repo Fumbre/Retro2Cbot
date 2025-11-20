@@ -4,6 +4,7 @@
 #include "common/tools/timer.h"
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
+#include "common/tools/tests/test_basicMovements.h"
 
 const int SETTING_MODE = 2;
 
@@ -26,12 +27,16 @@ Timer sadness1;
 
 void loop()
 {
-  moveBackward(100);
-  // // moveForward(255);
+  // Serial.println("TEST: forward 2s then backward 2s");
+  // moveForward(100);
+  // delay(2000);
 
-  // testPulses(20);
+  testBasicMovement();
 
-  // //------------some test------------------
+  // moveBackward(100);
+  // delay(2000);
+  // stopMotors();
+  //   // //------------some test------------------
 
   // if (sadness.executeOnce(0))
   // {
