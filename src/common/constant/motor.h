@@ -33,11 +33,11 @@ const int PPR = 20;
 
 // ======================BB011======================
 
-// const int PIN_MOTOR_RIGHT_FORWARD = 9;
-// const int PIN_MOTOR_RIGHT_BACKWARD = 6;
+// const int PIN_MOTOR_RIGHT_FORWARD = 11;
+// const int PIN_MOTOR_RIGHT_BACKWARD = 10;
 
-// const int PIN_MOTOR_LEFT_FORWARD = 11;
-// const int PIN_MOTOR_LEFT_BACKWARD = 10;
+// const int PIN_MOTOR_LEFT_FORWARD = 9;
+// const int PIN_MOTOR_LEFT_BACKWARD = 6;
 
 // const int PIN_MOTOR_LEFT_PULSE = 2;
 // const int PIN_MOTOR_RIGHT_PULSE = 3;

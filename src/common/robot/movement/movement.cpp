@@ -49,6 +49,8 @@ void moveForward(int speed)
   leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
   rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
   adjustPWMvalueByPulse(leftPWM, rightPWM);
+  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
+  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
   analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
   digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
   analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
