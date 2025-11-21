@@ -9,6 +9,7 @@ Timer stampTestBackward;
 
 Timer stampTestMoveLeft;
 Timer stampTestMoveLeft1;
+Timer stampTestMoveLeft2;
 Timer stampTestMoveRight;
 Timer stampTestMoveRight1;
 Timer stampTestMoveRight2;
@@ -29,62 +30,48 @@ void testBasicMovement()
     moveForward(100);
   }
 
-  if (stampTestBackward.executeOnce(1000))
+  if (stampTestBackward.executeOnce(1000 + 2000))
   {
     moveBackward(100);
   }
 
-  if (stampTestForward1.executeOnce(2000))
+  if (stampTestForward1.executeOnce(2000 + 4000))
   {
     moveForward(100);
   }
-  if (stampTestMoveRight.executeOnce(2500))
+  if (stampTestMoveRight.executeOnce(2500 + 4000))
   {
     switchDirection(100, 40);
   }
-  if (stampTestForward1.executeOnce(3000))
+  if (stampTestForward1.executeOnce(3500 + 4000))
   {
-    switchDirection(80, 100);
+    switchDirection(100, 50);
   }
 
-  if (stampTestRotateLeft.executeOnce(3500))
-  {
-    switchDirection(30, 100);
-    // moveForward(100);
-    // switchDirection(100, 100);
-    // switchDirection(50, 100);
-  }
-
-  if (stampTestForward2.executeOnce(4600))
-  {
-    moveForward(100);
-  }
-
-  if (stampTestMoveLeft1.executeOnce(5000))
-  {
-    switchDirection(30, 100);
-  }
-
-  if (stampTestForward3.executeOnce(5500))
+  if (stampTestRotateLeft.executeOnce(3700 + 4000))
   {
     switchDirection(40, 100);
   }
 
-  if (stampTestMoveRight1.executeOnce(6000))
+  if (stampTestForward2.executeOnce(4000 + 4000))
   {
-    switchDirection(100, 30);
-  }
-
-  if (stampTestMoveRight2.executeOnce(6900))
-  {
-    stopMotors();
     // moveForward(100);
+    switchDirection(50, 100);
   }
 
-  if (stampTestStop.executeOnce(7000))
+  if (stampTestMoveLeft1.executeOnce(5500 + 4000))
+  {
+    moveForward(100);
+  }
+
+  //
+  if (stampTestMoveLeft2.executeOnce(7500 + 4000))
+  {
+    rotateLeft(255);
+  }
+  if (stampTestStop.executeOnce(8600 + 4000))
   {
     stopMotors();
-    // 80 20
   }
 
   // if (stampTestMoveLeft1.executeOnce(5000))
@@ -105,13 +92,4 @@ void testBasicMovement()
   // {
   //   moveForward(100);
   // }
-
-  if (stampTestRotateLeft1.executeOnce(61000))
-  {
-    rotateLeft(255);
-  }
-  if (stampTestStop.executeOnce(69100))
-  {
-    stopMotors();
-  }
 }

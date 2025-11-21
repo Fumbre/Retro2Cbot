@@ -28,20 +28,20 @@ Timer sadness1;
 
 void loop()
 {
-  if (!avoiding)
-  {
-    moveForward(255);
-  }
+  // if (!avoiding)
+  // {
+  //   moveForward(255);
+  // }
 
-  if (isObstacleDetected(30))
-  {
-    avoidObstacleSmoothNonBlocking(255);
-  }
+  // if (isObstacleDetected(30))
+  // {
+  //   avoidObstacleSmoothNonBlocking(255);
+  // }
 
-  if (avoiding)
-  {
-    avoidObstacleSmoothNonBlocking(255);
-  }
+  // if (avoiding)
+  // {
+  //   avoidObstacleSmoothNonBlocking(255);
+  // }
   // // moveForward(255);
 
   testBasicMovement();
@@ -113,19 +113,19 @@ void loop()
 
   //     if (stampRotateLeft.interval(20, 20))
   //     {
-  //       rotateLeft(255);
+  //       rotateLeft(250);
   //     }
   //     else
   //     {
   //       rotateRight(255);
   //     }
-  //     moveForward(255);
+  //     moveBackward(255);
   //   }
   // }
 
   // if (doCoolRotation.executeOnce(32000))
   // {
-  //   moveStopAll();
+  //   stopMotors();
   // }
 
   //------------four test------------------
