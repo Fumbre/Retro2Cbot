@@ -5,6 +5,8 @@
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
 #include "common/tools/tests/test_basicMovements.h"
+#include "common/robot/reflective_sensor/reflective_sensor.h"
+#include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 
 const int SETTING_MODE = 2;
 
@@ -28,6 +30,7 @@ Timer sadness1;
 
 void loop()
 {
+  // testReflectiveSensor();
   // if (!avoiding)
   // {
   //   moveForward(255);
@@ -44,8 +47,9 @@ void loop()
   // }
   // // moveForward(255);
 
-  testBasicMovement();
-
+  // testBasicMovement();
+  MotorSpeed motorSpeed =  checkLine(70);
+  switchDirection(motorSpeed.leftSpeed,motorSpeed.rightSpeed);
   // moveBackward(100);
   // delay(2000);
   // stopMotors();

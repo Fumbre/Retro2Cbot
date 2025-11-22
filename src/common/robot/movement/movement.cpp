@@ -79,8 +79,6 @@ void moveBackward(int speed)
   digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
   analogWrite(PIN_MOTOR_RIGHT_BACKWARD, rightPWM);
   digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
-
-
 }
 
 /**
@@ -91,11 +89,14 @@ void moveBackward(int speed)
  * @param rightSpeed
  */
 void switchDirection(int leftSpeed, int rightSpeed)
-{
-  int leftValue = getPWMvalue(leftSpeed);
-  int rightValue = getPWMvalue(rightSpeed);
-  leftPWM = constrain(leftValue, 0, FULL_PWM_VALUE);
-  rightPWM = constrain(rightValue, 0, FULL_PWM_VALUE);
+{ 
+  leftPWM = getPWMvalue(leftSpeed);
+  rightPWM = getPWMvalue(rightSpeed);
+  adjustPWMvalueByPulse(leftPWM, rightPWM);
+  Serial.print("left: ");
+  Serial.println(leftPWM);
+  Serial.print("right: ");
+  Serial.println(rightPWM);
   // put left wheel pin
   analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
   digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
@@ -204,7 +205,7 @@ void rotate(int speed, String direction, float angle)
  * @name adjustPWMvalueByPulse
  * @author Sunny
  * @date 15-11-2025
- * @details use PID 
+ * @details use PID
  */
 void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
 {
@@ -217,7 +218,7 @@ void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
 
   // 2. caculate angular velcoity increment
   float dTheta = Ktheta * (motor_left_pulses_counter - motor_right_pulses_counter);
-    theta += dTheta;
+  theta += dTheta;
   float error = dTheta;
   // 4. Integrate error (I term)
   integral += error * (dt / 1000.0);
