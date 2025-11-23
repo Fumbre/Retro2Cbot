@@ -1,6 +1,6 @@
 /**
  * @name the basic functions of robots
- * @authors Sunny & Nicolo
+ * @authors Sunny
  * @date 10-11-2025
  */
 #include "common/robot/movement/movement.h"
@@ -45,12 +45,17 @@ float getPWMvalue(int speed)
 void moveForward(int speed)
 {
   isMovingForward = true;
+
   float pwmValue = getPWMvalue(speed);
+
   leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
   rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
+
   adjustPWMvalueByPulse(leftPWM, rightPWM);
+
   leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
   rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
+
   analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
   digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
   analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
@@ -89,7 +94,7 @@ void moveBackward(int speed)
  * @param rightSpeed
  */
 void switchDirection(int leftSpeed, int rightSpeed)
-{ 
+{
   leftPWM = getPWMvalue(leftSpeed);
   rightPWM = getPWMvalue(rightSpeed);
   adjustPWMvalueByPulse(leftPWM, rightPWM);
@@ -165,14 +170,17 @@ void rotateRight(int speed)
 void rotate(int speed, String direction, float angle)
 {
   isMovingForward = true;
+
   // reset encoder count
   motor_left_pulses_counter = 0;
   motor_right_pulses_counter = 0;
+
   // caculate the max number of rotation of wheels for rotate 180 degrees
   angle = constrain(angle, 0.0, 360.0);
   float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
   float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
   int targetPulses = wheelTurns * PPR;
+
   // get PWM value
   int pwmValue = getPWMvalue(speed);
   leftPWM = pwmValue;
@@ -195,10 +203,13 @@ void rotate(int speed, String direction, float angle)
     digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
   }
   // waiting rotate finish
-  while (motor_left_pulses_counter <= targetPulses && motor_right_pulses_counter <= targetPulses)
-  {
-  };
-  stopMotors();
+
+  // TODO: FIGURE OUT WAY WITHOUT while
+
+  // while (motor_left_pulses_counter <= targetPulses && motor_right_pulses_counter <= targetPulses)
+  // {
+  // };
+  // stopMotors();
 }
 
 /**

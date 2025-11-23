@@ -13,7 +13,6 @@ int avoidStep = 0;
  * pin as OUTPUT and the ECHO pin as INPUT. This setup enables the robot to send
  * ultrasonic pulses and detect their reflections for distance measurement.
  */
-
 void setupSonar()
 {
   pinMode(PIN_SONAR_TRIG, OUTPUT); // send ultrasonic pulses

@@ -1,5 +1,11 @@
 #include "test_reflective_sensor.h"
 
+/**
+ * @name testReflectiveSensor
+ * @author Fumbre (Vladyslav)
+ * @date 21-11-2025
+ * @details make test for reflective sensor
+ */
 void testReflectiveSensor()
 {
     Serial.println(analogRead(A0));

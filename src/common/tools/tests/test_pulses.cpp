@@ -2,6 +2,12 @@
 
 Timer pulseStamp;
 
+/**
+ * @name testPulses
+ * @author Fumbre (Vladyslav)
+ * @date 21-11-2025
+ * @details make test for pulses
+ */
 void testPulses(int updateTime)
 {
   if (pulseStamp.intervalStart(updateTime))

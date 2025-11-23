@@ -68,7 +68,7 @@ const float MOTOR_RIGHT_FACTOR = 1.0;
 
 // ==================================================
 
-// DISCUSS PIN_MOTOR_ARRAY and PIN_MOTOR_ARRAY_LENGTH
+//  PINS MOTOR ARRAY
 const int PINS_MOTOR[] = {
     PIN_MOTOR_RIGHT_FORWARD,
     PIN_MOTOR_RIGHT_BACKWARD,
@@ -76,13 +76,5 @@ const int PINS_MOTOR[] = {
     PIN_MOTOR_LEFT_BACKWARD,
 };
 
-// ----discuss----
-// const int PINS_MOTOR_PULSE[] = {
-//     PIN_MOTOR_LEFT_PULSE,
-//     PIN_MOTOR_RIGHT_PULSE,
-// };
-
-// const int PINS_MOTOR_PULSE_LENGTH = sizeof(PINS_MOTOR_PULSE) / sizeof(int);
-// ----------------------------
-
+//  PINS MOTOR ARRAY LENGTH
 const int PINS_MOTOR_LENGTH = sizeof(PINS_MOTOR) / sizeof(int);

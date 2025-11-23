@@ -1,3 +1,19 @@
+// #pragma once
+// #include <Arduino.h>
+// #include "common/constant/motor.h"
+// #include "common/robot/motor/motor.h"
+
+// void moveForward(int speed);
+// void moveBackward(int speed);
+// void moveRight(int speed);
+// void moveLeft(int speed);
+
+// void rotateLeft(int speed);
+// void rotateRight(int speed);
+
+// void moveStop(int wheel_pin);
+// void moveStopAll();
+
 // #include "movement.h"
 
 // void moveForward(int speed)
@@ -67,3 +83,112 @@
 //     digitalWrite(PINS_MOTOR[i], 0);
 //   }
 // };
+
+// ===============MAIN TESTS===============
+
+//------------some test------------------
+
+// if (sadness.executeOnce(0))
+// {
+//   moveForward(100);
+// }
+
+// if (sadness1.executeOnce(2000))
+// {
+//   // rotate(100, "left", 180);
+//   // rotate(100, "right", 180);
+//   sadness.resetExecuteOnce();
+//   sadness1.resetExecuteOnce();
+
+//   // stopMotors();
+// }
+
+//------------first test------------------
+// if (stampForward.interval(1000, 1500))
+// {
+//   moveBackward(255);
+// }
+// else
+// {
+//   moveForward(255);
+// }
+
+//------------second test------------------
+// if (stampForward.interval(4500))
+// {
+//   stampForward.hardReset();
+//   stampBackward.hardReset();
+//   stampRotateLeft.hardReset();
+// }
+
+// if (stampForward.executeOnce(0))
+// {
+//   moveForward(255);
+// }
+
+// if (stampBackward.executeOnce(1000))
+// {
+//   moveBackward(255);
+// }
+
+// if (stampRotateLeft.executeOnce(2000))
+// {
+//   rotateLeft(255);
+// }
+
+// if (stampRotateLeft.executeOnce(3500))
+// {
+//   rotateRight(255);
+// }
+
+//------------three test------------------
+
+// if (!doCoolRotation.timeout(32000))
+// {
+//   if (test.interval(25))
+//   {
+
+//     if (stampRotateLeft.interval(20, 20))
+//     {
+//       rotateLeft(250);
+//     }
+//     else
+//     {
+//       rotateRight(255);
+//     }
+//     moveBackward(255);
+//   }
+// }
+
+// if (doCoolRotation.executeOnce(32000))
+// {
+//   stopMotors();
+// }
+
+//------------four test------------------
+
+// if (!doCoolRotation.timeout(32000))
+// {
+//   // if (test.interval(20))
+//   // {
+//   if (test.executeOnce(0))
+//   {
+//     moveForward(255);
+//   }
+//   if (stampRotateLeft.interval(25, 15))
+//   {
+//     analogWrite(PIN_MOTOR_LEFT_BACKWARD, 0);
+//     // rotateLeft(255);
+//   }
+//   // else
+//   // {
+//   //   // rotateRight(255);
+//   // }
+//   moveForward(255);
+//   // }
+// }
+
+// if (doCoolRotation.executeOnce(32000))
+// {
+//   moveStopAll();
+// }
