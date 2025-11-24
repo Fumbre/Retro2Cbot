@@ -30,6 +30,7 @@ Timer sadness1;
 
 void loop()
 {
+  // testPulses(20);
   // testReflectiveSensor();
 
   //==========avoiding=============

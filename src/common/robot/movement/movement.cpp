@@ -176,10 +176,10 @@ void rotate(int speed, String direction, float angle)
   motor_right_pulses_counter = 0;
 
   // caculate the max number of rotation of wheels for rotate 180 degrees
-  angle = constrain(angle, 0.0, 360.0);
-  float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
-  float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
-  int targetPulses = wheelTurns * PPR;
+  // angle = constrain(angle, 0.0, 360.0);
+  // float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
+  // float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
+  // int targetPulses = wheelTurns * PPR;
 
   // get PWM value
   int pwmValue = getPWMvalue(speed);
