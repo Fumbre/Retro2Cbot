@@ -5,6 +5,26 @@
  */
 #include "reflective_sensor.h"
 
+
+/**
+ * @name initReflectiveSensorsPins
+ * @author Sunny
+ * @date 24-11-2025
+ */
+void initReflectiveSensorsPins(){
+    for(int i = 0; i < PINS_RS_LENGTH; i++){
+        pinMode(PINS_RS[i],INPUT);
+    }
+}
+
+/**
+ * @name checkLine
+ * @author Sunny
+ * @date 21-11-2025
+ * @details Acording the reflective sensor, getting current left and right wheel speed (0-100%)
+ * @param baseSpeed initial speed of motors (0-100%)
+ * @return MotorSpeed  It's a struct, which include left wheel speed and right wheel speed
+ */
 MotorSpeed checkLine(int baseSpeed)
 {
     // define some variables

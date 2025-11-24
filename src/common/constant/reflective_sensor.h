@@ -12,7 +12,7 @@ const int PIN_RS_D3 = A5;
 const int PIN_RS_D2 = A6;
 const int PIN_RS_D1 = A7;
 
-const int THRESHOLD = 300;
+const int THRESHOLD = 500;
 
 // spatial weight array
 const int WEIGHT[8] = {-350, -250, -150, -50, 50, 150, 250, 350};

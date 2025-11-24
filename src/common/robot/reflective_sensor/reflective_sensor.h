@@ -8,4 +8,6 @@
 #include <Arduino.h>
 #include "common/constant/reflective_sensor.h"
 
+void initReflectiveSensorsPins();
+
 MotorSpeed checkLine(int baseSpeed);
