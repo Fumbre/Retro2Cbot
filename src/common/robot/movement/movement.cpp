@@ -10,7 +10,6 @@ float integral = 0;
 unsigned long lastPIDTime = 0;
 const unsigned long PID_INTERVAL = 10;
 bool isMovingForward = true;
-bool pidStarted = false;
 
 float leftPWM = 0;
 float rightPWM = 0;
