@@ -7,6 +7,7 @@
 #include "common/tools/tests/test_basic_movements/test_basic_movements.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
+#include "common/robot/neopixel/neopixel.h"
 
 const int SETTING_MODE = 2;
 
@@ -18,6 +19,7 @@ void setup()
   Serial.begin(9600);
   setupMotor();
   setupSonar();
+  initNeopixel();
 }
 
 Timer stampForward;
@@ -30,6 +32,9 @@ Timer sadness1;
 
 void loop()
 {
+  int index[] = {2,3};
+  turnOnSomeNeopixels(index,2,0,255,0);
+  moveForward(100);
   // testReflectiveSensor();
 
   //==========avoiding=============
