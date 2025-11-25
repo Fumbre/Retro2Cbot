@@ -44,6 +44,30 @@ float getDistanceCM()
 }
 
 /**
+ * @name isObstacleDetected
+ * @author Francisco
+ * @date 15-11-2025
+ * @param limit_cm  Maximum distance (in cm) used to define what counts as an obstacle
+ * @details Reads the current distance using getDistanceCM() and compares it with
+ * the user-defined threshold. If the measured distance is positive and less than
+ * or equal to the limit, the function considers that an obstacle is present.
+ * @return bool: true if an obstacle is detected, false otherwise
+ */
+
+bool isObstacleDetected(float limit_cm)
+{
+    float distance = getDistanceCM();
+
+    // Ignore all readings below ~2 cm 
+    if (distance < 2) {
+        return false;
+    }
+
+    // Return true only if the distance is within the limit
+    return (distance <= limit_cm);
+}
+
+/**
  * @name avoidObstacleSmoothNonBlocking
  * @author Francisco
  * @date 20-11-2025
@@ -76,7 +100,7 @@ void avoidObstacleSmoothNonBlocking(int speed) {
     // turn left
     case 0:  
         switchDirection(40, 100);                       // Left curve
-        if (t.interval(800)) {                          // After 800 ms
+        if (t.interval(1000)) {                         // After 800 ms
             step++;                                     // Proceed to next movement
             t.resetInterval();                          
         }
@@ -85,7 +109,7 @@ void avoidObstacleSmoothNonBlocking(int speed) {
     // turn right
     case 1:  
         switchDirection(100, 40);                       // Right curve
-        if (t.interval(800)) {                          // After 800 ms
+        if (t.interval(1000)) {                          // After 800 ms
             step++;                                     
             t.resetInterval();                          
         }
@@ -94,7 +118,7 @@ void avoidObstacleSmoothNonBlocking(int speed) {
     // move forward
     case 2:  
         moveForward(100);                               // move forward
-        if (t.interval(800)) {                          // After 800 ms
+        if (t.interval(1000)) {                          // After 800 ms
             step++;                                     
             t.resetInterval();                          
         }
@@ -121,7 +145,7 @@ void avoidObstacleSmoothNonBlocking(int speed) {
     // short forward movement
     case 5:  
         moveForward(100);                               // Move forward 
-        if (t.interval(1000)) {                         // After 1000 ms
+        if (t.interval(200)) {                         // After 1000 ms
             step++; 
             t.resetInterval();      
         }

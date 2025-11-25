@@ -5,6 +5,7 @@
 
 void setupSonar();
 float getDistanceCM();
+bool isObstacleDetected(float limit_cm);
 void avoidObstacleSmoothNonBlocking(int speed);
 
 extern bool avoiding;

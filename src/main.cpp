@@ -33,24 +33,32 @@ void loop()
 
   //========== avoiding =============
 
-  // float distance = getDistanceCM();
+  static bool safeZone = true;
 
-  // if (!avoiding)
-  // {
+  float distance = getDistanceCM();
 
-  //   if (distance <= 30)
-  //   {
-  //     avoidObstacleSmoothNonBlocking(255);
-  //   }
-  //   else
-  //   {
-  //     moveForward(255);
-  //   }
-  // }
-  // else
-  // {
-  //   avoidObstacleSmoothNonBlocking(255);
-  // }
+  if (!avoiding)
+  {
+
+    if (safeZone && distance <= 30 && distance >= 2)
+    {
+      safeZone = false; // exiting safe zone
+      avoidObstacleSmoothNonBlocking(255);
+    }
+    else
+    {
+      moveForward(255);
+
+      if (distance > 30)
+      {                  // hysteresis threshold
+        safeZone = true; // re-enter safe zone only after a clear reading
+      }
+    }
+    }
+  else
+  {
+    avoidObstacleSmoothNonBlocking(255);
+  }
 
   //==============================
 
