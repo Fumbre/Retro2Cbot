@@ -33,22 +33,22 @@ void loop()
   // testPulses(20);
   // testReflectiveSensor();
 
-  //==========avoiding=============
+  //========== avoiding =============
 
-  // if (!avoiding)
-  // {
-  //   moveForward(255);
-  // }
+  float distance = getDistanceCM();
 
-  // if (isObstacleDetected(30))
-  // {
-  //   avoidObstacleSmoothNonBlocking(255);
-  // }
+  if (!avoiding) {
 
-  // if (avoiding)
-  // {
-  //   avoidObstacleSmoothNonBlocking(255);
-  // }
+    if (distance <= 30) {
+      avoidObstacleSmoothNonBlocking(255);   
+    }
+    else {
+      moveForward(255);                      
+    }
+  } else {
+    avoidObstacleSmoothNonBlocking(255);       
+  }
+
 
   //==============================
 
