@@ -1,5 +1,7 @@
 #pragma once
+#include "common/constant/board.h"
 #include <Arduino.h>
+#include "common/constant/motor.h"
 #include "common/tools/timer.h"
 
 void setupMotor();
