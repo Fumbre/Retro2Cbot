@@ -17,3 +17,5 @@ struct Stability
   int speedLeft;
   int speedRight;
 };
+
+void setupPulseCounter();

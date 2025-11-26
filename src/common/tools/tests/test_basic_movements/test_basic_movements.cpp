@@ -24,52 +24,52 @@ Timer timestampTestBasicMovementStopMotors;
  */
 void testBasicMovement()
 {
-  if (timestampTestBasicMovementForward.executeOnce(0))
+  if (timestampTestBasicMovementForward.executeOnce(0, 3000))
   {
-    moveForward(100);
+    moveSpeed(240, 240);
   }
 
-  if (timestampTestBasicMovementBackward.executeOnce(1000 + 2000))
+  if (timestampTestBasicMovementBackward.executeOnce(1000 + 2000, 3000))
   {
-    moveBackward(100);
+    moveSpeed(-240, -240);
   }
 
-  if (timestampTestBasicMovementForward1.executeOnce(2000 + 4000))
+  if (timestampTestBasicMovementForward1.executeOnce(2000 + 4000, 500))
   {
-    moveForward(100);
+    moveSpeed(240, 240);
   }
 
-  if (timestampTestBasicMovementRight.executeOnce(2500 + 4000))
+  if (timestampTestBasicMovementRight.executeOnce(2500 + 4000, 1000))
   {
-    switchDirection(100, 40);
+    switchDirection(240, 130);
   }
 
-  if (timestampTestBasicMovementRight1.executeOnce(3500 + 4000))
+  if (timestampTestBasicMovementRight1.executeOnce(3500 + 4000, 200))
   {
-    switchDirection(100, 50);
+    switchDirection(240, 140);
   }
 
-  if (timestampTestBasicMovementLeft.executeOnce(3700 + 4000))
+  if (timestampTestBasicMovementLeft.executeOnce(3700 + 4000, 300))
   {
-    switchDirection(40, 100);
+    switchDirection(140, 240);
   }
 
-  if (timestampTestBasicMovementLeft1.executeOnce(4000 + 4000))
+  if (timestampTestBasicMovementLeft1.executeOnce(4000 + 4000, 1500))
   {
-    switchDirection(50, 100);
+    moveSpeed(200, 200);
   }
 
-  if (timestampTestBasicMovementForward2.executeOnce(5500 + 4000))
+  if (timestampTestBasicMovementForward2.executeOnce(5500 + 4000, 2000))
   {
-    moveForward(100);
+    moveSpeed(240, 240);
   }
 
-  if (timestampTestBasicMovementRotateLeft.executeOnce(7500 + 4000))
+  if (timestampTestBasicMovementRotateLeft.executeOnce(7500 + 4000, 1000))
   {
-    rotateLeft(255);
+    moveSpeed(240, -240);
   }
 
-  if (timestampTestBasicMovementStopMotors.executeOnce(8600 + 4000))
+  if (timestampTestBasicMovementStopMotors.executeOnce(8500 + 4000))
   {
     stopMotors();
   }
