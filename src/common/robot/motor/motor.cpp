@@ -15,7 +15,7 @@ Timer timestampCountPulsesLeft;
 void countLeftPulses()
 {
   // detachInterrupt(digitalPinToInterrupt(PIN_MOTOR_LEFT_PULSE));
-  if (timestampCountPulsesLeft.interval(20))
+  if (timestampCountPulsesLeft.executeOnce(0))
   {
     motor_left_pulses_counter++;
   }
@@ -30,7 +30,7 @@ void countLeftPulses()
 void countRightPulses()
 {
   // detachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE));
-  if (timestampCountPulsesRight.interval(20))
+  if (timestampCountPulsesRight.executeOnce(0))
   {
     motor_right_pulses_counter++;
   }
@@ -56,3 +56,9 @@ void setupMotor()
   pinMode(PIN_MOTOR_RIGHT_PULSE, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
 };
+
+void setupPulseCounter()
+{
+  timestampCountPulsesLeft.resetExecuteOnce();
+  timestampCountPulsesRight.resetExecuteOnce();
+}

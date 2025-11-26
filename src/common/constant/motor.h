@@ -74,8 +74,8 @@ const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 const int PIN_MOTOR_LEFT_FORWARD = 10;
 const int PIN_MOTOR_LEFT_BACKWARD = 11;
 
-const int PIN_MOTOR_LEFT_PULSE = 2;  // !note this should be 3 but because of PID configuration (mistaken) now it's counting the right wheel
-const int PIN_MOTOR_RIGHT_PULSE = 3; // the same that abouve
+const int PIN_MOTOR_LEFT_PULSE = 3;  // shoud be 3 !
+const int PIN_MOTOR_RIGHT_PULSE = 2; // shoud be 2 !
 
 // PID factors
 const float Kp_f = 4.0;  // Proportional

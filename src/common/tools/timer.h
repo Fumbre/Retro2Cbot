@@ -88,7 +88,7 @@ public:
    * @details Timer.executeOnce(500) will return True once and only once! even in a loop it will be executed once after n milliseconds!!
    * @return bool
    */
-  bool executeOnce(unsigned long milliseconds)
+  bool executeOnce(unsigned long milliseconds, unsigned long executedTime = 0)
   {
     if (isTriggeredExecuteOnce)
       return false;
@@ -100,7 +100,11 @@ public:
 
     if (now - timestampExecuteOnce >= milliseconds)
     {
-      isTriggeredExecuteOnce = true;
+      if (now - timestampExecuteOnce >= milliseconds + executedTime)
+      {
+        isTriggeredExecuteOnce = true;
+      }
+
       return true;
     }
     return false;

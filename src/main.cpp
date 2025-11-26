@@ -21,67 +21,10 @@ void setup()
   setupSonar();
 }
 
-Timer stampForward;
-Timer stampBackward;
-Timer stampRotateLeft;
-Timer stampRotateRight;
-
 void loop()
 {
-  // testPulses(20);
-  // testReflectiveSensor();
-
-  //========== avoiding =============
-
-  static bool safeZone = true;
-
-  float distance = getDistanceCM();
-
-  if (!avoiding)
-  {
-
-    if (safeZone && distance <= 30 && distance >= 2)
-    {
-      safeZone = false; // exiting safe zone
-      avoidObstacleSmoothNonBlocking(255);
-    }
-    else
-    {
-      moveForward(255);
-
-      if (distance > 30)
-      {                  // hysteresis threshold
-        safeZone = true; // re-enter safe zone only after a clear reading
-      }
-    }
-    }
-  else
-  {
-    avoidObstacleSmoothNonBlocking(255);
-  }
-
-  //==============================
-
-  // testBasicMovement();
-
-  // MotorSpeed motorSpeed = checkLine(70);
-
-  // switchDirection(motorSpeed.leftSpeed, motorSpeed.rightSpeed);
-
-  // switch (SETTING_MODE)
-  // {
-  // case 0:
-  //   // to do followSingleLine
-  //   break;
-  // case 1:
-  //   // to do mazeLine
-  //   break;
-  // case 2:
-  //   // to do physicalMaze
-  //   break;
-
-  // default:
-  //   Serial.print("NO SUCH A PROGRAM");
-  //   break;
-  // }
+  setupPulseCounter();
+  testBasicMovement();
+  // moveSpeed(230, 230);
+  testPulses(20);
 }
