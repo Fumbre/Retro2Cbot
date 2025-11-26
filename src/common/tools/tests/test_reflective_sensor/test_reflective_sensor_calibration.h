@@ -1,8 +1,8 @@
-
 #pragma once
 #include <Arduino.h>
-#include "common/constant/reflective_sensor.h"
 
+void loopRs();
+void setupRs();
 
 struct Stats {
   unsigned long count = 0;
@@ -22,5 +22,3 @@ struct Stats {
   double variance() const { return (count > 1) ? (m2 / (count - 1)) : 0.0; }
   double stddev()  const { return sqrt(variance()); }
 };
-
-extern Stats stats[8];

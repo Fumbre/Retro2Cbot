@@ -9,6 +9,8 @@
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/tools/tests/test_pulses.h"
 
+
+#include "common/tools/tests/test_reflective_sensor/test_reflective_sensor_calibration.h"
 const int SETTING_MODE = 2;
 
 Timer doCoolRotation;
@@ -16,9 +18,10 @@ Timer test;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   setupMotor();
   setupSonar();
+  setupRs();
 }
 
 Timer stampForward;
@@ -28,37 +31,45 @@ Timer stampRotateRight;
 
 void loop()
 {
+  if (stampForward.executeOnce(0, 2000)) {
+    loopRs();
+  } else {
+    Serial.println("sfdddddddddddddddddddddddddddddddddddddddddddddddddddddddddd");
+    Serial.println(stats[3].mean);
+  }
+
+
   // testPulses(20);
   // testReflectiveSensor();
 
   //========== avoiding =============
 
-  static bool safeZone = true;
+  // static bool safeZone = true;
 
-  float distance = getDistanceCM();
+  // float distance = getDistanceCM();
 
-  if (!avoiding)
-  {
+  // if (!avoiding)
+  // {
 
-    if (safeZone && distance <= 30 && distance >= 2)
-    {
-      safeZone = false; // exiting safe zone
-      avoidObstacleSmoothNonBlocking(255);
-    }
-    else
-    {
-      moveForward(255);
+  //   if (safeZone && distance <= 30 && distance >= 2)
+  //   {
+  //     safeZone = false; // exiting safe zone
+  //     avoidObstacleSmoothNonBlocking(255);
+  //   }
+  //   else
+  //   {
+  //     moveForward(255);
 
-      if (distance > 30)
-      {                  // hysteresis threshold
-        safeZone = true; // re-enter safe zone only after a clear reading
-      }
-    }
-    }
-  else
-  {
-    avoidObstacleSmoothNonBlocking(255);
-  }
+  //     if (distance > 30)
+  //     {                  // hysteresis threshold
+  //       safeZone = true; // re-enter safe zone only after a clear reading
+  //     }
+  //   }
+  //   }
+  // else
+  // {
+  //   avoidObstacleSmoothNonBlocking(255);
+  // }
 
   //==============================
 

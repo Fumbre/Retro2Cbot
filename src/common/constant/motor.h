@@ -75,7 +75,7 @@ const int PIN_MOTOR_LEFT_FORWARD = 10;
 const int PIN_MOTOR_LEFT_BACKWARD = 11;
 
 const int PIN_MOTOR_LEFT_PULSE = 3;  // !note this should be 3 but because of PID configuration (mistaken) now it's counting the right wheel
-const int PIN_MOTOR_RIGHT_PULSE = 2; // the same that abouve
+const int PIN_MOTOR_RIGHT_PULSE = 2; 
 
 // PID factors
 const float Kp_f = 4.0;  // Proportional
@@ -104,6 +104,7 @@ const int PINS_MOTOR[] = {
 };
 
 //  PINS MOTOR ARRAY LENGTH
+// To store array length dynamically 
 const int PINS_MOTOR_LENGTH = sizeof(PINS_MOTOR) / sizeof(int);
 
 #endif

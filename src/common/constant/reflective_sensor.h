@@ -26,3 +26,4 @@ const int PINS_RS[] = {
 };
 
 const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
+// to store array length dynamically 
