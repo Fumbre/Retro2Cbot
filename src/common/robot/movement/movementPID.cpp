@@ -1,0 +1,229 @@
+/**
+ * @name the basic functions of robots
+ * @authors Sunny
+ * @date 10-11-2025
+ */
+#include "movementPID.h"
+
+float lastError = 0;
+float integral = 0;
+unsigned long lastPIDTime = 0;
+const unsigned long PID_INTERVAL = 10;
+bool moveForwardStart = false;
+bool moveBackWardStart = false;
+bool isMovingForward = true;
+
+float leftPWM = 0;
+float rightPWM = 0;
+
+/**
+ * @name getPWMvalue
+ * @author Sunny
+ * @date 11-11-2025
+ * @param speed
+ *
+ * @details  that function calclulate procantage of speed for analogWrite(255) is max speed is in procatage
+ * so we will have correcrt procatage based on max value of PWM_VALUE
+ *
+ * @return PWM value
+ */
+float getPWMvalue(int speed)
+{
+    speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
+    float value = (float)speed / 100.0;
+    return roundf(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
+}
+
+/**
+ * @name moveForward
+ * @author Sunny
+ * @date 10-11-2025
+ * @param speed
+ */
+void moveForward(int speed)
+{
+    if (!moveForwardStart)
+    {
+        integral = 0;
+        moveForwardStart = true;
+        float pwmValue = getPWMvalue(100);
+        leftPWM = pwmValue;
+        rightPWM = pwmValue;
+    }
+
+    isMovingForward = true;
+
+    Stability stability = adjustPWMvalueByPulse(&leftPWM, &rightPWM);
+
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, stability.speedLeft);
+    digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, stability.speedRight);
+    digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
+}
+
+/**
+ * @name moveBackward
+ * @author Sunny
+ * @date 10-11-2025
+ * @param speed
+ */
+void moveBackward(int speed)
+{
+    if (!moveBackWardStart)
+    {
+        integral = 0;
+        float pwmValue = getPWMvalue(speed);
+        leftPWM = pwmValue;
+        rightPWM = pwmValue;
+        moveBackWardStart = true;
+    }
+
+    isMovingForward = false;
+
+    // get PWM value
+    Stability stability = adjustPWMvalueByPulse(&leftPWM, &rightPWM);
+
+    // Serial.print("left: ");
+    // Serial.println(stability.speedLeft);
+    // Serial.print("right: ");
+    // Serial.println(stability.speedRight);
+
+    analogWrite(PIN_MOTOR_LEFT_BACKWARD, stability.speedLeft);
+    digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
+    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, stability.speedRight);
+    digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
+}
+
+/**
+ * @name switchDirection
+ * @author Sunny
+ * @date 10-11-2025
+ * @param leftSpeed
+ * @param rightSpeed
+ */
+void switchDirection(int leftSpeed, int rightSpeed)
+{
+    leftPWM = getPWMvalue(leftSpeed);
+    rightPWM = getPWMvalue(rightSpeed);
+    adjustPWMvalueByPulse(&leftPWM, &rightPWM);
+    // put left wheel pin
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
+    digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
+    // put right wheel pin
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
+    digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
+}
+
+/**
+ * @name stopMotors
+ * @author Fumbre (Vladyslav)
+ * @date 10-11-2025
+ */
+void stopMotors()
+{
+    for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+    {
+        digitalWrite(PINS_MOTOR[i], LOW);
+    }
+}
+
+/**
+ * @name rotateLeft
+ * @author Fumbre (Vladyslav)
+ * @date 19-11-2025
+ * @param speed (0-255)
+ */
+void rotateLeft(int speed)
+{
+    for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+    {
+        analogWrite(PINS_MOTOR[i], 0);
+        if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
+            analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+        if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
+            analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+    }
+};
+
+/**
+ * @name rotateLeft
+ * @author Fumbre (Vladyslav)
+ * @date 19-11-2025
+ * @param speed (0-255)
+ */
+void rotateRight(int speed)
+{
+    for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+    {
+        analogWrite(PINS_MOTOR[i], 0);
+        if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
+            analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
+        if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
+            analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+    }
+};
+
+/**
+ * @name adjustPWMvalueByPulse
+ * @author Sunny
+ * @date 15-11-2025
+ * @details use PID
+ */
+Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue)
+{
+
+    unsigned long now = millis();
+    Stability stability;
+    // Ensure PID runs at a fixed interval
+    if (now - lastPIDTime < INTERNAL)
+    {
+        stability.speedLeft = *leftPWMValue;
+        stability.speedRight = *rightPWMValue;
+        return stability;
+    }
+    lastPIDTime = now;
+    // stop interrupting functions to avoid pulses value changing when getting current pulses
+    noInterrupts();
+    long leftP = motor_left_pulses_counter;
+    long rightP = motor_right_pulses_counter;
+    motor_left_pulses_counter = 0;
+    motor_right_pulses_counter = 0;
+    // start interrupting functions
+    interrupts();
+    // get the distance of left and right wheels running with current pulses. unit:cm
+    float leftD = ((float)leftP / (float)PPR) * (2 * PI * WHEEL_RADUIS);
+    float rightD = ((float)rightP / (float)PPR) * (2 * PI * WHEEL_RADUIS);
+    // caculate current error
+    float error = leftD - rightD;
+    // sum integral
+    integral += error;
+    // caculate derivative
+    float derivative = (error - lastError);
+    // caculate correction value
+    float correction;
+    if (isMovingForward)
+    {
+        correction = Kp_f * error + Ki_f * integral + Kd_f * derivative;
+    }
+    else
+    {
+        correction = Kp_b * error + Ki_b * integral + Kd_b * derivative;
+    }
+    // if(fabs(correction) < 0.5) correction = 0;
+    // correction = constrain(correction,-20,20);
+    Serial.print("correction: ");
+    Serial.println(correction);
+    // get new pwm value
+    *leftPWMValue = constrain(*leftPWMValue - correction, 0, FULL_PWM_VALUE);
+    *rightPWMValue = constrain(*rightPWMValue + correction, 0, FULL_PWM_VALUE);
+    Serial.print("inside Left: ");
+    Serial.println(*leftPWMValue);
+    Serial.print("inside right: ");
+    Serial.println(*rightPWMValue);
+    // update last error
+    lastError = error;
+    stability.speedLeft = *leftPWMValue;
+    stability.speedRight = *rightPWMValue;
+
+    return stability;
+}

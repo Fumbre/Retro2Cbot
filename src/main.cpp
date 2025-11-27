@@ -1,5 +1,6 @@
 #include "common/constant/robot.h"
 #include "common/robot/motor/motor.h"
+#include "common/tools/bluetooth.h"
 #include "common/robot/movement/movement.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/sonar/sonar.h"
@@ -9,22 +10,36 @@
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/tools/tests/test_pulses.h"
 
-const int SETTING_MODE = 2;
+#include "common/robot/neopixel/neopixel.h"
 
-Timer doCoolRotation;
-Timer test;
+#include "maps_pogram/maze_line/maze_line.h"
+
+const int SETTING_MODE = 2;
 
 void setup()
 {
   Serial.begin(9600);
+  blueTooth.begin(9600);
   setupMotor();
   setupSonar();
+  initNeopixelPins();
 }
+
+Timer test;
 
 void loop()
 {
-  setupPulseCounter();
-  testBasicMovement();
-  // moveSpeed(230, 230);
+  moveStabilized(230, 230);
+
+  int index[] = {0, 1};
+  if (!test.interval(500, 500))
+  {
+    turnOnSomeLeds(index, 2, 54, 154, 12);
+  }
+  else
+  {
+    turnOnSomeLeds(index, 2, 255, 175, 0);
+  }
+
   testPulses(20);
 }

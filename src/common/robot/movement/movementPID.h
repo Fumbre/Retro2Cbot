@@ -18,10 +18,7 @@ void stopMotors();
 
 float getPWMvalue(int speed);
 
-void rotate(int speed, String direction, float angle);
-
-void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue);
+Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue);
 
 void rotateLeft(int speed);
 void rotateRight(int speed);
-void resetPIDValue();

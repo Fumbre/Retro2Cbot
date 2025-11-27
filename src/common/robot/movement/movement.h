@@ -4,17 +4,17 @@
 #include "common/constant/motor.h"
 #include "common/robot/motor/motor.h"
 
-void moveForward(int speed);
-void moveBackward(int speed);
-void moveRight(int speed);
-void moveLeft(int speed);
-
-void rotateLeft(int speed);
-void rotateRight(int speed);
+void resetMoveRight();
+void resetMoveLeft();
+bool didMoveRight(int speed, int pulses);
+bool didMoveLeft(int speed, int pulses);
 
 void moveStop(int wheel_pin);
-void stopMotors();
+void moveStopAll();
 
 void switchDirection(int speedLeft, int speedRight);
 
 void moveSpeed(int speedLeft, int speedRight);
+void moveStabilized(int speedLeft, int speedRight);
+
+void writeSpeed(int speedLeft, int speedRight);
