@@ -23,7 +23,6 @@ void setup()
 
 void loop()
 {
-  setupPulseCounter();
   testBasicMovement();
   // moveSpeed(230, 230);
   testPulses(20);
