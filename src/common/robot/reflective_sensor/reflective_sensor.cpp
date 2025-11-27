@@ -1,8 +1,5 @@
 #include "reflective_sensor.h"
 
-const unsigned int sampleIntervalMs = 10; // sample every 10 ms (~100 Hz)
-                                          // adjust if you want fewer/more samples
-
 // Stats per sensor using Welford's algorithm
 
 Stats *getRSValue()

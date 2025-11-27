@@ -25,11 +25,7 @@ void setup()
 
 void loop()
 {
-  setupPulseCounter();
-
-  calibrateRS();
-
-  // testBasicMovement();
+  testBasicMovement();
   // moveSpeed(230, 230);
 
   // testPulses(20);

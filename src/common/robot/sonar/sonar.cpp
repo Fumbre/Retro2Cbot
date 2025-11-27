@@ -103,7 +103,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // turn left
   case 0:
-    switchDirection(140, 230); // Left curve
+    switchDirection(40, 100); // Left curve
     if (t.interval(1000))
     {         // After 800 ms
       step++; // Proceed to next movement
@@ -113,7 +113,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // turn right
   case 1:
-    switchDirection(230, 140); // Right curve
+    switchDirection(100, 40); // Right curve
     if (t.interval(1000))
     { // After 800 ms
       step++;
@@ -123,7 +123,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // move forward
   case 2:
-    moveSpeed(230, 230); // move forward
+    moveForward(100); // move forward
     if (t.interval(1000))
     { // After 800 ms
       step++;
@@ -133,7 +133,8 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // long right curve
   case 3:
-    switchDirection(230, 140); // right curve¨
+    switchDirection(100, 40); // right curve
+    if (t.interval(1000))
     { // After 1000 ms
       step++;
       t.resetInterval();
@@ -142,7 +143,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // long left curve
   case 4:
-    switchDirection(140, 230); // left curve
+    switchDirection(40, 100); // left curve
     if (t.interval(1000))
     { // After 1000 ms
       step++;
@@ -152,7 +153,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // short forward movement
   case 5:
-    moveSpeed(230, 230); // Move forward
+    moveForward(100); // Move forward
     if (t.interval(200))
     { // After 1000 ms
       step++;

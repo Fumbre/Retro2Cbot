@@ -1,0 +1,54 @@
+
+// // == == == == == == == = MAIN TESTS == == == == == == == =
+
+// // ------------three test------------------
+
+// // if (!doCoolRotation.timeout(32000))
+// // {
+// //   if (test.interval(25))
+// //   {
+
+// //     if (stampRotateLeft.interval(20, 20))
+// //     {
+// //       rotateLeft(250);
+// //     }
+// //     else
+// //     {
+// //       rotateRight(255);
+// //     }
+// //     moveBackward(255);
+// //   }
+// // }
+
+// // if (doCoolRotation.executeOnce(32000))
+// // {
+// //   stopMotors();
+// // }
+
+// // ------------four test------------------
+
+// // if (!doCoolRotation.timeout(32000))
+// // {
+// //   // if (test.interval(20))
+// //   // {
+// //   if (test.executeOnce(0))
+// //   {
+// //     moveForward(255);
+// //   }
+// //   if (stampRotateLeft.interval(25, 15))
+// //   {
+// //     analogWrite(PIN_MOTOR_LEFT_BACKWARD, 0);
+// //     // rotateLeft(255);
+// //   }
+// //   // else
+// //   // {
+// //   //   // rotateRight(255);
+// //   // }
+// //   moveForward(255);
+// //   // }
+// // }
+
+// // if (doCoolRotation.executeOnce(32000))
+// // {
+// //   moveStopAll();
+// // }
