@@ -11,6 +11,8 @@
 
 #include "maps_pogram/maze_line/maze_line.h"
 
+#include "common/robot/movement/movementPID.h"
+
 const int SETTING_MODE = 2;
 
 Timer doCoolRotation;
@@ -23,10 +25,39 @@ void setup()
   setupSonar();
 }
 
+Timer t;
+Timer t1;
+
+bool flag = true;
+
 void loop()
 {
-  testBasicMovement();
-  // moveSpeed(230, 230);
+
+  // testBasicMovement();
+
+  // moveStabilized(-240, -240);
+
+  // if (t.executeOnce(0, 1000))
+  // {
+  //   moveStabilized(240, 240);
+  // }
+
+  if (t.executeOnce(0, 500))
+  {
+    // Serial.print("asfdasdf");
+    moveStabilized(-255, -255);
+  }
+  if (t1.timeout(500) && flag)
+  {
+    if (didMoveRight(255, 36))
+    {
+      flag = false;
+      resetMoveRight();
+      stopMotors();
+    }
+  }
+
+  // moveLeft(180, 36);
 
   // testPulses(20);
 }
