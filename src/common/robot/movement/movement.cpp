@@ -164,8 +164,6 @@ void moveStabilized(int speedLeft, int speedRight)
   static Timer stampRotateLeft;
   static Timer stampRotateRight;
 
-  setupPulseCounter();
-
   switch (step)
   {
   case 0:

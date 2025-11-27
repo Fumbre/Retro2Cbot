@@ -9,10 +9,8 @@ void resetMoveLeft();
 bool didMoveRight(int speed, int pulses);
 bool didMoveLeft(int speed, int pulses);
 
-void moveStop(int wheel_pin);
+void moveStop(int motor_pin);
 void moveStopAll();
-
-void switchDirection(int speedLeft, int speedRight);
 
 void moveSpeed(int speedLeft, int speedRight);
 void moveStabilized(int speedLeft, int speedRight);

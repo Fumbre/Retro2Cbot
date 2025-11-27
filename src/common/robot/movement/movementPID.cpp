@@ -5,8 +5,9 @@
  */
 #include "movementPID.h"
 
-float lastError = 0;
-float integral = 0;
+PID forwardPID(Kp_f, Ki_f, Kd_f);
+PID backwardPID(Kp_b, Ki_b, Kd_b);
+
 unsigned long lastPIDTime = 0;
 const unsigned long PID_INTERVAL = 10;
 bool moveForwardStart = false;
@@ -38,13 +39,13 @@ float getPWMvalue(int speed)
  * @name moveForward
  * @author Sunny
  * @date 10-11-2025
- * @param speed
+ * @param speed(0|100)
  */
 void moveForward(int speed)
 {
     if (!moveForwardStart)
     {
-        integral = 0;
+        forwardPID.integral = 0;
         moveForwardStart = true;
         float pwmValue = getPWMvalue(100);
         leftPWM = pwmValue;
@@ -71,7 +72,7 @@ void moveBackward(int speed)
 {
     if (!moveBackWardStart)
     {
-        integral = 0;
+        backwardPID.integral = 0;
         float pwmValue = getPWMvalue(speed);
         leftPWM = pwmValue;
         rightPWM = pwmValue;
@@ -164,6 +165,58 @@ void rotateRight(int speed)
 };
 
 /**
+ * @name rotate
+ * @author Sunny
+ * @date 12-11-2025
+ * @param speed (0-100%)
+ * @param direction (left, right)
+ * @param angle (0-360)
+ */
+void rotate(int speed, String direction, float angle)
+{
+
+    // reset encoder count
+    motor_left_pulses_counter = 0;
+    motor_right_pulses_counter = 0;
+
+    // caculate the max number of rotation of wheels for rotate 180 degrees
+    angle = constrain(angle, 0.0, 360.0);
+    float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
+    float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
+    int targetPulses = wheelTurns * PPR;
+
+    // get PWM value
+    int pwmValue = getPWMvalue(speed);
+    leftPWM = pwmValue;
+    rightPWM = pwmValue;
+    adjustPWMvalueByPulse(&leftPWM, &rightPWM);
+    if (direction.equalsIgnoreCase("right"))
+    {
+        // let right wheel go forward, let left wheel go backward
+        analogWrite(PIN_MOTOR_LEFT_FORWARD, pwmValue);
+        digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
+        analogWrite(PIN_MOTOR_RIGHT_BACKWARD, pwmValue);
+        digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
+    }
+    else if (direction.equalsIgnoreCase("left"))
+    {
+        // let right wheel go forward, let left wheel go backward
+        analogWrite(PIN_MOTOR_RIGHT_FORWARD, pwmValue);
+        digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
+        analogWrite(PIN_MOTOR_LEFT_BACKWARD, pwmValue);
+        digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
+    }
+    // waiting rotate finish
+
+    // TODO: FIGURE OUT WAY WITHOUT while
+
+    // while (motor_left_pulses_counter <= targetPulses && motor_right_pulses_counter <= targetPulses)
+    // {
+    // };
+    // stopMotors();
+}
+
+/**
  * @name adjustPWMvalueByPulse
  * @author Sunny
  * @date 15-11-2025
@@ -193,21 +246,15 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue)
     // get the distance of left and right wheels running with current pulses. unit:cm
     float leftD = ((float)leftP / (float)PPR) * (2 * PI * WHEEL_RADUIS);
     float rightD = ((float)rightP / (float)PPR) * (2 * PI * WHEEL_RADUIS);
-    // caculate current error
-    float error = leftD - rightD;
-    // sum integral
-    integral += error;
-    // caculate derivative
-    float derivative = (error - lastError);
     // caculate correction value
     float correction;
     if (isMovingForward)
     {
-        correction = Kp_f * error + Ki_f * integral + Kd_f * derivative;
+        correction = forwardPID.caculateCorrection(leftD, rightD);
     }
     else
     {
-        correction = Kp_b * error + Ki_b * integral + Kd_b * derivative;
+        correction = backwardPID.caculateCorrection(leftD, rightD);
     }
     // if(fabs(correction) < 0.5) correction = 0;
     // correction = constrain(correction,-20,20);
@@ -220,8 +267,6 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue)
     Serial.println(*leftPWMValue);
     Serial.print("inside right: ");
     Serial.println(*rightPWMValue);
-    // update last error
-    lastError = error;
     stability.speedLeft = *leftPWMValue;
     stability.speedRight = *rightPWMValue;
 

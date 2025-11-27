@@ -11,7 +11,7 @@
 #include "common/tools/tests/test_pulses.h"
 
 #include "common/robot/neopixel/neopixel.h"
-
+#include "common/robot/movement/movementPID.h"
 #include "maps_pogram/maze_line/maze_line.h"
 
 const int SETTING_MODE = 2;
@@ -29,17 +29,27 @@ Timer test;
 
 void loop()
 {
-  moveStabilized(230, 230);
+  // moveStabilized(230, 230);
 
-  int index[] = {0, 1};
-  if (!test.interval(500, 500))
+  if (test.executeOnce(0))
   {
+    int index[] = {0, 1};
     turnOnSomeLeds(index, 2, 54, 154, 12);
   }
-  else
+
+  if (test.timeout(10))
   {
-    turnOnSomeLeds(index, 2, 255, 175, 0);
+    moveForward(100);
   }
 
-  testPulses(20);
+  // if (!test.interval(500, 500))
+  // {
+  //   turnOnSomeLeds(index, 2, 54, 154, 12);
+  // }
+  // else
+  // {
+  //   turnOnSomeLeds(index, 2, 255, 175, 0);
+  // }
+
+  // testPulses(20);
 }

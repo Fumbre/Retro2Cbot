@@ -5,6 +5,7 @@
 #include "common/robot/motor/motor.h"
 #include "common/constant/robot.h"
 #include "common/tools/timer.h"
+#include "common/tools/PID.h"
 
 extern float integral;
 
