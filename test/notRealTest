@@ -1,4 +1,23 @@
 
+
+// ---------rotate test---------------------
+
+// if (t.executeOnce(0, 500))
+// {
+//   // Serial.print("asfdasdf");
+//   moveStabilized(-255, -255);
+// }
+// if (t1.timeout(500) && !flag)
+// {
+//   if (didMoveRight(255, 36))
+//   {
+//     flag = true;
+//     resetMoveRight();
+//     stopMotors();
+//     time = millis();
+//   }
+// }
+
 // // == == == == == == == = MAIN TESTS == == == == == == == =
 
 // // ------------three test------------------

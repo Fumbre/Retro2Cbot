@@ -104,6 +104,7 @@ const int PINS_MOTOR[] = {
 };
 
 //  PINS MOTOR ARRAY LENGTH
+// To store array length dynamically
 const int PINS_MOTOR_LENGTH = sizeof(PINS_MOTOR) / sizeof(int);
 
 #endif
