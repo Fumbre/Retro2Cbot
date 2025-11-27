@@ -35,6 +35,15 @@ bool didMoveRight(int speed, int pulses)
   }
 };
 
+/**
+ * @name moveStopAll
+ * @author Fumbre(Vladyslav)
+ * @date 27-11-2025
+ * @param speed(-255|255)
+ * @param pulses(0 99)
+ * @return bool
+ * @details after pulses rotation return true, otherwise false
+ */
 bool didMoveLeft(int speed, int pulses)
 {
 
@@ -83,6 +92,7 @@ void moveStopAll()
  * @param speedLeft(-255|255)
  * @param speedRight(-255|255)
  *
+ * @details this function doesn't count your pulses
  * @details you can use speed from -255 to 255
  */
 void moveSpeed(int speedLeft, int speedRight)
@@ -111,32 +121,6 @@ void moveSpeed(int speedLeft, int speedRight)
   }
 }
 
-void writeSpeed(int speedLeft, int speedRight)
-{
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
-    analogWrite(PINS_MOTOR[i], LOW);
-  }
-
-  if (speedLeft < 0)
-  {
-    analogWrite(PIN_MOTOR_LEFT_BACKWARD, speedLeft * -1);
-  }
-  else
-  {
-    analogWrite(PIN_MOTOR_LEFT_FORWARD, speedLeft);
-  }
-
-  if (speedRight < 0)
-  {
-    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speedRight * -1);
-  }
-  else
-  {
-    analogWrite(PIN_MOTOR_RIGHT_FORWARD, speedRight);
-  }
-}
-
 /**
  * @name moveStabilized
  * @author Fumbre(Vladyslav)
@@ -154,7 +138,6 @@ void moveStabilized(int speedLeft, int speedRight)
   static Timer stampForward;
   static Timer stampRotateLeft;
   static Timer stampRotateRight;
-  static Timer stampForward1;
 
   setupPulseCounter();
 
@@ -211,5 +194,42 @@ void moveStabilized(int speedLeft, int speedRight)
 
     step = 0;
     break;
+  }
+}
+
+/**
+ * @name writeSpeed
+ * @author Fumbre(Vladyslav)
+ * @date 26-11-2025
+ * @param speedLeft(-255|255)
+ * @param speedRight(-255|255)
+ *
+ * @details put to left and right motors high depending on values
+ * @details for minus value motor go backward
+ * @details this funciton put all pins to LOW (used for moveStabilized)
+ */
+void writeSpeed(int speedLeft, int speedRight)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], LOW);
+  }
+
+  if (speedLeft < 0)
+  {
+    analogWrite(PIN_MOTOR_LEFT_BACKWARD, speedLeft * -1);
+  }
+  else
+  {
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, speedLeft);
+  }
+
+  if (speedRight < 0)
+  {
+    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speedRight * -1);
+  }
+  else
+  {
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, speedRight);
   }
 }

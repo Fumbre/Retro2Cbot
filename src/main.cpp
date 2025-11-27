@@ -1,5 +1,6 @@
 #include "common/constant/robot.h"
 #include "common/robot/motor/motor.h"
+#include "common/tools/bluetooth.h"
 #include "common/robot/movement/movement.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/sonar/sonar.h"
@@ -11,53 +12,19 @@
 
 #include "maps_pogram/maze_line/maze_line.h"
 
-#include "common/robot/movement/movementPID.h"
-
 const int SETTING_MODE = 2;
-
-Timer doCoolRotation;
-Timer test;
 
 void setup()
 {
   Serial.begin(9600);
+  blueTooth.begin(9600);
   setupMotor();
   setupSonar();
 }
 
-Timer t;
-Timer t1;
-
-bool flag = true;
-
 void loop()
 {
+  moveStabilized(-240, -240);
 
-  // testBasicMovement();
-
-  // moveStabilized(-240, -240);
-
-  // if (t.executeOnce(0, 1000))
-  // {
-  //   moveStabilized(240, 240);
-  // }
-
-  if (t.executeOnce(0, 500))
-  {
-    // Serial.print("asfdasdf");
-    moveStabilized(-255, -255);
-  }
-  if (t1.timeout(500) && flag)
-  {
-    if (didMoveRight(255, 36))
-    {
-      flag = false;
-      resetMoveRight();
-      stopMotors();
-    }
-  }
-
-  // moveLeft(180, 36);
-
-  // testPulses(20);
+  testPulses(20);
 }
