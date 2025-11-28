@@ -24,3 +24,5 @@ struct Stats
 };
 
 Stats *getRSValue();
+
+int *getLineStatus(Stats currenRstData[], Stats storedRsData[], int reflectiveDifference);

@@ -22,35 +22,38 @@ void setup()
   blueTooth.begin(9600);
   setupMotor();
   setupSonar();
-  initNeopixelPins();
+  // initNeopixelPins();
 }
 
 Timer test;
 
 void loop()
 {
+
+  followLine();
+
   // moveStabilized(230, 230);
-  testBasicMovement();
 
-  // if (test.executeOnce(0))
+  // Serial.println(currenRstData[3].mean);
+
+  // double current = currenRstData[3].mean - storedRsData[3].mean < 0 ? (currenRstData[3].mean - storedRsData[3].mean) * -1 : currenRstData[3].mean - storedRsData[3].mean;
+  // Serial.println(current);
+
+  // Serial.println(storedRsData[3].mean + reflectiveDifference > currenRstData[3].mean && currenRstData[3].mean - reflectiveDifference < storedRsData[3].mean);
+
+  // if (current > 20)
   // {
-  //   int index[] = {0, 1};
-  //   turnOnSomeLeds(index, 2, 54, 154, 12);
+  //   digitalWrite(PINS_MOTOR[0], LOW);
+  //   digitalWrite(PINS_MOTOR[1], LOW);
+  //   digitalWrite(PINS_MOTOR[2], LOW);
+  //   digitalWrite(PINS_MOTOR[3], LOW);
+
+  //   Serial.println("Its working");
   // }
 
-  // if (test.timeout(10))
-  // {
-  //   moveForward(100);
-  // }
+  // currenRstData[3].mean + 20 > storedRsData[3].mean &&storedRsData[3].mean - 20 < currenRstData[3].mean
 
-  // if (!test.interval(500, 500))
-  // {
-  //   turnOnSomeLeds(index, 2, 54, 154, 12);
-  // }
-  // else
-  // {
-  //   turnOnSomeLeds(index, 2, 255, 175, 0);
-  // }
+  // Serial.println("why we stopped working");
 
   // testPulses(20);
 }

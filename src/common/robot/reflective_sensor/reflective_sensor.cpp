@@ -4,14 +4,33 @@
 
 Stats *getRSValue()
 {
-    static Stats stats[8];
+    Stats *s = new Stats[8];
 
     // Read and update stats
     for (int i = 0; i < PINS_RS_LENGTH; ++i)
     {
         int v = analogRead(PINS_RS[i]);
-        stats[i].update(v);
+        s[i].update(v);
     }
 
-    return stats;
+    return s;
+}
+
+int *getLineStatus(Stats currenRstData[], Stats storedRsData[], int reflectiveDifference)
+{
+
+    int *lineStatus = new int[PINS_RS_LENGTH];
+    for (int i = 0; i < PINS_RS_LENGTH; i++)
+    {
+        if ((storedRsData[i].mean + reflectiveDifference > currenRstData[i].mean && currenRstData[i].mean - reflectiveDifference < storedRsData[i].mean))
+        {
+            lineStatus[i] = 1;
+        }
+        else
+        {
+            lineStatus[i] = 0;
+        }
+    }
+
+    return lineStatus;
 }
