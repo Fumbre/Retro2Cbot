@@ -30,17 +30,18 @@ Timer test;
 void loop()
 {
   // moveStabilized(230, 230);
+  testBasicMovement();
 
-  if (test.executeOnce(0))
-  {
-    int index[] = {0, 1};
-    turnOnSomeLeds(index, 2, 54, 154, 12);
-  }
+  // if (test.executeOnce(0))
+  // {
+  //   int index[] = {0, 1};
+  //   turnOnSomeLeds(index, 2, 54, 154, 12);
+  // }
 
-  if (test.timeout(10))
-  {
-    moveForward(100);
-  }
+  // if (test.timeout(10))
+  // {
+  //   moveForward(100);
+  // }
 
   // if (!test.interval(500, 500))
   // {
