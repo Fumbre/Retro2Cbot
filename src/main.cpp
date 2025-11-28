@@ -27,45 +27,17 @@ void setup()
 
 Timer test;
 
-Stats *storedRsData;
-Stats *currenRstData;
-
-double reflectiveDifference = 20;
-
 void loop()
 {
+
+  followLine();
+
   // moveStabilized(230, 230);
-  if (test.executeOnce(0))
-  {
-    storedRsData = getRSValue();
-
-    for (int i = 0; i < 8; i++)
-    {
-      Serial.println(storedRsData[i].mean);
-    }
-    moveSpeed(255, 255);
-  }
-
-  free(currenRstData);
-  currenRstData = getRSValue();
 
   // Serial.println(currenRstData[3].mean);
 
   // double current = currenRstData[3].mean - storedRsData[3].mean < 0 ? (currenRstData[3].mean - storedRsData[3].mean) * -1 : currenRstData[3].mean - storedRsData[3].mean;
   // Serial.println(current);
-
-  for (int i = 0; i < PINS_RS_LENGTH; i++)
-  {
-    switch (i)
-    {
-    case 3:
-      if (!(storedRsData[3].mean + reflectiveDifference > currenRstData[3].mean && currenRstData[3].mean - reflectiveDifference < storedRsData[3].mean))
-      {
-        stopMotors();
-      }
-      break;
-    }
-  }
 
   // Serial.println(storedRsData[3].mean + reflectiveDifference > currenRstData[3].mean && currenRstData[3].mean - reflectiveDifference < storedRsData[3].mean);
 
