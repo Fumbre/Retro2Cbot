@@ -22,34 +22,66 @@ void setup()
   blueTooth.begin(9600);
   setupMotor();
   setupSonar();
-  initNeopixelPins();
+  // initNeopixelPins();
 }
 
 Timer test;
 
+Stats *storedRsData;
+Stats *currenRstData;
+
+double reflectiveDifference = 20;
+
 void loop()
 {
   // moveStabilized(230, 230);
-
   if (test.executeOnce(0))
   {
-    int index[] = {0, 1};
-    turnOnSomeLeds(index, 2, 54, 154, 12);
+    storedRsData = getRSValue();
+
+    for (int i = 0; i < 8; i++)
+    {
+      Serial.println(storedRsData[i].mean);
+    }
+    moveSpeed(255, 255);
   }
 
-  if (test.timeout(10))
+  free(currenRstData);
+  currenRstData = getRSValue();
+
+  // Serial.println(currenRstData[3].mean);
+
+  // double current = currenRstData[3].mean - storedRsData[3].mean < 0 ? (currenRstData[3].mean - storedRsData[3].mean) * -1 : currenRstData[3].mean - storedRsData[3].mean;
+  // Serial.println(current);
+
+  for (int i = 0; i < PINS_RS_LENGTH; i++)
   {
-    moveForward(100);
+    switch (i)
+    {
+    case 3:
+      if (!(storedRsData[3].mean + reflectiveDifference > currenRstData[3].mean && currenRstData[3].mean - reflectiveDifference < storedRsData[3].mean))
+      {
+        stopMotors();
+      }
+      break;
+    }
   }
 
-  // if (!test.interval(500, 500))
+  // Serial.println(storedRsData[3].mean + reflectiveDifference > currenRstData[3].mean && currenRstData[3].mean - reflectiveDifference < storedRsData[3].mean);
+
+  // if (current > 20)
   // {
-  //   turnOnSomeLeds(index, 2, 54, 154, 12);
+  //   digitalWrite(PINS_MOTOR[0], LOW);
+  //   digitalWrite(PINS_MOTOR[1], LOW);
+  //   digitalWrite(PINS_MOTOR[2], LOW);
+  //   digitalWrite(PINS_MOTOR[3], LOW);
+
+  //   Serial.println("Its working");
   // }
-  // else
-  // {
-  //   turnOnSomeLeds(index, 2, 255, 175, 0);
-  // }
+
+  // currenRstData[3].mean + 20 > storedRsData[3].mean &&storedRsData[3].mean - 20 < currenRstData[3].mean
+
+  // Serial.println("why we stopped working");
 
   // testPulses(20);
 }

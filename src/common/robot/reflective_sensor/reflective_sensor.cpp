@@ -4,14 +4,14 @@
 
 Stats *getRSValue()
 {
-    static Stats stats[8];
+    Stats *s = new Stats[8];
 
     // Read and update stats
     for (int i = 0; i < PINS_RS_LENGTH; ++i)
     {
         int v = analogRead(PINS_RS[i]);
-        stats[i].update(v);
+        s[i].update(v);
     }
 
-    return stats;
+    return s;
 }
