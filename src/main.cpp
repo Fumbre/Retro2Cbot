@@ -1,87 +1,55 @@
 #include "common/constant/robot.h"
 #include "common/robot/motor/motor.h"
+#include "common/tools/bluetooth.h"
 #include "common/robot/movement/movement.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
-#include "common/tools/timer.h"
+#include "common/tools/Timer.h"
 #include "common/tools/tests/test_basic_movements/test_basic_movements.h"
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/tools/tests/test_pulses.h"
 
-const int SETTING_MODE = 2;
+#include "common/robot/neopixel/neopixel.h"
+#include "common/robot/movement/movementPID.h"
+#include "maps_pogram/maze_line/maze_line.h"
 
-Timer doCoolRotation;
-Timer test;
+const int SETTING_MODE = 2;
 
 void setup()
 {
   Serial.begin(9600);
+  blueTooth.begin(9600);
   setupMotor();
   setupSonar();
+  initNeopixelPins();
 }
 
-Timer stampForward;
-Timer stampBackward;
-Timer stampRotateLeft;
-Timer stampRotateRight;
+Timer test;
 
 void loop()
 {
-  // testPulses(20);
-  // testReflectiveSensor();
+  // moveStabilized(230, 230);
 
-  //========== avoiding =============
-
-  static bool safeZone = true;
-
-  float distance = getDistanceCM();
-
-  if (!avoiding)
+  if (test.executeOnce(0))
   {
-
-    if (safeZone && distance <= 30 && distance >= 2)
-    {
-      safeZone = false; // exiting safe zone
-      avoidObstacleSmoothNonBlocking(255);
-    }
-    else
-    {
-      moveForward(255);
-
-      if (distance > 30)
-      {                  // hysteresis threshold
-        safeZone = true; // re-enter safe zone only after a clear reading
-      }
-    }
-    }
-  else
-  {
-    avoidObstacleSmoothNonBlocking(255);
+    int index[] = {0, 1};
+    turnOnSomeLeds(index, 2, 54, 154, 12);
   }
 
-  //==============================
+  if (test.timeout(10))
+  {
+    moveForward(100);
+  }
 
-  // testBasicMovement();
-
-  // MotorSpeed motorSpeed = checkLine(70);
-
-  // switchDirection(motorSpeed.leftSpeed, motorSpeed.rightSpeed);
-
-  // switch (SETTING_MODE)
+  // if (!test.interval(500, 500))
   // {
-  // case 0:
-  //   // to do followSingleLine
-  //   break;
-  // case 1:
-  //   // to do mazeLine
-  //   break;
-  // case 2:
-  //   // to do physicalMaze
-  //   break;
-
-  // default:
-  //   Serial.print("NO SUCH A PROGRAM");
-  //   break;
+  //   turnOnSomeLeds(index, 2, 54, 154, 12);
   // }
+  // else
+  // {
+  //   turnOnSomeLeds(index, 2, 255, 175, 0);
+  // }
+
+  // testPulses(20);
 }

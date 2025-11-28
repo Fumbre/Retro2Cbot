@@ -1,22 +1,19 @@
 #pragma once
 #include <Arduino.h>
 #include "common/constant/board.h"
+#include "common/constant/motor.h"
 #include "common/robot/motor/motor.h"
-#include "common/constant/robot.h"
+#include "common/tools/Timer.h"
 
-void moveForward(int speed);
+void resetMoveRight();
+void resetMoveLeft();
+bool didMoveRight(int speed, int pulses);
+bool didMoveLeft(int speed, int pulses);
 
-void moveBackward(int speed);
+void moveStop(int motor_pin);
+void moveStopAll();
 
-void switchDirection(int leftSpeed, int rightSpeed);
+void moveSpeed(int speedLeft, int speedRight);
+void moveStabilized(int speedLeft, int speedRight);
 
-void stopMotors();
-
-float getPWMvalue(int speed);
-
-void rotate(int speed, String direction, float angle);
-
-void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue);
-
-void rotateLeft(int speed);
-void rotateRight(int speed);
+void writeSpeed(int speedLeft, int speedRight);

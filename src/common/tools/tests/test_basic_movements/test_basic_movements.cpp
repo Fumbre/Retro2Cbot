@@ -24,53 +24,53 @@ Timer timestampTestBasicMovementStopMotors;
  */
 void testBasicMovement()
 {
-  if (timestampTestBasicMovementForward.executeOnce(0))
+  if (timestampTestBasicMovementForward.executeOnce(0, 3000))
   {
-    moveForward(100);
+    moveStabilized(240, 240);
   }
 
-  if (timestampTestBasicMovementBackward.executeOnce(1000 + 2000))
+  if (timestampTestBasicMovementBackward.executeOnce(1000 + 2000, 3000))
   {
-    moveBackward(100);
+    moveStabilized(-240, -240);
   }
 
-  if (timestampTestBasicMovementForward1.executeOnce(2000 + 4000))
+  if (timestampTestBasicMovementForward1.executeOnce(2000 + 4000, 500))
   {
-    moveForward(100);
+    moveStabilized(240, 240);
   }
 
   if (timestampTestBasicMovementRight.executeOnce(2500 + 4000))
   {
-    switchDirection(100, 40);
+    moveSpeed(240, 100);
   }
 
   if (timestampTestBasicMovementRight1.executeOnce(3500 + 4000))
   {
-    switchDirection(100, 50);
+    moveSpeed(240, 110);
   }
 
   if (timestampTestBasicMovementLeft.executeOnce(3700 + 4000))
   {
-    switchDirection(40, 100);
+    moveSpeed(140, 240);
   }
 
-  if (timestampTestBasicMovementLeft1.executeOnce(4000 + 4000))
+  if (timestampTestBasicMovementLeft1.executeOnce(4000 + 4000, 1500))
   {
-    switchDirection(50, 100);
+    moveSpeed(120, 240);
   }
 
-  if (timestampTestBasicMovementForward2.executeOnce(5500 + 4000))
+  if (timestampTestBasicMovementForward2.executeOnce(5500 + 4000, 2000))
   {
-    moveForward(100);
+    moveStabilized(240, 240);
   }
 
-  if (timestampTestBasicMovementRotateLeft.executeOnce(7500 + 4000))
+  if (timestampTestBasicMovementRotateLeft.executeOnce(7500 + 4000, 1000))
   {
-    rotateLeft(255);
+    moveStabilized(240, -240);
   }
 
-  if (timestampTestBasicMovementStopMotors.executeOnce(8600 + 4000))
+  if (timestampTestBasicMovementStopMotors.executeOnce(8500 + 4000))
   {
-    stopMotors();
+    moveStopAll();
   }
 }

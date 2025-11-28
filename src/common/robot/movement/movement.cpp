@@ -1,266 +1,258 @@
-/**
- * @name the basic functions of robots
- * @authors Sunny
- * @date 10-11-2025
- */
-#include "common/robot/movement/movement.h"
+#include "movement.h"
 
-float lastError = 0;
-float integral = 0;
-unsigned long lastPIDTime = 0;
-const unsigned long PID_INTERVAL = 10;
-bool isMovingForward = true;
+int prevPulsesLeft = 0;
+int prevPulsesRigt = 0;
 
-float leftPWM = 0;
-float rightPWM = 0;
-
-float theta = 0.0;
-float Ktheta = 2.0 * PI * WHEEL_RADUIS / (PPR * ROBOT_RADUIS);
+Timer didMoveRightTimer;
+Timer didMoveLeftTimer;
 
 /**
- * @name getPWMvalue
- * @author Sunny
- * @date 11-11-2025
- * @param speed
- *
- * @details  that function calclulate procantage of speed for analogWrite(255) is max speed is in procatage
- * so we will have correcrt procatage based on max value of PWM_VALUE
- *
- * @return PWM value
+ * @name resetMoveLeft
+ * @author Fumbre(Vladyslav)
+ * @date 27-11-2025
+ * @param speed(-255|255)
+ * @param pulses(0 99)
+ * @details reset didMoveLeft timer
  */
-float getPWMvalue(int speed)
+void resetMoveLeft()
 {
-  speed = constrain(speed, 0, FULL_SPEED); // if more than full speed put full speed variable [100%]
-  float value = (float)speed / 100.0;
-  return roundf(value * FULL_PWM_VALUE); // 0.80 * 255 = 204 * 0.97
+  didMoveLeftTimer.resetExecuteOnce();
 }
 
 /**
- * @name moveForward
- * @author Sunny
- * @date 10-11-2025
- * @param speed
+ * @name resetMoveRight
+ * @author Fumbre(Vladyslav)
+ * @date 27-11-2025
+ * @param speed(-255|255)
+ * @param pulses(0 99)
+ * @details reset didMoveRight timer
  */
-void moveForward(int speed)
+void resetMoveRight()
 {
-  isMovingForward = true;
-
-  float pwmValue = getPWMvalue(speed);
-
-  leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
-  rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
-
-  adjustPWMvalueByPulse(leftPWM, rightPWM);
-
-  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
-  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-
-  analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
-  digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
-  analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
-  digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
+  didMoveRightTimer.resetExecuteOnce();
 }
 
 /**
- * @name moveBackward
- * @author Sunny
- * @date 10-11-2025
- * @param speed
+ * @name didMoveRight
+ * @author Fumbre(Vladyslav)
+ * @date 27-11-2025
+ * @param speed(0|255)
+ * @param pulses(0 99)
+ * @return bool
+ * @details after pulses rotation return true, otherwise false
  */
-void moveBackward(int speed)
+bool didMoveRight(int speed, int pulses)
 {
-  isMovingForward = false;
 
-  // get PWM value
-  int pwmValue = getPWMvalue(speed);
-  leftPWM = pwmValue * MOTOR_LEFT_FACTOR;
-  rightPWM = pwmValue * MOTOR_RIGHT_FACTOR;
-  adjustPWMvalueByPulse(leftPWM, rightPWM);
+  if (didMoveRightTimer.executeOnce(0))
+  {
+    prevPulsesLeft = motor_left_pulses_counter;
+  }
 
-  leftPWM = constrain(leftPWM, 0, FULL_PWM_VALUE);
-  rightPWM = constrain(rightPWM, 0, FULL_PWM_VALUE);
-  analogWrite(PIN_MOTOR_LEFT_BACKWARD, leftPWM);
-  digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
-  analogWrite(PIN_MOTOR_RIGHT_BACKWARD, rightPWM);
-  digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
-}
+  if (motor_left_pulses_counter >= prevPulsesLeft + pulses)
+  {
+    return true;
+  }
+  else
+  {
+    moveStabilized(speed, speed * -1);
+    return false;
+  }
+};
 
 /**
- * @name switchDirection
- * @author Sunny
- * @date 10-11-2025
- * @param leftSpeed
- * @param rightSpeed
+ * @name didMoveLeft
+ * @author Fumbre(Vladyslav)
+ * @date 27-11-2025
+ * @param speed(0|255)
+ * @param pulses(0 99)
+ * @return bool
+ * @details after pulses rotation return true, otherwise false
  */
-void switchDirection(int leftSpeed, int rightSpeed)
+bool didMoveLeft(int speed, int pulses)
 {
-  leftPWM = getPWMvalue(leftSpeed);
-  rightPWM = getPWMvalue(rightSpeed);
-  adjustPWMvalueByPulse(leftPWM, rightPWM);
-  Serial.print("left: ");
-  Serial.println(leftPWM);
-  Serial.print("right: ");
-  Serial.println(rightPWM);
-  // put left wheel pin
-  analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
-  digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
-  // put right wheel pin
-  analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
-  digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
-}
+
+  if (didMoveLeftTimer.executeOnce(0))
+  {
+    prevPulsesRigt = motor_right_pulses_counter;
+  }
+
+  if (motor_right_pulses_counter >= prevPulsesRigt + pulses)
+  {
+    return true;
+  }
+  else
+  {
+    moveStabilized(speed * -1, speed);
+    return false;
+  }
+};
 
 /**
- * @name stopMotors
- * @author Fumbre (Vladyslav)
- * @date 10-11-2025
+ * @name moveStop
+ * @author Fumbre(Vladyslav)
+ * @date 13-11-2025
+ * @details stop specific motor pin
  */
-void stopMotors()
+void moveStop(int motor_pin) { digitalWrite(motor_pin, LOW); };
+
+/**
+ * @name moveStopAll
+ * @author Fumbre(Vladyslav)
+ * @date 13-11-2025
+ * @details stop all motor pins
+ */
+void moveStopAll()
 {
   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
     digitalWrite(PINS_MOTOR[i], LOW);
   }
-}
-
-/**
- * @name rotateLeft
- * @author Fumbre (Vladyslav)
- * @date 19-11-2025
- * @param speed (0-255)
- */
-void rotateLeft(int speed)
-{
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-  {
-    analogWrite(PINS_MOTOR[i], 0);
-    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_BACKWARD)
-      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
-    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_FORWARD)
-      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
-  }
 };
 
 /**
- * @name rotateLeft
- * @author Fumbre (Vladyslav)
- * @date 19-11-2025
- * @param speed (0-255)
+ * @name moveSpeed
+ * @author Fumbre(Vladyslav)
+ * @date 26-11-2025
+ * @param speedLeft(-255|255)
+ * @param speedRight(-255|255)
+ *
+ * @details this function doesn't count your pulses
+ * @details you can use speed from -255 to 255
  */
-void rotateRight(int speed)
+void moveSpeed(int speedLeft, int speedRight)
 {
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+
+  if (speedLeft < 0)
   {
-    analogWrite(PINS_MOTOR[i], 0);
-    if (PINS_MOTOR[i] == PIN_MOTOR_LEFT_FORWARD)
-      analogWrite(PIN_MOTOR_LEFT_BACKWARD, speed);
-    if (PINS_MOTOR[i] == PIN_MOTOR_RIGHT_BACKWARD)
-      analogWrite(PIN_MOTOR_RIGHT_FORWARD, speed);
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
+    analogWrite(PIN_MOTOR_LEFT_BACKWARD, speedLeft * -1);
   }
-};
-
-/**
- * @name rotate
- * @author Sunny
- * @date 12-11-2025
- * @param speed (0-100%)
- * @param direction (left, right)
- * @param angle (0-360)
- */
-void rotate(int speed, String direction, float angle)
-{
-  isMovingForward = true;
-
-  // reset encoder count
-  motor_left_pulses_counter = 0;
-  motor_right_pulses_counter = 0;
-
-  // caculate the max number of rotation of wheels for rotate 180 degrees
-  // angle = constrain(angle, 0.0, 360.0);
-  // float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
-  // float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
-  // int targetPulses = wheelTurns * PPR;
-
-  // get PWM value
-  int pwmValue = getPWMvalue(speed);
-  leftPWM = pwmValue;
-  rightPWM = pwmValue;
-  adjustPWMvalueByPulse(leftPWM, rightPWM);
-  if (direction.equalsIgnoreCase("right"))
+  else
   {
-    // let right wheel go forward, let left wheel go backward
-    analogWrite(PIN_MOTOR_LEFT_FORWARD, pwmValue);
-    digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
-    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, pwmValue);
-    digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
+    analogWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, speedLeft);
   }
-  else if (direction.equalsIgnoreCase("left"))
+
+  if (speedRight < 0)
   {
-    // let right wheel go forward, let left wheel go backward
-    analogWrite(PIN_MOTOR_RIGHT_FORWARD, pwmValue);
-    digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
-    analogWrite(PIN_MOTOR_LEFT_BACKWARD, pwmValue);
-    digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
+    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speedRight * -1);
   }
-  // waiting rotate finish
-
-  // TODO: FIGURE OUT WAY WITHOUT while
-
-  // while (motor_left_pulses_counter <= targetPulses && motor_right_pulses_counter <= targetPulses)
-  // {
-  // };
-  // stopMotors();
+  else
+  {
+    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, speedRight);
+  }
 }
 
 /**
- * @name adjustPWMvalueByPulse
- * @author Sunny
- * @date 15-11-2025
- * @details use PID
+ * @name moveStabilized
+ * @author Fumbre(Vladyslav)
+ * @date 26-11-2025
+ * @param speedLeft(-255|255)
+ * @param speedRight(-255|255)
+ *
+ * @details movement is stabilized by pulses
+ * @details you can use speed from -255 to 255
  */
-void adjustPWMvalueByPulse(float &leftPWMValue, float &rightPWMValue)
+void moveStabilized(int speedLeft, int speedRight)
 {
-  unsigned long now = millis();
-  unsigned long dt = now - lastPIDTime;
 
-  // Ensure PID runs at a fixed interval
-  if (dt < PID_INTERVAL)
-    return;
+  static int step = 0;
+  static Timer stampForward;
+  static Timer stampRotateLeft;
+  static Timer stampRotateRight;
 
-  // 2. caculate angular velcoity increment
-  float dTheta = Ktheta * (motor_left_pulses_counter - motor_right_pulses_counter);
-  theta += dTheta;
-  float error = dTheta;
-  // 4. Integrate error (I term)
-  integral += error * (dt / 1000.0);
-  integral = constrain(integral, -20, 20); // -20, 20
-
-  // 5. Derivative term (D term)
-  float derivative = (error - lastError) / (dt / 1000.0);
-
-  // 6. PID output value
-  float correction;
-  if (isMovingForward)
+  switch (step)
   {
-    correction = Kp_f * error + Ki_f * integral + Kd_f * derivative;
+  case 0:
+    if (stampForward.interval(20))
+    {
+      writeSpeed(speedLeft, speedRight);
+    }
+    if (stampForward.executeOnce(40))
+    {
+      step++;
+    }
+    break;
+
+  case 1:
+    if (motor_left_pulses_counter < motor_right_pulses_counter)
+    {
+      if (stampRotateLeft.interval(0))
+      {
+        writeSpeed(speedLeft, speedRight / 1.8);
+      }
+      if (stampRotateLeft.executeOnce(20))
+      {
+        step++;
+      }
+    }
+    else
+    {
+      step++;
+    }
+    break;
+
+  case 2:
+    if (motor_left_pulses_counter > motor_right_pulses_counter)
+    {
+      if (stampRotateRight.interval(0))
+      {
+        writeSpeed(speedLeft / 1.8, speedRight);
+      }
+      step++;
+    }
+    else
+    {
+      step++;
+    }
+    break;
+
+  case 3:
+    stampForward.hardReset();
+    stampRotateLeft.hardReset();
+    stampRotateRight.hardReset();
+
+    step = 0;
+    break;
+  }
+}
+
+/**
+ * @name writeSpeed
+ * @author Fumbre(Vladyslav)
+ * @date 26-11-2025
+ * @param speedLeft(-255|255)
+ * @param speedRight(-255|255)
+ *
+ * @details put to left and right motors high depending on values
+ * @details for minus value motor go backward
+ * @details this funciton put all pins to LOW (used for moveStabilized)
+ */
+void writeSpeed(int speedLeft, int speedRight)
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
+    analogWrite(PINS_MOTOR[i], LOW);
+  }
+
+  if (speedLeft < 0)
+  {
+    analogWrite(PIN_MOTOR_LEFT_BACKWARD, speedLeft * -1);
   }
   else
   {
-    correction = Kp_b * error + Ki_b * integral + Kd_b * derivative;
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, speedLeft);
   }
 
-  // 8. Apply correction to the PWM values
-  if (isMovingForward)
+  if (speedRight < 0)
   {
-    leftPWMValue = constrain(leftPWMValue - correction * 2, 0, FULL_PWM_VALUE);
-    rightPWMValue = constrain(rightPWMValue + correction * 2, 0, FULL_PWM_VALUE);
+    analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speedRight * -1);
   }
   else
   {
-    leftPWMValue = constrain(leftPWMValue + correction * 2, 0, FULL_PWM_VALUE);
-    rightPWMValue = constrain(rightPWMValue - correction * 2, 0, FULL_PWM_VALUE);
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, speedRight);
   }
-  lastError = error;
-  motor_left_pulses_counter = 0;
-  motor_right_pulses_counter = 0;
-  lastPIDTime = now;
 }
