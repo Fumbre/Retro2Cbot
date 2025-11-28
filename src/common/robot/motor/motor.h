@@ -2,7 +2,7 @@
 #include "common/constant/board.h"
 #include <Arduino.h>
 #include "common/constant/motor.h"
-#include "common/tools/timer.h"
+#include "common/tools/Timer.h"
 
 void setupMotor();
 

@@ -3,6 +3,7 @@
 #include "common/constant/board.h"
 #include "common/constant/motor.h"
 #include "common/robot/motor/motor.h"
+#include "common/tools/Timer.h"
 
 void resetMoveRight();
 void resetMoveLeft();

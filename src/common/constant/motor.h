@@ -28,9 +28,6 @@ const float Kp_b = 5.0;
 const float Ki_b = 2.2;
 const float Kd_b = 0.12;
 
-const float MOTOR_LEFT_FACTOR = 1.0;
-const float MOTOR_RIGHT_FACTOR = 0.95;
-
 #endif
 
 // ==================================================
@@ -57,9 +54,6 @@ const float Kp_b = 5.0;
 const float Ki_b = 2.2;
 const float Kd_b = 0.12;
 
-const float MOTOR_LEFT_FACTOR = 1.0;
-const float MOTOR_RIGHT_FACTOR = 0.95;
-
 #endif
 
 // ==================================================
@@ -85,9 +79,6 @@ const float Kd_f = 0.12; // Derivative
 const float Kp_b = 5.9;
 const float Ki_b = 2.2;
 const float Kd_b = 0.12;
-
-const float MOTOR_LEFT_FACTOR = 0.985;
-const float MOTOR_RIGHT_FACTOR = 1.0;
 
 #endif
 

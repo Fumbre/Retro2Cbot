@@ -5,7 +5,7 @@
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
-#include "common/tools/timer.h"
+#include "common/tools/Timer.h"
 #include "common/tools/tests/test_basic_movements/test_basic_movements.h"
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/tools/tests/test_pulses.h"

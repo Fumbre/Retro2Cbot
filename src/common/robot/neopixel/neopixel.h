@@ -6,7 +6,7 @@
 
 #pragma once
 #include "common/constant/neopixel.h"
-#include "common/tools/neopixel.h"
+#include "common/tools/Neopixel.h"
 
 void initNeopixelPins();
 

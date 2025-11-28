@@ -36,7 +36,7 @@ void resetMoveRight()
  * @name didMoveRight
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
- * @param speed(-255|255)
+ * @param speed(0|255)
  * @param pulses(0 99)
  * @return bool
  * @details after pulses rotation return true, otherwise false
@@ -64,7 +64,7 @@ bool didMoveRight(int speed, int pulses)
  * @name didMoveLeft
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
- * @param speed(-255|255)
+ * @param speed(0|255)
  * @param pulses(0 99)
  * @return bool
  * @details after pulses rotation return true, otherwise false
