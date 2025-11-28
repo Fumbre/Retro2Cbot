@@ -106,7 +106,7 @@ void switchDirection(int leftSpeed, int rightSpeed)
 {
     leftPWM = getPWMvalue(leftSpeed);
     rightPWM = getPWMvalue(rightSpeed);
-    adjustPWMvalueByPulse(&leftPWM, &rightPWM);
+    // adjustPWMvalueByPulse(&leftPWM, &rightPWM);
     // put left wheel pin
     analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
     digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);

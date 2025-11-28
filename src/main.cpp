@@ -13,6 +13,7 @@
 #include "common/robot/neopixel/neopixel.h"
 #include "common/robot/movement/movementPID.h"
 #include "maps_pogram/maze_line/maze_line.h"
+#include "common/robot/reflective_sensor/reflective_sensor.h"
 
 const int SETTING_MODE = 2;
 
@@ -22,34 +23,12 @@ void setup()
   blueTooth.begin(9600);
   setupMotor();
   setupSonar();
-  initNeopixelPins();
+  initReflectiveSensorPins();
 }
 
-Timer test;
 
 void loop()
 {
-  // moveStabilized(230, 230);
-
-  if (test.executeOnce(0))
-  {
-    int index[] = {0, 1};
-    turnOnSomeLeds(index, 2, 54, 154, 12);
-  }
-
-  if (test.timeout(10))
-  {
-    moveForward(100);
-  }
-
-  // if (!test.interval(500, 500))
-  // {
-  //   turnOnSomeLeds(index, 2, 54, 154, 12);
-  // }
-  // else
-  // {
-  //   turnOnSomeLeds(index, 2, 255, 175, 0);
-  // }
-
-  // testPulses(20);
+ WheelSpeed speed = checkLine(70);
+ switchDirection(speed.leftSpeed,speed.rightSpeed);
 }

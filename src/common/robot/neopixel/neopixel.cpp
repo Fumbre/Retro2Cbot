@@ -31,7 +31,6 @@ void turnOnAllLeds(int R, int G, int B)
   pixel.show();
 }
 
-// asdfsad
 /**
  * @name turnOffAllLeds
  * @author Sunny

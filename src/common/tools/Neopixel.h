@@ -206,7 +206,7 @@ public:
     void show()
     {
         if(!canShow()) return;
-        *lastColor = *color;
+        memcpy(lastColor, color, NUMBER_OF_LED * sizeof(RGB));
         noInterrupts();
         sendBytes((uint8_t *)color, NUMBER_OF_LED * 3);
         interrupts();
