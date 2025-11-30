@@ -1,20 +1,30 @@
 #include "maze_line.h"
 
-void calibrateRS()
+Stats *storedRsData;
+Stats *currenRstData;
+
+Timer getRsStatusT;
+
+int *lineStatus;
+
+void followLine()
 {
-  static Timer t;
-  static Stats *dataInit;
-
-  if (t.executeOnce(0))
+  if (getRsStatusT.executeOnce(0))
   {
-    dataInit = getRSValue();
+    storedRsData = getRSValue();
+  }
 
-    for (int i = 0; i < 8; i++)
-    {
-      Serial.print("It's ");
-      Serial.print(i);
-      Serial.print(" print: ");
-      Serial.println(dataInit[i].mean);
-    }
+  free(currenRstData);
+  currenRstData = getRSValue();
+
+  free(lineStatus);
+  lineStatus = getLineStatus(currenRstData, storedRsData, 20);
+
+  for (int i = 0; i < 8; i++)
+  {
+    Serial.print("now ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(lineStatus[i]);
   }
 }
