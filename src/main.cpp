@@ -23,12 +23,24 @@ void setup()
   blueTooth.begin(9600);
   setupMotor();
   setupSonar();
+  initNeopixelPins();
   initReflectiveSensorPins();
 }
 
+int test[] = {1, 2, 3};
 
+Timer t;
 void loop()
 {
- WheelSpeed speed = checkLine(70);
- switchDirection(speed.leftSpeed,speed.rightSpeed);
+  // if (t.interval(1000, 1000))
+  // {
+  //   turnOnSomeLeds(test, 3, 255, 0, 0);
+  // }
+  // else
+  // {
+  //   turnOnSomeLeds(test, 3, 0, 255, 0);
+  // }
+  // moveForward(100);
+  WheelSpeed speed = checkLine(100);
+  switchDirection(speed.leftPWM, speed.rightPWM);
 }

@@ -205,13 +205,14 @@ public:
      */
     void show()
     {
-        if(!canShow()) return;
+        if (!canShow())
+            return;
         memcpy(lastColor, color, NUMBER_OF_LED * sizeof(RGB));
         noInterrupts();
         sendBytes((uint8_t *)color, NUMBER_OF_LED * 3);
-        interrupts();
         // resetting signal, In WS2812B, if low voltage last 50µs at least, WS2812B should get last LED color status
         delayMicroseconds(300);
+        interrupts();
     }
 
     /**
@@ -229,7 +230,7 @@ public:
         RGB rgb = checkRGBvalue(R, G, B);
         color[index] = rgb;
     }
-    
+
     /**
      * @name canShow
      * @author Sunny
@@ -238,11 +239,13 @@ public:
     bool canShow()
     {
         bool flag = false;
-        for(int i = 0; i < NUMBER_OF_LED; i++){
-           if(color[i].R != lastColor[i].R || color[i].G != lastColor[i].G || color[i].B != lastColor[i].B){
-            flag = true;
-            break;
-           } 
+        for (int i = 0; i < NUMBER_OF_LED; i++)
+        {
+            if (color[i].R != lastColor[i].R || color[i].G != lastColor[i].G || color[i].B != lastColor[i].B)
+            {
+                flag = true;
+                break;
+            }
         }
         return flag;
     }

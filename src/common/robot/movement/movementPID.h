@@ -14,6 +14,8 @@ void moveBackward(int speed);
 
 void switchDirection(int leftSpeed, int rightSpeed);
 
+void switchDirection(float leftPWMValue, float rightPWMValue);
+
 void stopMotors();
 
 float getPWMvalue(int speed);

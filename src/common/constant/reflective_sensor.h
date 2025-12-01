@@ -11,8 +11,8 @@ const int PIN_RS_D3 = A5;
 const int PIN_RS_D2 = A6;
 const int PIN_RS_D1 = A7;
 
-const int THRESHOLD = 500;
-const int WEIGHT[] = {-350, -250, -150, -50, 50, 150, 250, 350};
+// const int THRESHOLD = 200;
+const float WEIGHT[] = {-1, -0.75, -0.5, -0.25, 0.25, 0.5, 0.75, 1};
 
 const int PINS_RS[] = {
     PIN_RS_D8,
@@ -30,6 +30,6 @@ const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
 
 struct WheelSpeed
 {
-    int leftSpeed;
-    int rightSpeed;
+    float leftPWM;
+    float rightPWM;
 };
