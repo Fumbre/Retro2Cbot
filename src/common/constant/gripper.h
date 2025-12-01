@@ -1,3 +1,3 @@
 #pragma once
 
-const int GRIPPER = 7;
+const int GRIPPER = 12;

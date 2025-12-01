@@ -8,13 +8,12 @@
 #include "common/tools/Timer.h"
 #include "common/tools/tests/test_basic_movements/test_basic_movements.h"
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
-#include "common/tools/tests/test_pulses.h"
+#include "common/robot/gripper/gripper.h"
 
-#include "common/robot/neopixel/neopixel.h"
-#include "common/robot/movement/movementPID.h"
-#include "maps_pogram/maze_line/maze_line.h"
+// const int SETTING_MODE = 2;
 
-const int SETTING_MODE = 2;
+Timer doCoolRotation;
+Timer test;
 
 void setup()
 {
@@ -22,24 +21,60 @@ void setup()
   blueTooth.begin(9600);
   setupMotor();
   setupSonar();
-  // initNeopixelPins();
+  setupGripper();
 }
 
-Timer test;
+Timer stampForward;
+Timer stampBackward;
+Timer stampRotateLeft;
+Timer stampRotateRight;
+Timer sadness;
+Timer sadness1;
 
 void loop()
 {
+  // testPulses(20);
+  // testReflectiveSensor();
 
-  followLine();
+  // ========== gripper =============
+  gripper(0);
 
-  // moveStabilized(230, 230);
+  float d = getDistanceCM();
 
-  // Serial.println(currenRstData[3].mean);
+  if (d < 10 && d > 0) {                  // 0 < distance < 10
+      gripperCatch();                     // close gripper
+  }
 
-  // double current = currenRstData[3].mean - storedRsData[3].mean < 0 ? (currenRstData[3].mean - storedRsData[3].mean) * -1 : currenRstData[3].mean - storedRsData[3].mean;
-  // Serial.println(current);
+  if (d > 20) {                           // distance > 20
+      gripperUnCatch();                   // open gripper
+  }
 
-  // Serial.println(storedRsData[3].mean + reflectiveDifference > currenRstData[3].mean && currenRstData[3].mean - reflectiveDifference < storedRsData[3].mean);
+  //========== avoiding =============
+
+  // static bool safeZone = true;
+
+  // float distance = getDistanceCM();
+
+  // if (!avoiding) {
+
+  //   if (safeZone && distance <= 20 && distance >= 2) {
+  //     safeZone = false;                   // exiting safe zone
+  //     avoidObstacleSmoothNonBlocking(255);
+  //   }
+  //   else {
+  //     moveForward(255);
+
+  //     if (distance > 20) {                
+  //       safeZone = true;                
+  //     }
+  //   }
+  // } else {
+  //   avoidObstacleSmoothNonBlocking(255);
+  // }
+
+  //==============================
+
+  // testBasicMovement();
 
   // if (current > 20)
   // {
