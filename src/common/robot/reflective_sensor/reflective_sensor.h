@@ -1,9 +1,10 @@
 #pragma once
-#include <Arduino.h>
+
 #include "common/constant/reflective_sensor.h"
-#include "common/tools/Welford.h"
-#include "common/robot/movement/movementPID.h"
+#include "common/tools/reflective_sensor/Line_Follower.h"
+#include "common/tools/reflective_sensor/Line_Interrupter.h"
+#include "common/tools/reflective_sensor/Line_sensor.h"
 
-void initReflectiveSensorPins();
+void initReflectiveSensor();
 
-WheelSpeed checkLine(int baseSpeed);
+FollowerResult lineFollow();
