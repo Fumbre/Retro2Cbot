@@ -6,7 +6,8 @@ bool isLine[PINS_RS_LENGTH];
 unsigned long last_left_pulses = 0;
 unsigned long last_right_pulses = 0;
 
-PID linePID(2.9, 0.5, 0.14,100,FULL_PWM_VALUE);
+PID linePID(0.75, 0.02, 0.02, 100, fabs(FULL_PWM_VALUE));
+Timer check;
 
 void initReflectiveSensorPins()
 {
@@ -47,17 +48,26 @@ WheelSpeed checkLine(int baseSpeed)
         if (isLine[i])
         {
             blackLineCount++;
-            weightedSum += WEIGHT[i];
+            weightedSum += WEIGHT[i] * fabs(WEIGHT[i]);
         }
     }
     float error = (blackLineCount) > 0 ? (weightedSum / (float)blackLineCount) : 0;
-    if(fabs(error)<0.1) error = 0;
-    error = error/ WEIGHT[7] * FULL_PWM_VALUE;
+    float maxCorrection = baseSpeed / 3.0 + fabs(error) * (baseSpeed / 2.0);
+    // according to proportion, error should be converted to pwm value
+    error = error / WEIGHT[PINS_RS_LENGTH - 1] * maxCorrection;
     // get line correction
     float lineCorrection = linePID.caculateCorrection(0, error);
     // get left and right targeted pwm value
-    float leftTargetPwmValue = basePwmValue - lineCorrection;
-    float rightTargetPwmValue = basePwmValue + lineCorrection;
+    float pwmCorrection = constrain(lineCorrection, -maxCorrection, maxCorrection);
+    float leftTargetPwmValue = basePwmValue - pwmCorrection;
+    float rightTargetPwmValue = basePwmValue + pwmCorrection;
+    if (check.interval(500))
+    {
+        Serial.print("left speed: ");
+        Serial.println(leftTargetPwmValue);
+        Serial.print("right speed: ");
+        Serial.println(rightTargetPwmValue);
+    }
     WheelSpeed speed;
     speed.leftPWM = leftTargetPwmValue;
     speed.rightPWM = rightTargetPwmValue;
