@@ -77,7 +77,7 @@ private:
   {
     uint8_t b;
     uint8_t bit;
-    uint8_t next;
+    uint8_t next = 0; 
     uint8_t hi = bitMask;
     uint8_t lo = 0;
 
@@ -104,7 +104,7 @@ private:
                  "st %a[port], %[lo]\n\t"   // digitalWrite(pin, LOW)
                  "nop\n\t"
                  "sbiw %[count], 1\n\t" // count--
-                 "brne head20%=\n\t" : [port] "+e"(port), [byte] "+r"(b), [bit] "+r"(bit), [next] "+r"(next), [count] "+w"(count) : [ptr] "e"(ptr), [hi] "r"(hi), [lo] "r"(lo));
+                 "brne head20%=\n\t" : [port] "+e"(port), [byte] "+r"(b), [bit] "+r"(bit), [next] "=r"(next), [count] "+w"(count) : [ptr] "e"(ptr), [hi] "r"(hi), [lo] "r"(lo));
     // brne head20% go back to loop beginning
   }
 

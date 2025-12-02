@@ -9,6 +9,7 @@
 #include "common/tools/tests/test_basic_movements/test_basic_movements.h"
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/robot/gripper/gripper.h"
+#include "maps_pogram/follow_single_line/lineFollower.h"
 
 // const int SETTING_MODE = 2;
 
@@ -27,20 +28,23 @@ Timer stampForward;
 Timer stampBackward;
 Timer stampRotateLeft;
 Timer stampRotateRight;
-Timer sadness;
-Timer sadness1;
+ 
+      
+// // LineSensor sensor(PINS_RS, 8, 700);
+// LineInterpreter interpreter;
+// LineFollower follower(190, 250);
 
 void loop() {
 
   // ================== simple stop/forward ==================
 
-  float distance = getDistanceCM();
+  // float distance = getDistanceCM();
 
-  if (distance > 2 && distance <= 20) {
-    moveStopAll();           
-  } else {
-    moveStabilized(255, 255);        
-  }
+  // if (distance > 2 && distance <= 20) {
+  //   moveStopAll();           
+  // } else {
+  //   follower.follow(sensor, interpreter);
+  // }
 
   // ================== gripper ==================
   // gripper(0);
@@ -57,26 +61,26 @@ void loop() {
 
   // ================== avoiding ==================
 
-  // static bool safeZone = true;
+  static bool safeZone = true;
 
-  // float distance = getDistanceCM();
+  float distance = getDistanceCM();
 
-  // if (!avoiding) {
+  if (!avoiding) {
 
-  //   if (safeZone && distance <= 20 && distance >= 2) {
-  //     safeZone = false;                   // exiting safe zone
-  //     avoidObstacleSmoothNonBlocking(255);
-  //   }
-  //   else {
-  //     moveForward(255);
+    if (safeZone && distance <= 20 && distance >= 2) {
+      safeZone = false;                   // exiting safe zone
+      avoidObstacleSmoothNonBlocking(255);
+    }
+    else {
+      moveStabilized(255, 255);
 
-  //     if (distance > 20) {                
-  //       safeZone = true;                
-  //     }
-  //   }
-  // } else {
-  //   avoidObstacleSmoothNonBlocking(255);
-  // }
+      if (distance > 20) {                
+        safeZone = true;                
+      }
+    }
+  } else {
+    avoidObstacleSmoothNonBlocking(255);
+  }
 
   //==============================
 

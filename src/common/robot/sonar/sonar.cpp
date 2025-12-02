@@ -1,4 +1,5 @@
 #include "sonar.h"
+#include "common/robot/movement/movement.h"
 
 bool avoiding = false;
 
@@ -89,8 +90,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
   static int step = 0; // stage of the avoidance sequence
 
   // Start avoidance routine
-  if (!avoiding)
-  {
+  if (!avoiding) {
     avoiding = true;   // Mark that avoidance mode has begun
     step = 0;          // Reset step sequence to the first movement
     t.resetInterval(); // Reset the timer to ensure timings start fresh
@@ -98,14 +98,12 @@ void avoidObstacleSmoothNonBlocking(int speed)
   }
 
   // Execute movements depending on the current step
-  switch (step)
-  {
+  switch (step) {
 
   // turn left
   case 0:
     switchDirection(40, 100); // Left curve
-    if (t.interval(1000))
-    {         // After 800 ms
+    if (t.interval(1000)) {         // After 800 ms
       step++; // Proceed to next movement
       t.resetInterval();
     }
@@ -114,8 +112,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
   // turn right
   case 1:
     switchDirection(100, 40); // Right curve
-    if (t.interval(1000))
-    { // After 800 ms
+    if (t.interval(1000)) { // After 800 ms
       step++;
       t.resetInterval();
     }
@@ -123,9 +120,8 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // move forward
   case 2:
-    moveForward(100); // move forward
-    if (t.interval(1000))
-    { // After 800 ms
+    moveStabilized(255, 255); // move forward
+    if (t.interval(1000)) { // After 800 ms
       step++;
       t.resetInterval();
     }
@@ -134,8 +130,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
   // long right curve
   case 3:
     switchDirection(100, 40); // right curve
-    if (t.interval(1000))
-    { // After 1000 ms
+    if (t.interval(1000)) { // After 1000 ms
       step++;
       t.resetInterval();
     }
@@ -144,8 +139,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
   // long left curve
   case 4:
     switchDirection(40, 100); // left curve
-    if (t.interval(1000))
-    { // After 1000 ms
+    if (t.interval(1000)) { // After 1000 ms
       step++;
       t.resetInterval();
     }
@@ -153,9 +147,8 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // short forward movement
   case 5:
-    moveForward(100); // Move forward
-    if (t.interval(200))
-    { // After 1000 ms
+    moveStabilized(255, 255); // move forward   
+     if (t.interval(200)) { // After 1000 ms
       step++;
       t.resetInterval();
     }
