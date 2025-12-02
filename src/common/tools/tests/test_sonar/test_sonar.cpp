@@ -6,7 +6,6 @@
  * @date 21-11-2025
  * @details make test for sonar
  */
-void testSonar()
-{
+void testSonar() {
     Serial.println(getDistanceCM());
 }

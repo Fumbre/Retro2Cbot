@@ -12,12 +12,10 @@
 
 // const int SETTING_MODE = 2;
 
-
 Timer doCoolRotation;
 Timer test;
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
   blueTooth.begin(9600);
   setupMotor();
@@ -32,25 +30,32 @@ Timer stampRotateRight;
 Timer sadness;
 Timer sadness1;
 
-void loop()
-{
-  // testPulses(20);
-  // testReflectiveSensor();
+void loop() {
 
-  // ========== gripper =============
-  gripper(0);
+  // ================== simple stop/forward ==================
 
-  float d = getDistanceCM();
+  float distance = getDistanceCM();
 
-  if (d < 10 && d > 0) {                  // 0 < distance < 10
-      gripperCatch();                     // close gripper
+  if (distance > 2 && distance <= 20) {
+    moveStopAll();           
+  } else {
+    moveStabilized(255, 255);        
   }
 
-  if (d > 20) {                           // distance > 20
-      gripperUnCatch();                   // open gripper
-  }
+  // ================== gripper ==================
+  // gripper(0);
 
-  //========== avoiding =============
+  // float d = getDistanceCM();
+
+  // if (d < 10 && d > 0) {                  // 0 < distance < 10
+  //     gripperCatch();                     // close gripper
+  // }
+
+  // if (d > 20) {                           // distance > 20
+  //     gripperUnCatch();                   // open gripper
+  // }
+
+  // ================== avoiding ==================
 
   // static bool safeZone = true;
 
