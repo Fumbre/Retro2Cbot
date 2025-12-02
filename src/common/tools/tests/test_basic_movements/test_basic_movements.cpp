@@ -26,51 +26,51 @@ void testBasicMovement()
 {
   if (timestampTestBasicMovementForward.executeOnce(0, 3000))
   {
-    moveStabilized(240, 240);
+    moveStabilized(235, 235);
     // moveForward(100);
   }
 
   if (timestampTestBasicMovementBackward.executeOnce(1000 + 2000, 3000))
   {
-    moveStabilized(-240, -240);
+    moveStabilized(-235, -235);
     // moveBackward(100);
   }
 
   if (timestampTestBasicMovementForward1.executeOnce(2000 + 4000, 500))
   {
-    moveStabilized(240, 240);
+    moveStabilized(235, 235);
     // moveForward(100);
   }
 
   if (timestampTestBasicMovementRight.executeOnce(2500 + 4000))
   {
-    writeSpeed(240, 120);
+    writeSpeed(235, 120);
   }
 
   if (timestampTestBasicMovementRight1.executeOnce(3500 + 4000))
   {
-    writeSpeed(240, 130);
+    writeSpeed(235, 130);
   }
 
   if (timestampTestBasicMovementLeft.executeOnce(3700 + 4000))
   {
-    writeSpeed(120, 240);
+    writeSpeed(120, 235);
   }
 
   if (timestampTestBasicMovementLeft1.executeOnce(4000 + 4000))
   {
-    writeSpeed(125, 240);
+    writeSpeed(125, 235);
   }
 
   if (timestampTestBasicMovementForward2.executeOnce(5500 + 4000, 2000))
   {
-    moveStabilized(240, 240);
+    moveStabilized(235, 235);
     // moveForward(100);
   }
 
   if (timestampTestBasicMovementRotateLeft.timeout(7500 + 4000))
   {
-    // moveStabilized(240, -240);
+    // moveStabilized(235, -235);
 
     // moveForward(100);
 

@@ -29,7 +29,6 @@ Timer test;
 
 void loop()
 {
-
   followLine();
 
   // moveStabilized(230, 230);
