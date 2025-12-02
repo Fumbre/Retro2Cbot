@@ -23,7 +23,7 @@ void followLine()
   currenRstData = getRSValue();
 
   free(lineWhiteStatus);
-  lineWhiteStatus = getLineStatus(currenRstData, storedRsWhiteData, 20);
+  lineWhiteStatus = getLineStatus(currenRstData, storedRsWhiteData, 15);
 
   for (int i = 0; i < 8; i++)
   {

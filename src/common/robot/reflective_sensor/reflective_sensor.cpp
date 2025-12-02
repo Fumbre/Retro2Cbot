@@ -23,8 +23,8 @@ int *getLineStatus(Stats currenRstData[], Stats storedRsData[], int reflectiveDi
     for (int i = 0; i < PINS_RS_LENGTH; i++)
     {
         if ((
-                (storedRsData[i].mean <= currenRstData[i].mean && currenRstData[i].mean - reflectiveDifference <= storedRsData[i].mean) ||
-                (storedRsData[i].mean >= currenRstData[i].mean && currenRstData[i].mean + reflectiveDifference >= storedRsData[i].mean)))
+                (currenRstData[i].mean - reflectiveDifference <= storedRsData[i].mean) &&
+                (currenRstData[i].mean + reflectiveDifference >= storedRsData[i].mean)))
         {
             lineStatus[i] = 1;
         }
