@@ -10,34 +10,38 @@ Timer getRsStatusBlackT;
 int *lineWhiteStatus;
 int *lineBlackStatus;
 
-int isAllwhite = 0;
+int isAllNotWhite = 0;
 
 void followLine()
 {
   if (getRsStatusT.executeOnce(0))
   {
     storedRsWhiteData = getRSValue();
-    Serial.println(storedRsWhiteData[0].mean);
   }
 
   free(currenRstData);
   currenRstData = getRSValue();
 
-  Serial.println(currenRstData[0].mean);
-
   free(lineWhiteStatus);
   lineWhiteStatus = getLineStatus(currenRstData, storedRsWhiteData, 20);
 
-  isAllwhite = 0;
-
   for (int i = 0; i < 8; i++)
   {
-    isAllwhite += lineWhiteStatus[i];
+    Serial.println("first index data: ");
+    Serial.print(lineWhiteStatus[i]);
   }
 
-  // Serial.print(lineWhiteStatus[0]);
+  // isAllNotWhite = 0;
 
-  // if (isAllwhite == 7)
+  // for (int i = 0; i < 8; i++)
+  // {
+  //   isAllNotWhite += lineWhiteStatus[i];
+  // }
+
+  // Serial.print("change");
+  // delay(2000);
+
+  // if (isAllNotWhite == 0)
   // {
   //   if (getRsStatusBlackT.executeOnce(0))
   //   {
@@ -47,14 +51,16 @@ void followLine()
   // }
 
   // free(lineBlackStatus);
-  // lineBlackStatus = getLineStatus(storedRsWhiteData, storedRsBlackData, 20);
+  // lineBlackStatus = getLineStatus(currenRstData, storedRsBlackData, 20);
 
   // for (int i = 0; i < 8; i++)
   // {
-
   //   Serial.print("black ");
   //   Serial.print(i);
   //   Serial.print(": ");
-  //   Serial.println(lineBlackStatus[i]);
+  //   Serial.println(storedRsBlackData[i].mean);
+  //   Serial.println(currenRstData[i].mean);
+  //   Serial.println("black index: ");
+  //   Serial.println(lineWhiteStatus[i]);
   // }
 }

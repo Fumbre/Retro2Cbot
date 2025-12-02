@@ -38,6 +38,8 @@ public:
    * @param v2 second value
    * @return correction
    */
+
+  // TODO calculate not caculate
   float caculateCorrection(float v1, float v2)
   {
     // caculate error
