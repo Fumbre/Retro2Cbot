@@ -1,38 +1,23 @@
 #include "reflective_sensor.h"
 
-// Stats per sensor using Welford's algorithm
+LineSensor lineSensor(PINS_RS, PINS_RS_LENGTH);
+LineFollower lineFollower;
+LineInterpreter interpreter;
 
-Stats *getRSValue()
+void initReflectiveSensor()
 {
-    Stats *s = new Stats[8];
-
-    // Read and update stats
-    for (int i = 0; i < PINS_RS_LENGTH; ++i)
-    {
-        int v = analogRead(PINS_RS[i]);
-        s[i].update(v);
-    }
-
-    return s;
+    lineSensor.setup();
 }
 
-int *getLineStatus(Stats currenRstData[], Stats storedRsData[], int reflectiveDifference)
+FollowerResult lineFollow(int speed)
 {
+    int pwmValue = getPWM(speed);
+    lineFollower.setupPWMValue(pwmValue);
+    return lineFollower.follow(lineSensor, interpreter);
+}
 
-    int *lineStatus = new int[PINS_RS_LENGTH];
-    for (int i = 0; i < PINS_RS_LENGTH; i++)
-    {
-        if ((
-                (currenRstData[i].mean - reflectiveDifference <= storedRsData[i].mean) &&
-                (currenRstData[i].mean + reflectiveDifference >= storedRsData[i].mean)))
-        {
-            lineStatus[i] = 1;
-        }
-        else
-        {
-            lineStatus[i] = 0;
-        }
-    }
-
-    return lineStatus;
+int getPWM(int speed)
+{
+    int pwmValue = (float)speed / 100 * 255;
+    return constrain(pwmValue, 0, 255);
 }

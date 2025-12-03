@@ -1,17 +1,51 @@
-class Rs_calibrate
+#include "common/constant/reflective_sensor.h"
+
+struct RsStats
+{
+    unsigned long count = 0;
+    double mean = 0.0;
+    double m2 = 0.0; // sum of squares of differences for variance
+    int minimum = 1023;
+    int maximum = 0;
+    void update(int x)
+    {
+        count++;
+        double dx = x - mean;
+        mean += dx / count;
+        double dx2 = x - mean;
+        m2 += dx * dx2;
+        if (x < minimum)
+            minimum = x;
+        if (x > maximum)
+            maximum = x;
+    }
+};
+
+class RsData
 {
 private:
     /* data */
 public:
-    Rs_calibrate(/* args */);
-    ~Rs_calibrate();
+    RsData(/* args */);
+    ~RsData();
+
+    RsStats *getCurrentRsData()
+    {
+        RsStats *data = new RsStats[8];
+        for (int i = 0; i < PINS_RS_LENGTH; ++i)
+        {
+            int v = analogRead(PINS_RS[i]);
+            data[i].update(v);
+        }
+        return data;
+    }
 };
 
-Rs_calibrate::Rs_calibrate(/* args */)
+RsData::RsData(/* args */)
 {
 }
 
-Rs_calibrate::~Rs_calibrate()
+RsData::~RsData()
 {
 }
 

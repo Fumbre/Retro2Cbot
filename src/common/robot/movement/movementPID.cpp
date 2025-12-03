@@ -106,7 +106,7 @@ void switchDirection(int leftSpeed, int rightSpeed)
 {
     leftPWM = getPWMvalue(leftSpeed);
     rightPWM = getPWMvalue(rightSpeed);
-    adjustPWMvalueByPulse(&leftPWM, &rightPWM);
+    // adjustPWMvalueByPulse(&leftPWM, &rightPWM);
     // put left wheel pin
     analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
     digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
@@ -225,7 +225,7 @@ void rotateRight(int speed)
 Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue)
 {
 
-    unsigned long now = millis();
+    unsigned long now = millis() - 300;
     Stability stability;
     // Ensure PID runs at a fixed interval
     if (now - lastPIDTime < INTERNAL)
@@ -271,4 +271,16 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue)
     stability.speedRight = *rightPWMValue;
 
     return stability;
+}
+
+void switchDirection(float leftPWMValue, float rightPWMValue)
+{
+    leftPWM = constrain(leftPWMValue, 0, FULL_PWM_VALUE);
+    rightPWM = constrain(rightPWMValue, 0, FULL_PWM_VALUE);
+    // put left wheel pin
+    analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
+    digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
+    // put right wheel pin
+    analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
+    digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
 }

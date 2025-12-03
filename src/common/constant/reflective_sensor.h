@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-
 // RS - reflective sensor
 // D* is board naming
 const int PIN_RS_D8 = A0; // D8
@@ -10,9 +9,9 @@ const int PIN_RS_D5 = A3;
 const int PIN_RS_D4 = A4;
 const int PIN_RS_D3 = A5;
 const int PIN_RS_D2 = A6;
-const int PIN_RS_D1 = A7; 
+const int PIN_RS_D1 = A7;
 
-const int THRESHOLD = 500;
+const int THRESHOLD = 700;
 
 const int PINS_RS[] = {
     PIN_RS_D8,
@@ -26,4 +25,10 @@ const int PINS_RS[] = {
 };
 
 const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
-// to store array length dynamically 
+// to store array length dynamically
+
+struct WheelSpeed
+{
+    float leftPWM;
+    float rightPWM;
+};
