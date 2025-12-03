@@ -13,5 +13,5 @@ void setup()
 
 void loop()
 {
-  running();
+  running(80);
 }

@@ -8,4 +8,4 @@
 
 void initFollowLiner();
 
-void running();
+void running(int speed);

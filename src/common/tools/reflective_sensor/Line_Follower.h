@@ -5,6 +5,7 @@
 struct FollowerResult{
     Direction dir;
     Direction lastDir;
+    float speedFactor;
     int baseSpeed;
     int turnSpeed;
 };
@@ -17,11 +18,14 @@ private:
     Direction lastDir;
 
 public:
-    LineFollower(int baseSpeed, int turnSpeed)
+    LineFollower()
     {
-        this->baseSpeed = baseSpeed;
-        this->turnSpeed = turnSpeed;
         this->lastDir = CENTER;
+    }
+
+    void setupPWMValue(int baseSpeed){
+        this->baseSpeed = baseSpeed - 50;
+        this->turnSpeed = baseSpeed;
     }
 
     FollowerResult follow(LineSensor &sensor, LineInterpreter &interpreter)
@@ -31,10 +35,16 @@ public:
         if(dir != LOST){
             this->lastDir = dir;
         }
+        //set reducing factor
+        float factor = 1;
+        if(dir == SLIGHT_LEFT || dir == SLIGHT_RIGHT){
+            factor = 0.8;
+        }
         FollowerResult result;
         result.dir = dir;
         result.baseSpeed = this->baseSpeed;
         result.turnSpeed = this->baseSpeed;
+        result.speedFactor = factor;
         result.lastDir = this->lastDir;
         return result;
     }

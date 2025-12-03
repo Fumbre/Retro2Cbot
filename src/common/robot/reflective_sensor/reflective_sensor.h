@@ -7,4 +7,6 @@
 
 void initReflectiveSensor();
 
-FollowerResult lineFollow();
+FollowerResult lineFollow(int speed);
+
+int getPWM(int speed);

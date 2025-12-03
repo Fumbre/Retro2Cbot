@@ -5,6 +5,8 @@
  */
 #pragma once
 #include <Arduino.h>
+#include "common/tools/Welford.h"
+
 
 struct LineReading
 {
@@ -18,14 +20,13 @@ class LineSensor
 private:
     int *pins;
     int count;
-    int threshold;
+    Welford welford;
 
 public:
-    LineSensor(int *pins, int count, int threshold)
+    LineSensor(int *pins, int count)
     {
         this->pins = pins;
         this->count = count;
-        this->threshold = threshold;
     }
 
     void setup()
@@ -38,17 +39,26 @@ public:
     LineReading read()
     {
         LineReading r;
-        r.mask = 0;
-
+        //caculate threshold
         for (int i = 0; i < count; i++)
         {
             int reading = analogRead(pins[i]);
             r.values[i] = reading;
-            Serial.println(reading);
-            if (reading > threshold)
+            welford.update(reading);
+        }
+        float threshold = welford.getCurrrentAvgerageNumber() - welford.getStandardDeviation();
+        Serial.print("Threshold: ");
+        Serial.println(threshold);
+        welford.reset();
+        r.mask = 0;
+        for (int i = 0; i < count; i++)
+        {
+            if (r.values[i] > 700)
             {
                 // A0 = leftmost → highest bit
                 r.mask |= (1 << (count - 1 - i));
+                Serial.print("current value: ");
+                Serial.println(r.values[i]);
             }
         }
         return r;
