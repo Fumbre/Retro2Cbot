@@ -38,9 +38,6 @@ void followLine()
     isAllNotWhite += lineWhiteStatus[i];
   }
 
-  Serial.print("change");
-  delay(2000);
-
   if (isAllNotWhite == 0)
   {
     if (getRsStatusBlackT.executeOnce(0))
