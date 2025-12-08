@@ -24,3 +24,4 @@ struct Stats
 };
 
 Stats *getRSValue();
+int *getLineStatus();
