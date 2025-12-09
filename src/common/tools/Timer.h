@@ -7,7 +7,6 @@
  * @date 14-11-2025
  * @details Timer class for easier access to millis calculation
  */
-
 class Timer
 {
 private:
