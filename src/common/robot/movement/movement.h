@@ -17,3 +17,6 @@ void moveSpeed(int speedLeft, int speedRight);
 void moveStabilized(int speedLeft, int speedRight);
 
 void writeSpeed(int speedLeft, int speedRight);
+
+extern Timer didMoveRightTimer;
+extern Timer didMoveLeftTimer;   

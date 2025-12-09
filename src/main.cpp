@@ -10,6 +10,7 @@
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/robot/gripper/gripper.h"
 #include "maps_pogram/follow_single_line/lineFollower.h"
+#include "maps_pogram/physical_maze/physical_maze.h"
 
 // const int SETTING_MODE = 2;
 
@@ -18,10 +19,11 @@ Timer test;
 
 void setup() {
   Serial.begin(9600);
-  blueTooth.begin(9600);
+  // blueTooth.begin(9600);
   setupMotor();
   setupSonar();
   setupGripper();
+  mazeInit();
 }
 
 Timer stampForward;
@@ -35,6 +37,11 @@ Timer stampRotateRight;
 // LineFollower follower(190, 250);
 
 void loop() {
+  // ================== Physical Maze ==================
+  Serial.println(getDistanceCM_Front());
+  delay(200);
+
+  mazeStep();
 
   // ================== simple stop/forward ==================
 
@@ -61,26 +68,26 @@ void loop() {
 
   // ================== avoiding ==================
 
-  static bool safeZone = true;
+  // static bool safeZone = true;
 
-  float distance = getDistanceCM();
+  // float distance = getDistanceCM();
 
-  if (!avoiding) {
+  // if (!avoiding) {
 
-    if (safeZone && distance <= 20 && distance >= 2) {
-      safeZone = false;                   // exiting safe zone
-      avoidObstacleSmoothNonBlocking(255);
-    }
-    else {
-      moveStabilized(255, 255);
+  //   if (safeZone && distance <= 20 && distance >= 2) {
+  //     safeZone = false;                   // exiting safe zone
+  //     avoidObstacleSmoothNonBlocking(255);
+  //   }
+  //   else {
+  //     moveStabilized(255, 255);
 
-      if (distance > 20) {                
-        safeZone = true;                
-      }
-    }
-  } else {
-    avoidObstacleSmoothNonBlocking(255);
-  }
+  //     if (distance > 20) {                
+  //       safeZone = true;                
+  //     }
+  //   }
+  // } else {
+  //   avoidObstacleSmoothNonBlocking(255);
+  // }
 
   //==============================
 

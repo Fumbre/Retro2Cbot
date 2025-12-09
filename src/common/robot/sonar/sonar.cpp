@@ -14,8 +14,11 @@ bool avoiding = false;
 
 void setupSonar()
 {
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // send ultrasonic pulses
-  pinMode(PIN_SONAR_ECHO, INPUT);  // receive reflected signal
+  pinMode(PIN_SONAR_TRIG_1, OUTPUT);
+  pinMode(PIN_SONAR_ECHO_1, INPUT);
+
+  pinMode(PIN_SONAR_TRIG_2, OUTPUT);
+  pinMode(PIN_SONAR_ECHO_2, INPUT);
 }
 
 /**
@@ -30,19 +33,21 @@ void setupSonar()
  * @return float  Estimated distance in centimeters
  */
 
-float getDistanceCM()
+// Função genérica para medir distância de QUALQUER sonar
+float measureDistance(int trig, int echo)
 {
-  digitalWrite(PIN_SONAR_TRIG, LOW);  // Ensure TRIG is low to start clean pulse
-  delayMicroseconds(2);               // Short delay to stabilize the pin
-  digitalWrite(PIN_SONAR_TRIG, HIGH); // Send a HIGH pulse to trigger the ultrasonic burst
-  delayMicroseconds(10);              // Pulse duration: 10 microseconds (required by HC-SR04)
-  digitalWrite(PIN_SONAR_TRIG, LOW);  // Stop the trigger pulse
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
 
-  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH); // Measure the time until echo is received (in microseconds)
+  unsigned long duration = pulseIn(echo, HIGH, 25000); // timeout 25ms
 
-  float distance = duration * 0.034 / 2;
-  return distance;
+  if (duration == 0) return 400; // leitura inválida
+  return duration * 0.034 / 2;
 }
+
 
 /**
  * @name isObstacleDetected
@@ -55,19 +60,30 @@ float getDistanceCM()
  * @return bool: true if an obstacle is detected, false otherwise
  */
 
-bool isObstacleDetected(float limit_cm)
+// Distância frontal
+float getDistanceCM_Front()
 {
-  float distance = getDistanceCM();
-
-  // Ignore all readings below ~2 cm
-  if (distance < 2)
-  {
-    return false;
-  }
-
-  // Return true only if the distance is within the limit
-  return (distance <= limit_cm);
+  return measureDistance(PIN_SONAR_TRIG_1, PIN_SONAR_ECHO_1);
 }
+
+// Distância direita
+float getDistanceCM_Right()
+{
+  return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
+}
+
+bool isObstacleFront(float limit)
+{
+  float d = getDistanceCM_Front();
+  return (d > 2 && d <= limit);
+}
+
+bool isObstacleRight(float limit)
+{
+  float d = getDistanceCM_Right();
+  return (d > 2 && d <= limit);
+}
+
 
 /**
  * @name avoidObstacleSmoothNonBlocking
@@ -84,80 +100,80 @@ bool isObstacleDetected(float limit_cm)
  *  4. resume normal forward movement and finish the avoidance
  */
 
-void avoidObstacleSmoothNonBlocking(int speed)
-{
-  static Timer t;      // duration of each movement step
-  static int step = 0; // stage of the avoidance sequence
+// void avoidObstacleSmoothNonBlocking(int speed)
+// {
+//   static Timer t;      // duration of each movement step
+//   static int step = 0; // stage of the avoidance sequence
 
-  // Start avoidance routine
-  if (!avoiding) {
-    avoiding = true;   // Mark that avoidance mode has begun
-    step = 0;          // Reset step sequence to the first movement
-    t.resetInterval(); // Reset the timer to ensure timings start fresh
-    return;
-  }
+//   // Start avoidance routine
+//   if (!avoiding) {
+//     avoiding = true;   // Mark that avoidance mode has begun
+//     step = 0;          // Reset step sequence to the first movement
+//     t.resetInterval(); // Reset the timer to ensure timings start fresh
+//     return;
+//   }
 
-  // Execute movements depending on the current step
-  switch (step) {
+//   // Execute movements depending on the current step
+//   switch (step) {
 
-  // turn left
-  case 0:
-    switchDirection(40, 100); // Left curve
-    if (t.interval(1000)) {         // After 800 ms
-      step++; // Proceed to next movement
-      t.resetInterval();
-    }
-    break;
+//   // turn left
+//   case 0:
+//     switchDirection(40, 100); // Left curve
+//     if (t.interval(1000)) {         // After 800 ms
+//       step++; // Proceed to next movement
+//       t.resetInterval();
+//     }
+//     break;
 
-  // turn right
-  case 1:
-    switchDirection(100, 40); // Right curve
-    if (t.interval(1000)) { // After 800 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
+//   // turn right
+//   case 1:
+//     switchDirection(100, 40); // Right curve
+//     if (t.interval(1000)) { // After 800 ms
+//       step++;
+//       t.resetInterval();
+//     }
+//     break;
 
-  // move forward
-  case 2:
-    moveStabilized(255, 255); // move forward
-    if (t.interval(1000)) { // After 800 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
+//   // move forward
+//   case 2:
+//     moveStabilized(255, 255); // move forward
+//     if (t.interval(1000)) { // After 800 ms
+//       step++;
+//       t.resetInterval();
+//     }
+//     break;
 
-  // long right curve
-  case 3:
-    switchDirection(100, 40); // right curve
-    if (t.interval(1000)) { // After 1000 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
+//   // long right curve
+//   case 3:
+//     switchDirection(100, 40); // right curve
+//     if (t.interval(1000)) { // After 1000 ms
+//       step++;
+//       t.resetInterval();
+//     }
+//     break;
 
-  // long left curve
-  case 4:
-    switchDirection(40, 100); // left curve
-    if (t.interval(1000)) { // After 1000 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
+//   // long left curve
+//   case 4:
+//     switchDirection(40, 100); // left curve
+//     if (t.interval(1000)) { // After 1000 ms
+//       step++;
+//       t.resetInterval();
+//     }
+//     break;
 
-  // short forward movement
-  case 5:
-    moveStabilized(255, 255); // move forward   
-     if (t.interval(200)) { // After 1000 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
+//   // short forward movement
+//   case 5:
+//     moveStabilized(255, 255); // move forward   
+//      if (t.interval(200)) { // After 1000 ms
+//       step++;
+//       t.resetInterval();
+//     }
+//     break;
 
-  // stop
-  case 6:
-    stopMotors();
-    avoiding = false;
-    break;
-  }
-}
+//   // stop
+//   case 6:
+//     stopMotors();
+//     avoiding = false;
+//     break;
+//   }
+// }

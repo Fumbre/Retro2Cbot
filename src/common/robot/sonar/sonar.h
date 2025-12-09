@@ -4,8 +4,8 @@
 #include "common/robot/movement/movementPID.h"
 
 void setupSonar();
-float getDistanceCM();
-bool isObstacleDetected(float limit_cm);
-void avoidObstacleSmoothNonBlocking(int speed);
+float getDistanceCM_Front();
+float getDistanceCM_Right();
 
-extern bool avoiding;
+bool isObstacleFront(float limit_cm);
+bool isObstacleRight(float limit_cm);
