@@ -11,7 +11,7 @@ struct ReflectiveRead
     int maximum = 0;
     void update(int x)
     {
-        count++;
+        count = 1;
         double dx = x - mean;
         mean += dx / count;
         double dx2 = x - mean;

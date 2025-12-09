@@ -22,7 +22,7 @@ private:
 
     ReflectiveRead *getRSValue()
     {
-        static ReflectiveRead stats[8];
+        ReflectiveRead *stats = new ReflectiveRead[8];
 
         // Read and update stats
         for (int i = 0; i < PINS_RS_LENGTH; ++i)
@@ -34,11 +34,10 @@ private:
         return stats;
     }
 
-    ReflectiveRead *currentSensors;
-
 public:
-    ReflectiveRead *reflectiveRead;
-    ReflectiveRead *reflectiveReadBlack;
+    ReflectiveRead *currentSensors;
+    ReflectiveRead *reflectiveRead;        // init surface
+    ReflectiveRead reflectiveReadBlack[8]; // second surface
 
     /**
      * @name ReflectiveSensor
@@ -90,32 +89,31 @@ public:
                     (currentSensors[i].mean - reflectiveDifference <= compare[i].mean) &&
                     (currentSensors[i].mean + reflectiveDifference >= compare[i].mean)))
             {
-                lineStatus |= (1 << i);
+                lineStatus |= (128 >> i);
             }
             else
             {
-
-                lineStatus &= (1 << i);
+                lineStatus &= ~(128 >> i);
             }
         }
     }
 
     void calibrationBlack()
     {
+        // Serial.println(lineStatus, BIN);
         for (int i = 0; i < 8; i++)
         {
-            Serial.print(lineStatus);
-            // if (!(lineStatus & (0 >> i)) && (int)isBlackCalib[i] == 0)
-            // {
-            //     int value = analogRead(pins[i]);
-            //     reflectiveReadBlack[i].update(value);
-            //     isBlackCalib[i] = 1;
-            //     Serial.print("Sensor ");
-            //     Serial.print(i);
-            //     Serial.print(" ");
-            //     Serial.println(reflectiveReadBlack[i].mean);
-            // }
+            if (!(lineStatus & (128 >> i)) && (int)isBlackCalib[i] == 0)
+            {
+                int value = analogRead(pins[i]);
+                reflectiveReadBlack[i].update(value);
+                isBlackCalib[i] = 1;
+                Serial.print("Sensor ");
+                Serial.print(i);
+                Serial.print(" ");
+                Serial.println(reflectiveReadBlack[i].mean);
+            }
         }
-        Serial.println("");
+        // Serial.println("");
     }
 };

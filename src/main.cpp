@@ -42,7 +42,7 @@ void loop()
   {
     huj.calibration();
   }
-  huj.getDifference(huj.reflectiveRead, 20);
+  huj.getDifference(huj.reflectiveRead, 150);
   huj.calibrationBlack();
 
   // huj.getDifference(huj.reflectiveRead, 20);
