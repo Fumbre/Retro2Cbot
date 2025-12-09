@@ -14,6 +14,8 @@
 #include "common/robot/movement/movementPID.h"
 #include "maps_pogram/maze_line/maze_line.h"
 
+#include "common/robot/reflective_sensor/reflective_sensor.h"
+
 const int SETTING_MODE = 2;
 
 void setup()
@@ -26,11 +28,27 @@ void setup()
 }
 
 Timer test;
+Timer test2;
+
+Stats *data;
 
 void loop()
 {
+  if (test.executeOnce(0))
+  {
+    data = getRSValue();
+  }
+
+  if (test2.executeOnce(0))
+  {
+    for (int i = 0; i < 8; i++)
+    {
+      Serial.println(data[i].mean);
+    }
+  }
+
   // moveStabilized(230, 230);
-  testBasicMovement();
+  // testBasicMovement();
 
   // if (test.executeOnce(0))
   // {
