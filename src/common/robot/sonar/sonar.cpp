@@ -21,18 +21,6 @@ void setupSonar()
   pinMode(PIN_SONAR_ECHO_2, INPUT);
 }
 
-/**
- * @name getDistanceCM
- * @author Francisco
- * @date 15-11-2025
- * @details Sends a trigger pulse to the ultrasonic sensor and measures the time
- * taken for the reflected echo to return. This duration is then converted into
- * an estimated distance in centimeters based on the speed of sound.
- * @details The result represents the distance to the nearest object directly
- * in front of the sensor. A value of 0 usually indicates an invalid or missing echo.
- * @return float  Estimated distance in centimeters
- */
-
 // Função genérica para medir distância de QUALQUER sonar
 float measureDistance(int trig, int echo)
 {
@@ -47,18 +35,6 @@ float measureDistance(int trig, int echo)
   if (duration == 0) return 400; // leitura inválida
   return duration * 0.034 / 2;
 }
-
-
-/**
- * @name isObstacleDetected
- * @author Francisco
- * @date 15-11-2025
- * @param limit_cm  Maximum distance (in cm) used to define what counts as an obstacle
- * @details Reads the current distance using getDistanceCM() and compares it with
- * the user-defined threshold. If the measured distance is positive and less than
- * or equal to the limit, the function considers that an obstacle is present.
- * @return bool: true if an obstacle is detected, false otherwise
- */
 
 // Distância frontal
 float getDistanceCM_Front()

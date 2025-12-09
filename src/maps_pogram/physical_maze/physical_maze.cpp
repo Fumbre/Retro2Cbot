@@ -1,16 +1,10 @@
 #include "physical_maze.h"
 #include "common/robot/movement/movement.h"
 #include "common/robot/sonar/sonar.h"
+#include "common/robot/gripper/gripper.h"
 
 // functions to turn
 void turnLeft90() {
-    moveSpeed(-200, 200);
-    delay(260);
-    moveStopAll();
-    delay(50);
-}
-
-void turnLeft90_both() {
     moveSpeed(-200, 200);
     delay(260);
     moveStopAll();
@@ -34,7 +28,7 @@ bool doubleCheckFront() {
 
     // another check
     int f = getDistanceCM_Front();
-    return (f < 25);  // true = is wall
+    return (f < 17);  // true = is wall
 }
 
 bool doubleCheckRight() {
@@ -44,16 +38,26 @@ bool doubleCheckRight() {
     delay(30);
 
     int r = getDistanceCM_Right();
-    return (r < 25);
+    return (r < 17);
 }
 
 void mazeInit() {}
 
 void mazeStep() {
 
+    static bool gripperClosed = false;
+
+    if (!gripperClosed) {
+        for (int i = 0; i < 50; i++) {          // 1 second of pulses
+            gripper(1000);                      // 1200 = closed (adjust if needed)
+            delay(20);
+        }
+        gripperClosed = true;
+    }
+
     // first check
-    bool front = isObstacleFront(25);
-    bool right = isObstacleRight(25);
+    bool front = isObstacleFront(17);
+    bool right = isObstacleRight(17);
 
     // no wall
     if (!front && !right) {
@@ -65,7 +69,7 @@ void mazeStep() {
     if (!front && right) {
 
         int currentRightDist = getDistanceCM_Right();
-        int ideal = 15;
+        int ideal = 17;
         int margin = 1;
 
         if (currentRightDist < ideal - margin) {     // very close
@@ -98,7 +102,7 @@ void mazeStep() {
 
     // both detected >> turn left
     if (front && right) {
-        turnLeft90_both();
+        turnLeft90();
         return;
     }
 
