@@ -7,6 +7,7 @@
 #pragma once
 #include <Arduino.h>
 #include "Reflective_read.h"
+#include "common/constant/reflective_sensor.h"
 
 class ReflectiveSensor
 {
@@ -16,11 +17,26 @@ private:
     int pins_rs_length; // length of pins array
     float threshold;    // white range
     ReflectiveRead *reflectiveReadBlack;
-    ReflectiveRead *reflectiveRead;
     uint8_t previousLineStatus = 0;
     uint8_t lineStatus = 0;
 
+    ReflectiveRead *getRSValue()
+    {
+        static ReflectiveRead stats[8];
+
+        // Read and update stats
+        for (int i = 0; i < PINS_RS_LENGTH; ++i)
+        {
+            int v = analogRead(PINS_RS[i]);
+            stats[i].update(v);
+        }
+
+        return stats;
+    }
+
 public:
+    ReflectiveRead *reflectiveRead;
+
     /**
      * @name ReflectiveSensor
      * @authors Sunny & Vlad
@@ -53,39 +69,39 @@ public:
     void calibration()
     {
         // calibrate for first surface
-        for (int i = 0; i < pins_rs_length; i++)
+        reflectiveRead = getRSValue();
+        for (int i = 0; i < 8; i++)
         {
-            int value = analogRead(pins[i]);
-            reflectiveRead[i].update(value);
+            Serial.println(reflectiveRead[i].mean);
         }
     }
 
     void getDifference(ReflectiveRead *compare, int reflectiveDifference)
     {
-        static ReflectiveRead sensor;
+        static ReflectiveRead *sensor;
+        sensor = getRSValue();
         for (int i = 0; i < pins_rs_length; i++)
         {
-            int value = analogRead(pins[i]);
-            sensor.update(value);
-
             if ((
-                    (sensor.getCurrrentAvgerageNumber() - reflectiveDifference <= compare[i].getCurrrentAvgerageNumber()) &&
-                    (sensor.getCurrrentAvgerageNumber() + reflectiveDifference >= compare[i].getCurrrentAvgerageNumber())))
+                    (sensor[i].mean - reflectiveDifference <= compare[i].mean) &&
+                    (sensor[i].mean + reflectiveDifference >= compare[i].mean)))
             {
                 lineStatus |= (1 << i);
             }
             else
             {
                 lineStatus &= (1 << i);
+                // lineStatus = ~();
             }
         }
+        Serial.println(lineStatus);
     }
 
     void calibrationBlack()
     {
         for (int i = 0; i < 8; i++)
         {
-            if ((lineStatus & (1 << i)) != 0 && reflectiveReadBlack[i].getCurrrentAvgerageNumber() != 0)
+            if ((lineStatus & (1 << i)) == 0)
             {
                 int value = analogRead(pins[i]);
                 reflectiveReadBlack[i].update(value);

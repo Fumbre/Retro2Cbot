@@ -9,10 +9,12 @@
 #include "common/tools/tests/test_basic_movements/test_basic_movements.h"
 #include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
 #include "common/tools/tests/test_pulses.h"
-
+#include "common/constant/reflective_sensor.h"
 #include "common/robot/neopixel/neopixel.h"
 #include "common/robot/movement/movementPID.h"
 #include "maps_pogram/maze_line/maze_line.h"
+
+#include "common/tools/Reflective_sensor.h"
 
 const int SETTING_MODE = 2;
 
@@ -27,10 +29,19 @@ void setup()
 
 Timer test;
 
+ReflectiveSensor huj(PINS_RS, PINS_RS_LENGTH, 700);
+
 void loop()
 {
   // moveStabilized(230, 230);
-  testBasicMovement();
+  // testBasicMovement();
+
+  if (test.executeOnce(0))
+  {
+    huj.calibration();
+  }
+
+  // huj.getDifference(huj.reflectiveRead, 20);
 
   // if (test.executeOnce(0))
   // {
