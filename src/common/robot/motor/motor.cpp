@@ -42,7 +42,6 @@ void countRightPulses()
  * @date 13-11-2025
  * @details configurate pins for motor
  */
-
 void setupMotor()
 {
   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)

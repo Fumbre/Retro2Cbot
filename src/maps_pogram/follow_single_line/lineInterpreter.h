@@ -1,18 +1,24 @@
 #pragma once
 #include <Arduino.h>
 
-enum Direction {
+enum LineState {
     CENTER,
     SLIGHT_LEFT,
     SLIGHT_RIGHT,
     HARD_LEFT,
     HARD_RIGHT,
-    LOST
+    
+    ALL_WHITE,     
+    ALL_BLACK,      
+    
+    LEFT_TURN,      
+    RIGHT_TURN      
 };
+
 
 class LineInterpreter {
 public:
-    Direction interpret(uint8_t mask);
+    LineState interpret(uint8_t mask);
 
 private:
     bool match(uint8_t mask, const uint8_t* patterns, int count);

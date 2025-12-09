@@ -1,30 +1,18 @@
-// #pragma once
-// #include <Arduino.h>
-// #include "lineSensor.h"
-
-// class LineFollower {
-// public:
-//     LineFollower(int baseSpeed, int turnSpeed);
-
-//     void follow(LineSensor& sensor);
-
-// private:
-//     int baseSpeed;
-//     int turnSpeed;
-// };
-
-
 // =================================================
 
 #pragma once
 #include "lineSensor.h"
 #include "lineInterpreter.h"
+#include "lineFollowerLogic.h"
+#include "command.h"
 
 class LineFollower {
 public:
     LineFollower(int baseSpeed, int turnSpeed);
 
-    void follow(LineSensor& sensor, LineInterpreter& interpreter);
+    MotorCommand follow(LineSensor& sensor,
+                        LineInterpreter& interpreter,
+                        LineFollowerLogic& logic);
 
 private:
     int baseSpeed;
