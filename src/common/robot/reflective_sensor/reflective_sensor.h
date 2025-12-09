@@ -25,3 +25,5 @@ struct Stats
 
 Stats *getRSValue();
 int *getLineStatus();
+
+void setupRS();
