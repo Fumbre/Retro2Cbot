@@ -258,15 +258,15 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue)
     }
     // if(fabs(correction) < 0.5) correction = 0;
     // correction = constrain(correction,-20,20);
-    Serial.print("correction: ");
-    Serial.println(correction);
+    // Serial.print("correction: ");
+    // Serial.println(correction);
     // get new pwm value
     *leftPWMValue = constrain(*leftPWMValue - correction, 0, FULL_PWM_VALUE);
     *rightPWMValue = constrain(*rightPWMValue + correction, 0, FULL_PWM_VALUE);
-    Serial.print("inside Left: ");
-    Serial.println(*leftPWMValue);
-    Serial.print("inside right: ");
-    Serial.println(*rightPWMValue);
+    // Serial.print("inside Left: ");
+    // Serial.println(*leftPWMValue);
+    // Serial.print("inside right: ");
+    // Serial.println(*rightPWMValue);
     stability.speedLeft = *leftPWMValue;
     stability.speedRight = *rightPWMValue;
 

@@ -15,6 +15,7 @@
 #include "maps_pogram/maze_line/maze_line.h"
 
 #include "common/tools/Reflective_sensor.h"
+#include "common/robot/reflective_sensor/reflective_sensor.h"
 
 const int SETTING_MODE = 2;
 
@@ -30,20 +31,36 @@ void setup()
 Timer test;
 Timer test2;
 
-ReflectiveSensor huj(PINS_RS, PINS_RS_LENGTH, 700);
+bool detected = false;
 
 void loop()
 {
+  calibrate();
+
+  if (detectSquer())
+  {
+    detected = true;
+    if (test.executeOnce(0))
+    {
+      resetMoveLeft();
+    }
+  }
+
+  if (detected)
+  {
+    if (didMoveLeft(200, 9))
+    {
+      detected = false;
+      test.resetExecuteOnce();
+        }
+  }
+  else
+  {
+    moveForward(75);
+  }
 
   // moveStabilized(230, 230);
   // testBasicMovement();
-
-  if (test.executeOnce(0))
-  {
-    huj.calibration();
-  }
-  huj.getDifference(huj.reflectiveRead, 150);
-  huj.calibrationBlack();
 
   // huj.getDifference(huj.reflectiveRead, 20);
 

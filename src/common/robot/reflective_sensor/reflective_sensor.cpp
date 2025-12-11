@@ -1,38 +1,57 @@
-// #include "reflective_sensor.h"
+#include "reflective_sensor.h"
 
-// // Stats per sensor using Welford's algorithm
+ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 700);
 
-// Stats *getRSValue()
-// {
-//     static Stats stats[8];
+void calibrate()
+{
+  static Timer t;
 
-//     // Read and update stats
-//     for (int i = 0; i < PINS_RS_LENGTH; ++i)
-//     {
-//         int v = analogRead(PINS_RS[i]);
-//         stats[i].update(v);
-//     }
+  if (t.executeOnce(0))
+  {
+    rs.calibration();
+  }
+  rs.getLineDifference(rs.reflectiveRead, 370);
+  rs.calibrationBlack();
+}
 
-//     return stats;
-// }
+bool detectSquer()
+{
+  static Timer t;
 
-// int *getLineStatus(Stats currenRstData[], Stats storedRsData[], int reflectiveDifference)
-// {
+  // Serial.print("lineDif: ");
+  // Serial.println(rs.getLineDifference(rs.reflectiveReadBlack, 370));
+  // Serial.print("reflectiveReadBlack: ");
+  // Serial.print(rs.reflectiveReadBlack[0].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[1].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[2].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[3].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[4].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[5].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[6].mean);
+  // Serial.print(" ");
+  // Serial.print(rs.reflectiveReadBlack[7].mean);
+  // Serial.println(" ");
 
-//     int *lineStatus = new int[PINS_RS_LENGTH];
-//     for (int i = 0; i < PINS_RS_LENGTH; i++)
-//     {
-//         if ((
-//                 (currenRstData[i].mean - reflectiveDifference <= storedRsData[i].mean) &&
-//                 (currenRstData[i].mean + reflectiveDifference >= storedRsData[i].mean)))
-//         {
-//             lineStatus[i] = 1;
-//         }
-//         else
-//         {
-//             lineStatus[i] = 0;
-//         }
-//     }
+  Serial.print("diff: ");
+  Serial.println(rs.getLineDifference(rs.reflectiveReadBlack, 370) == 255);
+  Serial.print("black set?: ");
+  Serial.println(rs.getIsBlackCalib());
+  Serial.print("time?: ");
+  Serial.println(t.timeout(105));
 
-//     return lineStatus;
-// }
+  if (t.timeout(105) && rs.getIsBlackCalib() && rs.getLineDifference(rs.reflectiveReadBlack, 370) == 255)
+  {
+    return true;
+  }
+  else if (rs.getLineDifference(rs.reflectiveReadBlack, 370) != 255)
+  {
+    t.resetTimeout();
+  }
+  return false;
+}
