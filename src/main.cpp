@@ -37,16 +37,16 @@ Timer stampRotateRight;
 // LineFollower follower(190, 250);
 
 void loop() {
-  // ================== Physical Maze ==================
+  // ================== Physical Maze ==================  
   mazeStep();
   
-  // Serial.print("F: ");
-  // Serial.print(getDistanceCM_Front());
-  // Serial.print(" | R: ");
-  // Serial.print(getDistanceCM_Right());
-  // Serial.print(" | L: ");
-  // Serial.println(getDistanceCM_Left());
-  // delay(200);
+  Serial.print("F: ");
+  Serial.print(getDistanceCM_Front());
+  Serial.print(" | R: ");
+  Serial.print(getDistanceCM_Right());
+  Serial.print(" | L: ");
+  Serial.println(getDistanceCM_Left());
+  delay(200);
 
   // ================== simple stop/forward ==================
 

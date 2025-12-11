@@ -104,7 +104,7 @@ void mazeStep() {
             dcRight = isObstacleRight(OBST_LIMIT_CM);
             dcLeft  = isObstacleLeft(OBST_LIMIT_CM);
 
-            // se afinal NÃO há parede à frente nem dos lados → voltar a andar
+            // if no wall, keep going
             if (!dcFront && !dcRight && !dcLeft) {
                 mazeState = MAZE_FORWARD;
                 return;

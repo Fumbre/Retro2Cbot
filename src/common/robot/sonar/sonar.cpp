@@ -10,10 +10,9 @@ bool avoiding = false;
  * @details Initializes the ultrasonic sensor (HC-SR04) by configuring the TRIG
  * pin as OUTPUT and the ECHO pin as INPUT. This setup enables the robot to send
  * ultrasonic pulses and detect their reflections for distance measurement.
- */
+*/
 
-void setupSonar()
-{
+void setupSonar() {
   pinMode(PIN_SONAR_TRIG_1, OUTPUT);
   pinMode(PIN_SONAR_ECHO_1, INPUT);
 
@@ -25,8 +24,7 @@ void setupSonar()
 }
 
 // Função genérica para medir distância de QUALQUER sonar
-float measureDistance(int trig, int echo)
-{
+float measureDistance(int trig, int echo) {
   digitalWrite(trig, LOW);
   delayMicroseconds(2);
   digitalWrite(trig, HIGH);
@@ -39,35 +37,29 @@ float measureDistance(int trig, int echo)
   return duration * 0.034 / 2;
 }
 
-float getDistanceCM_Front()
-{
+float getDistanceCM_Front() {
   return measureDistance(PIN_SONAR_TRIG_1, PIN_SONAR_ECHO_1);
 }
 
-float getDistanceCM_Right()
-{
+float getDistanceCM_Right() {
   return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
 }
 
-float getDistanceCM_Left()
-{
+float getDistanceCM_Left() {
   return measureDistance(PIN_SONAR_TRIG_3, PIN_SONAR_ECHO_3);
 }
 
-bool isObstacleFront(float limit)
-{
+bool isObstacleFront(float limit) {
   float d = getDistanceCM_Front();
   return (d > 2 && d <= limit);
 }
 
-bool isObstacleRight(float limit)
-{
+bool isObstacleRight(float limit) {
   float d = getDistanceCM_Right();
   return (d > 2 && d <= limit);
 }
 
-bool isObstacleLeft(float limit)
-{
+bool isObstacleLeft(float limit) {
   float d = getDistanceCM_Left();
   return (d > 2 && d <= limit);
 }
