@@ -1,3 +1,4 @@
+#include "common/tools/Timer.h"
 
 /**
  * @name ReflectiveSensor
@@ -104,33 +105,23 @@ public:
         // calibrate for first surface
         free(reflectiveReadInit);
         reflectiveReadInit = getRSValue();
-
-        for (int i = 0; i < 8; i++)
-        {
-            Serial.println(reflectiveReadInit[i].mean);
-        }
     }
 
     void calibrationBlack()
     {
-        if (isBlackCalib < 8)
+        if (isBlackCalib < pins_rs_length)
         {
-            uint8_t reflectiveReadCheange = this->getLineDifference(this->reflectiveReadInit, threshold);
+            uint8_t reflectiveReadChange = this->getLineDifference(this->reflectiveReadInit, threshold);
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < pins_rs_length; i++)
             {
-                if (!(reflectiveReadCheange & (128 >> i)) && !(blackCalibration & (128 >> i)))
+                if (!(reflectiveReadChange & (128 >> i)) && !(blackCalibration & (128 >> i)))
                 {
                     this->reflectiveReadBlack[i].mean = analogRead(PINS_RS[i]);
 
                     blackCalibration |= (128 >> i);
 
                     isBlackCalib++;
-
-                    Serial.print("Sensor ");
-                    Serial.print(i);
-                    Serial.print(": ");
-                    Serial.println(reflectiveReadBlack[i].mean);
                 }
             }
         }
@@ -189,5 +180,24 @@ public:
             }
         }
         return status;
+    }
+
+    uint8_t readBlackLine()
+    {
+        static Timer t;
+
+        if (t.executeOnce(0))
+        {
+            this->calibrationInit();
+        }
+        this->calibrationBlack();
+
+        if (!this->isBlackCalibrated)
+            return 0;
+
+        uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, 75);
+
+        return currentBlackStatus;
+        // Serial.println(currentBlackStatus, BIN);
     }
 };

@@ -1,26 +1,33 @@
 #include "reflective_sensor.h"
 
-ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 125);
+ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 225);
 
-void calibrate()
+uint8_t getBlackLine()
 {
-  static Timer t;
-
-  if (t.executeOnce(0))
-  {
-    rs.calibrationInit();
-  }
-  rs.calibrationBlack();
+  return rs.readBlackLine();
 }
 
-void readBlackLine()
-{
-  if (!rs.isBlackCalibrated)
-    return;
+// void calibrate()
+// {
+//   static Timer t;
 
-  uint8_t currentBlackStatus = rs.getLineStatusMoreThan(rs.reflectiveReadBlack, 75);
-  Serial.println(currentBlackStatus, BIN);
-}
+//   if (t.executeOnce(0))
+//   {
+//     rs.calibrationInit();
+//   }
+//   rs.calibrationBlack();
+// }
+
+// void readBlackLine()
+// {
+//   if (!rs.isBlackCalibrated)
+//     return;
+
+//   uint8_t currentBlackStatus = rs.getLineStatusMoreThan(rs.reflectiveReadBlack, 75);
+//   Serial.println(currentBlackStatus, BIN);
+// }
+
+// =========================
 
 // bool detectSquer()
 // {

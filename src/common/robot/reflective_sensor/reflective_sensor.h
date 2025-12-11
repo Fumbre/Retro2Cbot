@@ -8,5 +8,5 @@
 
 void calibrate();
 
-void readBlackLine();
+uint8_t getBlackLine();
 bool detectSquer();

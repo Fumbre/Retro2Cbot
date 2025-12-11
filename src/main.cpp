@@ -35,8 +35,11 @@ bool detected = false;
 
 void loop()
 {
-  calibrate();
-  readBlackLine();
+  // calibrate();
+  // readBlackLine();
+  
+  getBlackLine();
+
   // if (detectSquer())
   // {
   //   detected = true;
