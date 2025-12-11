@@ -1,11 +1,11 @@
 #include "reflective_sensor.h"
 
-ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 225);
+// ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 225);
 
-uint8_t getBlackLine()
-{
-  return rs.readBlackLine();
-}
+// uint8_t getBlackLine()
+// {
+//   return rs.readBlackLine();
+// }
 
 // void calibrate()
 // {

@@ -15,7 +15,7 @@
 #include "maps_pogram/maze_line/maze_line.h"
 
 #include "common/tools/Reflective_sensor.h"
-#include "common/robot/reflective_sensor/reflective_sensor.h"
+#include "maps_pogram/follow_single_line/follow_single_line.h"
 
 const int SETTING_MODE = 2;
 
@@ -37,8 +37,8 @@ void loop()
 {
   // calibrate();
   // readBlackLine();
-  
-  getBlackLine();
+
+  followLine();
 
   // if (detectSquer())
   // {

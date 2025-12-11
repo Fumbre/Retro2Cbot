@@ -1,13 +1,57 @@
-#include "common/tools/Timer.h"
-
 /**
  * @name ReflectiveSensor
- * @authors Sunny & Vlad
+ * @authors Sunny & Vlad & Aria
  * @date 08-12-2025
  */
 #pragma once
 #include <Arduino.h>
 #include "common/constant/reflective_sensor.h"
+#include "common/tools/Timer.h"
+
+// --- bitmask tables ---
+const uint8_t centerPatterns[] = {0b00011000, 0b00111100};
+const uint8_t slightLeftPatterns[] = {
+    0b00110000,
+    0b01110000,
+    0b00111000,
+};
+const uint8_t slightRightPatterns[] = {0b00001100, 0b00001110, 0b00011100};
+
+const uint8_t hardLeftPatterns[] = {
+    0b11111000,
+    0b11110000,
+    0b11100000,
+    0b11000000,
+    0b10000000,
+};
+const uint8_t hardRightPatterns[] = {
+    0b00011111,
+    0b00001111,
+    0b00000111,
+    0b00000011,
+    0b00000001,
+};
+
+const uint8_t allWhite[] = {0b00000000};
+const uint8_t allBlack[] = {0b11111111};
+
+// const uint8_t leftTurn[] = {0b11111000, 0b11110000, 0b11111100, 0b11111110};
+// const uint8_t rightTurn[] = {0b00011111, 0b00001111, 0b00111111, 0b01111111};
+
+enum LineState
+{
+    CENTER,
+    SLIGHT_LEFT,
+    SLIGHT_RIGHT,
+    HARD_LEFT,
+    HARD_RIGHT,
+
+    ALL_WHITE,
+    ALL_BLACK,
+
+    LEFT_TURN,
+    RIGHT_TURN
+};
 
 struct ReflectiveRead
 {
@@ -59,9 +103,6 @@ public:
     ReflectiveRead *currentSensors;
     ReflectiveRead *reflectiveReadInit;    // init surface
     ReflectiveRead reflectiveReadBlack[8]; // second surface
-
-    uint8_t currentLineStatus = 0;
-    uint8_t previousLineStatus = 0;
 
     bool isBlackCalibrated = false;
 
@@ -199,5 +240,44 @@ public:
 
         return currentBlackStatus;
         // Serial.println(currentBlackStatus, BIN);
+    }
+
+    bool match(const uint8_t *patterns, int elementCount)
+    {
+        for (int i = 0; i < elementCount; i++)
+        {
+            if (this->readBlackLine() == patterns[i])
+                return true;
+        }
+        return false;
+    }
+
+    LineState pattern()
+    {
+
+        if (match(centerPatterns, sizeof(centerPatterns) / sizeof(centerPatterns[0])))
+            return CENTER;
+
+        if (match(slightLeftPatterns, sizeof(slightLeftPatterns) / sizeof(slightLeftPatterns[0])))
+            return SLIGHT_LEFT;
+        if (match(slightRightPatterns, sizeof(slightRightPatterns) / sizeof(slightRightPatterns[0])))
+            return SLIGHT_RIGHT;
+
+        if (match(hardLeftPatterns, sizeof(hardLeftPatterns) / sizeof(hardLeftPatterns[0])))
+            return HARD_LEFT;
+        if (match(hardRightPatterns, sizeof(hardRightPatterns) / sizeof(hardRightPatterns[0])))
+            return HARD_RIGHT;
+
+        // if (match(leftTurn, sizeof(leftTurn) / sizeof(leftTurn[0])))
+        //     return LEFT_TURN;
+        // if (match(rightTurn, sizeof(rightTurn) / sizeof(rightTurn[0])))
+        //     return RIGHT_TURN;
+
+        if (match(allWhite, sizeof(allWhite) / sizeof(allWhite[0])))
+            return ALL_WHITE;
+        if (match(allBlack, sizeof(allBlack) / sizeof(allBlack[0])))
+            return ALL_BLACK;
+
+        return CENTER;
     }
 };
