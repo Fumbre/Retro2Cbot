@@ -6,8 +6,28 @@
  */
 #pragma once
 #include <Arduino.h>
-#include "Reflective_read.h"
 #include "common/constant/reflective_sensor.h"
+
+struct ReflectiveRead
+{
+    unsigned long count = 0;
+    double mean = 0.0;
+    double m2 = 0.0; // sum of squares of differences for variance
+    int minimum = 1023;
+    int maximum = 0;
+    void update(int x)
+    {
+        count = 1;
+        double dx = x - mean;
+        mean += dx / count;
+        double dx2 = x - mean;
+        m2 += dx * dx2;
+        if (x < minimum)
+            minimum = x;
+        if (x > maximum)
+            maximum = x;
+    }
+};
 
 class ReflectiveSensor
 {
@@ -16,9 +36,6 @@ private:
     const int *pins;    // reflective sensor pins
     int pins_rs_length; // length of pins array
     float threshold;    // white range
-    uint8_t previousLineStatus = 0;
-    uint8_t lineStatus = 0;
-    int isBlackCalibArr[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
     ReflectiveRead *getRSValue()
     {
@@ -34,11 +51,19 @@ private:
         return stats;
     }
 
+    uint8_t blackCalibration;
+    int isBlackCalib = 0;
+
 public:
     ReflectiveRead *currentSensors;
-    ReflectiveRead *reflectiveRead;        // init surface
+    ReflectiveRead *reflectiveReadInit;    // init surface
     ReflectiveRead reflectiveReadBlack[8]; // second surface
-    int isBlackCalib = false;
+
+    uint8_t currentLineStatus = 0;
+    uint8_t previousLineStatus = 0;
+
+    bool isBlackCalibrated = false;
+
     /**
      * @name ReflectiveSensor
      * @authors Sunny & Vlad
@@ -69,20 +94,49 @@ public:
     }
 
     /**
-     * @name calibration
+     * @name calibrationInit
      * @authors Sunny & Vlad
      * @date 10-12-2025
      * @details get first surface data to reflectiveRead property
      */
-    void calibration()
+    void calibrationInit()
     {
         // calibrate for first surface
-        free(reflectiveRead);
-        reflectiveRead = getRSValue();
+        free(reflectiveReadInit);
+        reflectiveReadInit = getRSValue();
 
         for (int i = 0; i < 8; i++)
         {
-            Serial.println(reflectiveRead[i].mean);
+            Serial.println(reflectiveReadInit[i].mean);
+        }
+    }
+
+    void calibrationBlack()
+    {
+        if (isBlackCalib < 8)
+        {
+            uint8_t reflectiveReadCheange = this->getLineDifference(this->reflectiveReadInit, threshold);
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (!(reflectiveReadCheange & (128 >> i)) && !(blackCalibration & (128 >> i)))
+                {
+                    this->reflectiveReadBlack[i].mean = analogRead(PINS_RS[i]);
+
+                    blackCalibration |= (128 >> i);
+
+                    isBlackCalib++;
+
+                    Serial.print("Sensor ");
+                    Serial.print(i);
+                    Serial.print(": ");
+                    Serial.println(reflectiveReadBlack[i].mean);
+                }
+            }
+        }
+        else
+        {
+            isBlackCalibrated = true;
         }
     }
 
@@ -107,51 +161,33 @@ public:
                     (currentSensors[i].mean - reflectiveDifference <= compare[i].mean) &&
                     (currentSensors[i].mean + reflectiveDifference >= compare[i].mean)))
             {
-                lineStatus |= (128 >> i);
                 status |= (128 >> i);
             }
             else
             {
-                lineStatus &= ~(128 >> i);
                 status &= ~(128 >> i);
             }
         }
         return status;
     }
 
-    void calibrationBlack()
+    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMinus)
     {
-        // Serial.println(lineStatus, BIN);
-        for (int i = 0; i < 8; i++)
-        {
-            if (!(lineStatus & (128 >> i)) && (int)isBlackCalibArr[i] == 0)
-            {
-                int value = analogRead(pins[i]);
-                reflectiveReadBlack[i].update(value);
-                isBlackCalibArr[i] = 1;
-                // Serial.print("Sensor ");
-                // Serial.print(i);
-                // Serial.print(" ");
-                // Serial.println(reflectiveReadBlack[i].mean);
-            }
-        }
-        // Serial.println("");
-    }
+        uint8_t status = 0;
 
-    bool getIsBlackCalib()
-    {
-        for (int i = 0; i < 8; i++)
+        free(currentSensors);
+        currentSensors = getRSValue();
+        for (int i = 0; i < pins_rs_length; i++)
         {
-            if (isBlackCalibArr[i])
+            if (currentSensors[i].mean + reflectiveDifferenceMinus >= compare[i].mean)
             {
-                isBlackCalib = true;
+                status |= (128 >> i);
             }
             else
             {
-                isBlackCalib = false;
-                break;
+                status &= ~(128 >> i);
             }
         }
-        return isBlackCalib;
+        return status;
     }
 };

@@ -7,4 +7,6 @@
 #include "common/robot/movement/movementPID.h"
 
 void calibrate();
+
+void readBlackLine();
 bool detectSquer();

@@ -36,28 +36,28 @@ bool detected = false;
 void loop()
 {
   calibrate();
+  readBlackLine();
+  // if (detectSquer())
+  // {
+  //   detected = true;
+  //   if (test.executeOnce(0))
+  //   {
+  //     resetMoveLeft();
+  //   }
+  // }
 
-  if (detectSquer())
-  {
-    detected = true;
-    if (test.executeOnce(0))
-    {
-      resetMoveLeft();
-    }
-  }
-
-  if (detected)
-  {
-    if (didMoveLeft(200, 9))
-    {
-      detected = false;
-      test.resetExecuteOnce();
-        }
-  }
-  else
-  {
-    moveForward(75);
-  }
+  // if (detected)
+  // {
+  //   if (didMoveLeft(200, 9))
+  //   {
+  //     detected = false;
+  //     test.resetExecuteOnce();
+  //       }
+  // }
+  // else
+  // {
+  //   moveForward(75);
+  // }
 
   // moveStabilized(230, 230);
   // testBasicMovement();
