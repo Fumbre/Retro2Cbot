@@ -19,6 +19,9 @@ void setupSonar()
 
   pinMode(PIN_SONAR_TRIG_2, OUTPUT);
   pinMode(PIN_SONAR_ECHO_2, INPUT);
+
+  pinMode(PIN_SONAR_TRIG_3, OUTPUT);
+  pinMode(PIN_SONAR_ECHO_3, INPUT);
 }
 
 // Função genérica para medir distância de QUALQUER sonar
@@ -36,16 +39,19 @@ float measureDistance(int trig, int echo)
   return duration * 0.034 / 2;
 }
 
-// Distância frontal
 float getDistanceCM_Front()
 {
   return measureDistance(PIN_SONAR_TRIG_1, PIN_SONAR_ECHO_1);
 }
 
-// Distância direita
 float getDistanceCM_Right()
 {
   return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
+}
+
+float getDistanceCM_Left()
+{
+  return measureDistance(PIN_SONAR_TRIG_3, PIN_SONAR_ECHO_3);
 }
 
 bool isObstacleFront(float limit)
@@ -60,6 +66,11 @@ bool isObstacleRight(float limit)
   return (d > 2 && d <= limit);
 }
 
+bool isObstacleLeft(float limit)
+{
+  float d = getDistanceCM_Left();
+  return (d > 2 && d <= limit);
+}
 
 /**
  * @name avoidObstacleSmoothNonBlocking

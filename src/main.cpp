@@ -32,16 +32,21 @@ Timer stampRotateLeft;
 Timer stampRotateRight;
  
       
-// // LineSensor sensor(PINS_RS, 8, 700);
+// LineSensor sensor(PINS_RS, 8, 700);
 // LineInterpreter interpreter;
 // LineFollower follower(190, 250);
 
 void loop() {
   // ================== Physical Maze ==================
-  Serial.println(getDistanceCM_Front());
-  delay(200);
-
   mazeStep();
+  
+  // Serial.print("F: ");
+  // Serial.print(getDistanceCM_Front());
+  // Serial.print(" | R: ");
+  // Serial.print(getDistanceCM_Right());
+  // Serial.print(" | L: ");
+  // Serial.println(getDistanceCM_Left());
+  // delay(200);
 
   // ================== simple stop/forward ==================
 
