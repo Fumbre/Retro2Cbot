@@ -36,6 +36,7 @@ bool detected = false;
 void loop()
 {
   // calibrate();
+
   // readBlackLine();
 
   followLine();
