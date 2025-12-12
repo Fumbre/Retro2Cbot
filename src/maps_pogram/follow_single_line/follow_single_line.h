@@ -1,3 +1,5 @@
 #include "common/tools/Reflective_sensor.h"
+#include "common/robot/movement/movement.h"
+void followLine(int speed);
 
-void followLine();
+float getProcentValue(int speed);

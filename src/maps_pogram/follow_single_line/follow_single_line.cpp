@@ -2,54 +2,55 @@
 
 ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 225);
 
-void followLine()
+void followLine(int speed)
 {
+  float pwmValue = getProcentValue(speed);
+  uint8_t lineStatus = rs.readBlackLine();
+  int leftIndex = 0;
+  int rightIndex = PINS_RS_LENGTH - 1;
+  int leftBlackCount = 0;
+  int rightBlackCount = 0;
+  float leftSum = 0;
+  float rightSum = 0;
 
-  switch (rs.pattern())
+  int i = 0;
+  while (i < (PINS_RS_LENGTH / 2))
   {
-  case CENTER:
-  {
-    Serial.println(rs.readBlackLine(), BIN);
+    i++;
 
-    Serial.println("center");
-    break;
-  };
-  case SLIGHT_LEFT:
-  {
-    Serial.println("SLIGHT_LEFT");
-    break;
-  };
-  case SLIGHT_RIGHT:
-  {
-    Serial.println("SLIGHT_RIGHT");
-    break;
-  };
-  case HARD_LEFT:
-  {
-    Serial.println("HARD_LEFT");
-    break;
-  };
-  case HARD_RIGHT:
-  {
-    Serial.println("HARD_RIGHT");
-    break;
-  };
-  case ALL_WHITE:
-  {
-    Serial.println("ALL_WHITE");
-    break;
-  };
-
-  case ALL_BLACK:
-  {
-    Serial.println("ALL_BLACK");
-    break;
-  };
-
-  default:
-  {
-    Serial.println(rs.readBlackLine(), BIN);
-    break;
+    if (bitRead(lineStatus, leftIndex))
+    {
+      leftBlackCount++;
+      leftSum += WEIGHT[leftIndex];
+    }
+    if (bitRead(lineStatus, rightIndex))
+    {
+      rightBlackCount++;
+      rightSum += WEIGHT[rightIndex];
+    }
+    leftIndex++;
+    rightIndex--;
   }
+
+  float leftSpeed = pwmValue;
+  float rightSpeed = pwmValue;
+  if (leftBlackCount != 0)
+  {
+    float factor = leftSum / (float)leftBlackCount;
+    leftSpeed *= factor;
   }
+
+  if (rightBlackCount != 0)
+  {
+    float factor = rightSum / (float)rightBlackCount;
+    rightSpeed *= factor;
+  }
+  moveSpeed(leftSpeed,rightSpeed);
+}
+
+float getProcentValue(int speed)
+{
+  speed = constrain(speed, 0, 100);
+  float value = ((float)speed / (float)100) * 255;
+  return constrain(value, 0, 255);
 }

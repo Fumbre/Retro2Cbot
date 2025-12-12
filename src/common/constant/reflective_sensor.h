@@ -10,9 +10,11 @@ const int PIN_RS_D5 = A3;
 const int PIN_RS_D4 = A4;
 const int PIN_RS_D3 = A5;
 const int PIN_RS_D2 = A6;
-const int PIN_RS_D1 = A7; 
+const int PIN_RS_D1 = A7;
 
 const int THRESHOLD = 500;
+
+const float WEIGHT[] = {-1, -0.75, -0.5, 0, 0, -0.5, -0.75, -1};
 
 const int PINS_RS[] = {
     PIN_RS_D8,
@@ -26,4 +28,4 @@ const int PINS_RS[] = {
 };
 
 const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
-// to store array length dynamically 
+// to store array length dynamically
