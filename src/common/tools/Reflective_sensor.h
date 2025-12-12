@@ -11,22 +11,24 @@
 // --- bitmask tables ---
 const uint8_t centerPatterns[] = {0b00011000, 0b00111100};
 const uint8_t slightLeftPatterns[] = {
+    0b01100000,
     0b00110000,
     0b01110000,
     0b00111000,
 };
-const uint8_t slightRightPatterns[] = {0b00001100, 0b00001110, 0b00011100};
+const uint8_t slightRightPatterns[] = {
+    0b00000110,
+    0b00001100,
+    0b00001110,
+    0b00011100,
+};
 
 const uint8_t hardLeftPatterns[] = {
-    0b11111000,
-    0b11110000,
     0b11100000,
     0b11000000,
     0b10000000,
 };
 const uint8_t hardRightPatterns[] = {
-    0b00011111,
-    0b00001111,
     0b00000111,
     0b00000011,
     0b00000001,
@@ -35,8 +37,8 @@ const uint8_t hardRightPatterns[] = {
 const uint8_t allWhite[] = {0b00000000};
 const uint8_t allBlack[] = {0b11111111};
 
-// const uint8_t leftTurn[] = {0b11111000, 0b11110000, 0b11111100, 0b11111110};
-// const uint8_t rightTurn[] = {0b00011111, 0b00001111, 0b00111111, 0b01111111};
+const uint8_t leftTurn[] = {0b11111000, 0b11110000, 0b11111100, 0b11111110};
+const uint8_t rightTurn[] = {0b00011111, 0b00001111, 0b00111111, 0b01111111};
 
 enum LineState
 {
@@ -268,10 +270,10 @@ public:
         if (match(hardRightPatterns, sizeof(hardRightPatterns) / sizeof(hardRightPatterns[0])))
             return HARD_RIGHT;
 
-        // if (match(leftTurn, sizeof(leftTurn) / sizeof(leftTurn[0])))
-        //     return LEFT_TURN;
-        // if (match(rightTurn, sizeof(rightTurn) / sizeof(rightTurn[0])))
-        //     return RIGHT_TURN;
+        if (match(leftTurn, sizeof(leftTurn) / sizeof(leftTurn[0])))
+            return LEFT_TURN;
+        if (match(rightTurn, sizeof(rightTurn) / sizeof(rightTurn[0])))
+            return RIGHT_TURN;
 
         if (match(allWhite, sizeof(allWhite) / sizeof(allWhite[0])))
             return ALL_WHITE;

@@ -4,7 +4,6 @@ ReflectiveSensor rs(PINS_RS, PINS_RS_LENGTH, 225);
 
 void followLine()
 {
-
   switch (rs.pattern())
   {
   case CENTER:
