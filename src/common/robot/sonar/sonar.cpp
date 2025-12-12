@@ -50,18 +50,27 @@ float getDistanceCM_Left() {
 }
 
 bool isObstacleFront(float limit) {
-  float d = getDistanceCM_Front();
-  return (d > 2 && d <= limit);
+    float d = getDistanceCM_Front();
+
+    if (d == 400) { return true; }         // parede encostada
+    if (d < 2) { return true; }          // parede MUITO perto >> ruído >> considerar parede
+    return (d > 2 && d <= limit);       // parede dentro do limite
 }
 
 bool isObstacleRight(float limit) {
-  float d = getDistanceCM_Right();
-  return (d > 2 && d <= limit);
+    float d = getDistanceCM_Right();
+
+    if (d == 400) { return true; }         // parede encostada
+    if (d < 2) { return true; }          // parede MUITO perto >> ruído >> considerar parede
+    return (d > 2 && d <= limit);       // parede dentro do limite
 }
 
 bool isObstacleLeft(float limit) {
-  float d = getDistanceCM_Left();
-  return (d > 2 && d <= limit);
+    float d = getDistanceCM_Left();
+
+    if (d == 400) { return true; }          // parede encostada
+    if (d < 2)   { return true; }           // parede MUITO perto >> ruído >> considerar parede
+    return (d > 2 && d <= limit);       // parede dentro do limite
 }
 
 /**
