@@ -1,5 +1,5 @@
 #pragma once
-#include "mazeMove.h"
+#include "lineMazeLogic.h"
 #include "command.h"
 
 class MazeController {
