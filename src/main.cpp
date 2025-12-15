@@ -30,7 +30,6 @@ Timer stampForward;
 Timer stampBackward;
 Timer stampRotateLeft;
 Timer stampRotateRight;
- 
       
 // LineSensor sensor(PINS_RS, 8, 700);
 // LineInterpreter interpreter;
