@@ -12,9 +12,9 @@ LineSensor sensor(sensorPins, 8, 700);
 LineInterpreter interpreter;
 
 // turn pref and cooldown value
-MazeLogic maze(RIGHT_FIRST, 200);
+MazeLogic maze(RIGHT_FIRST, 100);
 // turn speed and base speed
-MazeController controller(200, 255);
+MazeController controller(210, 255);
 
 void setup() {
     Serial.begin(9600);

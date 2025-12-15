@@ -32,4 +32,11 @@ private:
     // confirmation filter
     LineState pendingState;
     int pendingCount;
+
+    bool uturnActive;
+
+    bool turnActive;
+    MazeMove activeTurn;
+    unsigned long turnStartTime;
+    unsigned long minTurnDurationMs;
 };
