@@ -14,7 +14,7 @@ const int PIN_RS_D1 = A7;
 
 const int THRESHOLD = 500;
 
-const float WEIGHT[] = {-1, -0.75, -0.5, 1, 1, -0.5, -0.75, -1};
+const float WEIGHT[] = {-1, -0.75, -0.5, 0, 0, -0.5, -0.75, -1};
 
 const int PINS_RS[] = {
     PIN_RS_D8,
