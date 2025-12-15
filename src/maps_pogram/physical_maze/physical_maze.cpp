@@ -1,3 +1,8 @@
+/**
+ * @name physical maze
+ * @author Francisco
+ * @date 11-12-2025
+ */
 #include "physical_maze.h"
 #include "common/robot/movement/movement.h"
 #include "common/robot/sonar/sonar.h"
@@ -27,12 +32,22 @@ static Timer turnTimer;
 static bool dcRight = false;
 static bool dcLeft  = false;
 
+/**
+ * @name mazeInit
+ * @author Francisco
+ * @date 11-12-2025
+ */
 void mazeInit() {
     mazeState = MAZE_FORWARD;
     dcTimer.hardReset();
     turnTimer.hardReset();
 }
 
+/**
+ * @name mazeStep
+ * @author Francisco
+ * @date 11-12-2025
+ */
 void mazeStep() {
 
     gripper(1200);
