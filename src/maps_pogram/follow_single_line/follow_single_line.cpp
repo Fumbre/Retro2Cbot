@@ -6,6 +6,7 @@ void followLine(int speed)
 {
   float pwmValue = getProcentValue(speed);
   uint8_t lineStatus = rs.readBlackLine();
+  Serial.println(lineStatus, BIN);
   int leftIndex = 0;
   int rightIndex = PINS_RS_LENGTH - 1;
   int leftBlackCount = 0;
@@ -37,15 +38,17 @@ void followLine(int speed)
   if (leftBlackCount != 0)
   {
     float factor = leftSum / (float)leftBlackCount;
-    leftSpeed *= factor;
+    leftSpeed = leftSpeed + leftSpeed * factor;
   }
 
   if (rightBlackCount != 0)
   {
     float factor = rightSum / (float)rightBlackCount;
-    rightSpeed *= factor;
+    rightSpeed = rightSpeed + rightSpeed * factor;
   }
-  moveSpeed(leftSpeed,rightSpeed);
+  Serial.println(leftSpeed);
+  Serial.println(rightSpeed);
+  moveSpeed(leftSpeed, rightSpeed);
 }
 
 float getProcentValue(int speed)

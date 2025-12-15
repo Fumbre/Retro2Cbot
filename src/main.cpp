@@ -13,7 +13,8 @@
 #include "common/robot/neopixel/neopixel.h"
 #include "common/robot/movement/movementPID.h"
 #include "maps_pogram/maze_line/maze_line.h"
-
+#include "common/robot/hc12/hc12.h"
+#include "common/tools/JSON.h"
 #include "common/tools/Reflective_sensor.h"
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 
@@ -22,71 +23,26 @@ const int SETTING_MODE = 2;
 void setup()
 {
   Serial.begin(9600);
-  blueTooth.begin(9600);
-  setupMotor();
-  setupSonar();
-  initNeopixelPins();
+  buildHC12Connection();
 }
 
-Timer test;
-Timer test2;
-
-bool detected = false;
+unsigned long lastTime = 0;
 
 void loop()
 {
-  // calibrate();
-
-  // readBlackLine();
-
-  followLine(100);
-
-  // if (detectSquer())
-  // {
-  //   detected = true;
-  //   if (test.executeOnce(0))
-  //   {
-  //     resetMoveLeft();
-  //   }
-  // }
-
-  // if (detected)
-  // {
-  //   if (didMoveLeft(200, 9))
-  //   {
-  //     detected = false;
-  //     test.resetExecuteOnce();
-  //       }
-  // }
-  // else
-  // {
-  //   moveForward(75);
-  // }
-
-  // moveStabilized(230, 230);
-  // testBasicMovement();
-
-  // huj.getDifference(huj.reflectiveRead, 20);
-
-  // if (test.executeOnce(0))
-  // {
-  //   int index[] = {0, 1};
-  //   turnOnSomeLeds(index, 2, 54, 154, 12);
-  // }
-
-  // if (test.timeout(10))
-  // {
-  //   moveForward(100);
-  // }
-
-  // if (!test.interval(500, 500))
-  // {
-  //   turnOnSomeLeds(index, 2, 54, 154, 12);
-  // }
-  // else
-  // {
-  //   turnOnSomeLeds(index, 2, 255, 175, 0);
-  // }
-
-  // testPulses(20);
+  Json json;
+  json.add("event","gripper");
+  json.add("method","POST");
+  Json* list[1];
+  Json inside;
+  inside.add("gripperStatus",true);
+  inside.add("robotCode","BB016");
+  list[0] = &inside;
+  json.addArray("data",list,1);
+  String data =  json.toString();
+  unsigned long now = millis();
+  if(now - lastTime >= 2000){
+    sendDataFromHC12(data);
+    lastTime = now;
+  }
 }
