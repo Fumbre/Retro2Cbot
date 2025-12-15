@@ -241,7 +241,6 @@ public:
         uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, 75);
 
         return currentBlackStatus;
-        // Serial.println(currentBlackStatus, BIN);
     }
 
     bool match(const uint8_t *patterns, int elementCount)

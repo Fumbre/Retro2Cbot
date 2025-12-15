@@ -1,7 +1,6 @@
 #include "common/constant/robot.h"
 #include "common/robot/motor/motor.h"
 #include "common/tools/bluetooth.h"
-#include "common/robot/movement/movement.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
@@ -17,28 +16,37 @@
 #include "common/tools/Reflective_sensor.h"
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 
-const int SETTING_MODE = 2;
+int mapInit = 0;
 
 void setup()
 {
   Serial.begin(9600);
   blueTooth.begin(9600);
+  // #ifdef BB046
+  //   TODO: followLineSetupFunction
+  // #endif
   setupMotor();
   setupSonar();
   initNeopixelPins();
 }
 
-Timer test;
-Timer test2;
-
-bool detected = false;
-
 void loop()
 {
-  // calibrate();
-  // readBlackLine();
+  switch (mapInit)
+  {
+  case 0:
 
-  followLine();
+  
+    if (false)
+    {
+      // when calibration is done go to next mode
+      mapInit += SETTING_MODE;
+    }
+    break;
+  case 2:
+    followLine();
+    break;
+  }
 
   // if (detectSquer())
   // {
