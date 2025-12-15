@@ -8,13 +8,11 @@ Timer didMoveLeftTimer;
 
 // bool didMoveRight(int speed, int ms)
 // {
-//     // enquanto não passar o tempo → roda à direita
 //     if (!didMoveRightTimer.timeout(ms)) {
 //         moveStabilized(speed, -speed);
 //         return false;
 //     }
 
-//     // acabou o tempo → parar e resetar
 //     didMoveRightTimer.resetTimeout();
 //     return true;
 // }
@@ -175,17 +173,12 @@ void moveSpeed(int speedLeft, int speedRight)
  */
 void moveStabilized(int speedLeft, int speedRight)
 {
-    // ================================
-    // CORREÇÃO PARA ANDAR EM LINHA RECTA
-    // (ajusta estes valores)
-    // ================================
-    #define LEFT_CORRECTION  1.00   // aumenta para puxar mais p/ esquerda
-    #define RIGHT_CORRECTION 0.93   // aumenta para puxar mais p/ direita
+    
+    #define LEFT_CORRECTION  1.00   
+    #define RIGHT_CORRECTION 0.93   
 
     speedLeft  = speedLeft  * LEFT_CORRECTION;
     speedRight = speedRight * RIGHT_CORRECTION;
-    // ================================
-
 
     static int step = 0;
     static Timer stampForward;
