@@ -23,7 +23,7 @@ void setupSonar() {
   pinMode(PIN_SONAR_ECHO_3, INPUT);
 }
 
-// Função genérica para medir distância de QUALQUER sonar
+
 float measureDistance(int trig, int echo) {
   digitalWrite(trig, LOW);
   delayMicroseconds(2);
@@ -31,9 +31,12 @@ float measureDistance(int trig, int echo) {
   delayMicroseconds(10);
   digitalWrite(trig, LOW);
 
-  unsigned long duration = pulseIn(echo, HIGH, 25000); // timeout 25ms
+  unsigned long duration = pulseIn(echo, HIGH, 25000);          // timeout 25ms
 
-  if (duration == 0) return 400; // leitura inválida
+  if (duration == 0) {
+    return 400;
+  }
+                  
   return duration * 0.034 / 2;
 }
 
@@ -52,25 +55,37 @@ float getDistanceCM_Left() {
 bool isObstacleFront(float limit) {
     float d = getDistanceCM_Front();
 
-    if (d == 400) { return true; }         // parede encostada
-    if (d < 2) { return true; }          // parede MUITO perto >> ruído >> considerar parede
-    return (d > 2 && d <= limit);       // parede dentro do limite
+    if (d == 400) { 
+      return true; 
+    }         
+    if (d < 2) { 
+      return true; 
+    }          
+    return (d > 2 && d <= limit);      
 }
 
 bool isObstacleRight(float limit) {
     float d = getDistanceCM_Right();
 
-    if (d == 400) { return true; }         // parede encostada
-    if (d < 2) { return true; }          // parede MUITO perto >> ruído >> considerar parede
-    return (d > 2 && d <= limit);       // parede dentro do limite
+    if (d == 400) { 
+      return true; 
+    }         
+    if (d < 2) { 
+      return true; 
+    }          
+    return (d > 2 && d <= limit);      
 }
 
 bool isObstacleLeft(float limit) {
     float d = getDistanceCM_Left();
 
-    if (d == 400) { return true; }          // parede encostada
-    if (d < 2)   { return true; }           // parede MUITO perto >> ruído >> considerar parede
-    return (d > 2 && d <= limit);       // parede dentro do limite
+    if (d == 400) { 
+      return true; 
+    }          
+    if (d < 2)   { 
+      return true; 
+    }           
+    return (d > 2 && d <= limit);       
 }
 
 /**
