@@ -22,18 +22,10 @@ void setup()
 
 void loop()
 {
-  switch (mapInit)
+  switch (SETTING_MODE)
   {
-  case 0:
-
-    if (false)
-    {
-      // when calibration is done go to next mode
-      mapInit += SETTING_MODE;
-    }
-    break;
   case 2:
-    followLine();
+    followLineSequence();
     break;
   }
 

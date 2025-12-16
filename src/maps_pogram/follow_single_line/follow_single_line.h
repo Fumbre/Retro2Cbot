@@ -5,3 +5,4 @@
 
 void followLine();
 void followLineSetup();
+void followLineSequence();

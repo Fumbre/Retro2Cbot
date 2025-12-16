@@ -3,6 +3,11 @@
 // RS - reflective sensor
 ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 
+bool isSequenceStart = true;
+bool isSequenceEnd = false;
+bool mazePassed = false;
+bool isSequenceProcessing = false;
+
 /**
  * @name followLine
  * @authors Aria & Fumbre (Vladyslav)
@@ -95,4 +100,25 @@ void followLineSetup()
   setupMotor();
   setupSonar();
   rsLine.setup();
+}
+
+void followLineSequence()
+{
+  if (!isSequenceStart && isSequenceEnd) // false
+  {
+    return;
+  }
+  if (isSequenceStart) // true
+  {
+
+    return;
+  }
+
+  if (isSequenceProcessing)
+  {
+    followLine();
+  }
+
+  if (mazePassed)
+    return;
 }
