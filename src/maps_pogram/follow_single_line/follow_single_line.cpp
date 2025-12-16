@@ -1,33 +1,46 @@
 #include "follow_single_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, THRESHOLD);
+ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 
+/**
+ * @name followLine
+ * @authors Aria & Fumbre (Vladyslav)
+ * @date 15-12-2025
+ */
 void followLine()
 {
 
-  int fullSpeed = 255;
-  float slightConf = .8;
-  float hardConf = -.8;
+  LineState prevPattern;
 
-  switch (rsLine.pattern())
+  int fullSpeed = 255;
+  float slightConf = .6;
+  float hardConf = -.7;
+
+  Serial.println(rsLine.readBlackLine(), BIN);
+
+  LineState currnetPattern = rsLine.pattern();
+
+  switch (currnetPattern)
   {
   case CENTER:
   {
     moveSpeed(fullSpeed, fullSpeed);
+    prevPattern = CENTER;
     Serial.println("center");
     break;
   };
   case SLIGHT_LEFT:
   {
     moveSpeed(fullSpeed * slightConf, fullSpeed);
-
+    prevPattern = SLIGHT_LEFT;
     Serial.println("SLIGHT_LEFT");
     break;
   };
   case SLIGHT_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * slightConf);
+    prevPattern = SLIGHT_RIGHT;
 
     Serial.println("SLIGHT_RIGHT");
     break;
@@ -35,6 +48,7 @@ void followLine()
   case HARD_LEFT:
   {
     moveSpeed(fullSpeed * hardConf, fullSpeed);
+    prevPattern = HARD_LEFT;
     Serial.println("HARD_LEFT");
     break;
   };
@@ -42,16 +56,18 @@ void followLine()
   {
     moveSpeed(fullSpeed, fullSpeed * hardConf);
 
+    prevPattern = HARD_RIGHT;
     Serial.println("HARD_RIGHT");
     break;
   };
-  case ALL_WHITE:
-  {
-    moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
 
-    Serial.println("ALL_WHITE");
-    break;
-  };
+    // case ALL_WHITE:
+    // {
+    //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
+
+    //   Serial.println("ALL_WHITE");
+    //   break;
+    // };
 
   case ALL_BLACK:
   {
@@ -63,10 +79,20 @@ void followLine()
 
   default:
   {
-    moveSpeed(fullSpeed, fullSpeed);
-
-    Serial.println(rsLine.readBlackLine(), BIN);
+    currnetPattern = prevPattern;
     break;
   }
   }
+}
+
+/**
+ * @name followLine
+ * @authors Aria & Fumbre (Vladyslav)
+ * @date 15-12-2025
+ */
+void followLineSetup()
+{
+  setupMotor();
+  setupSonar();
+  rsLine.setup();
 }
