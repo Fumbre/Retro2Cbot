@@ -3,6 +3,8 @@
 // RS - reflective sensor
 ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD);
 
+float slightConf = .8;
+
 void mazeLineSetup()
 {
     setupMotor();
@@ -17,7 +19,21 @@ void mazeLine(int speed)
     {
     case CENTER:
         moveSpeed(pwmValue, pwmValue);
-        break;   
+        break;
+    case SLIGHT_LEFT:
+        moveSpeed(pwmValue * slightConf, pwmValue);
+        break;
+    case SLIGHT_RIGHT:
+        moveSpeed(pwmValue, pwmValue * slightConf);
+        break;
+    case HARD_LEFT:
+        break;
+    case HARD_RIGHT:
+        break;
+    case ALL_WHITE:
+        break;
+    case ALL_BLACK:
+        break;                 
     }
 }
 
