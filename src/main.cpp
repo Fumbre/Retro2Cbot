@@ -21,32 +21,35 @@ int mapInit = 0;
 void setup()
 {
   Serial.begin(9600);
-  blueTooth.begin(9600);
+  // blueTooth.begin(9600);
   // #ifdef BB046
   //   TODO: followLineSetupFunction
   // #endif
-  setupMotor();
-  setupSonar();
-  initNeopixelPins();
+  // setupMotor();
+  // setupSonar();
+  // initNeopixelPins();
+  mazeLineSetup();
 }
 
 void loop()
 {
-  switch (mapInit)
-  {
-  case 0:
+  // switch (mapInit)
+  // {
+  // case 0:
 
   
-    if (false)
-    {
-      // when calibration is done go to next mode
-      mapInit += SETTING_MODE;
-    }
-    break;
-  case 2:
-    followLine();
-    break;
-  }
+  //   if (false)
+  //   {
+  //     // when calibration is done go to next mode
+  //     mapInit += SETTING_MODE;
+  //   }
+  //   break;
+  // case 2:
+  //   followLine();
+  //   break;
+  // }
+
+  mazeLine(80);
 
   // if (detectSquer())
   // {

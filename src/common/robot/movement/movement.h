@@ -5,8 +5,8 @@
 #include "common/robot/motor/motor.h"
 #include "common/tools/Timer.h"
 
-void resetMoveRight();
-void resetMoveLeft();
+int resetMoveRight();
+int resetMoveLeft();
 bool didMoveRight(int speed, int pulses);
 bool didMoveLeft(int speed, int pulses);
 

@@ -6,4 +6,4 @@ void mazeLineSetup();
 
 void mazeLine(int speed);
 
-float getPWMValue(int speed);
+int getPWMValue(int speed);

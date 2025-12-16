@@ -10,11 +10,9 @@ Timer didMoveLeftTimer;
  * @name resetMoveLeft
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
- * @param speed(-255|255)
- * @param pulses(0 99)
  * @details reset didMoveLeft timer
  */
-void resetMoveLeft()
+int resetMoveLeft()
 {
   didMoveLeftTimer.resetExecuteOnce();
 }
@@ -23,11 +21,9 @@ void resetMoveLeft()
  * @name resetMoveRight
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
- * @param speed(-255|255)
- * @param pulses(0 99)
  * @details reset didMoveRight timer
  */
-void resetMoveRight()
+int resetMoveRight()
 {
   didMoveRightTimer.resetExecuteOnce();
 }
