@@ -1,4 +1,3 @@
-
 // conclude the move forward t obe real in forward;
 // check left and right sensor to calib between section;
 // the same for 3 lines of black and white;
@@ -8,29 +7,45 @@
 #include "common/tools/Timer.h"
 #include "common/robot/gripper/gripper.h"
 
-class sequenceStart
+class SequenceStart
 {
 private:
   ReflectiveSensor *rsData;
-
-public:
-  sequenceStart(ReflectiveSensor *rsData)
-  {
-    this->rsData = rsData;
-  }
 
   bool isDetecetingBlackSquare()
   {
     static Timer t;
 
-    if (!t.timeout(30) && this->rsData->readBlackLine() == 255)
+    Serial.println(this->rsData->readBlackLine());
+
+    if (t.timeout(3000) && this->rsData->readBlackLine() == 255)
     {
       return true;
     }
-    else
+    else if (this->rsData->readBlackLine() != 255)
     {
       t.resetTimeout();
     }
     return false;
+  }
+
+public:
+  SequenceStart(ReflectiveSensor *rsData)
+  {
+    this->rsData = rsData;
+  }
+
+  void pickUp()
+  {
+    bool catchObj = false;
+    bool test = this->isDetecetingBlackSquare();
+    if (test)
+    {
+      catchObj = true;
+    }
+    if (catchObj)
+    {
+      gripperCatch();
+    }
   }
 };

@@ -1,7 +1,8 @@
 #include "follow_single_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
+ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 100, 10);
+SequenceStart entryPoint(&rsLine);
 
 bool isSequenceStart = true;
 bool isSequenceEnd = false;
@@ -98,27 +99,31 @@ void followLine()
 void followLineSetup()
 {
   setupMotor();
+  setupGripper();
   setupSonar();
   rsLine.setup();
 }
 
 void followLineSequence()
 {
-  if (!isSequenceStart && isSequenceEnd) // false
-  {
-    return;
-  }
-  if (isSequenceStart) // true
-  {
+  Serial.print("fsaf");
+  entryPoint.pickUp();
 
-    return;
-  }
+  // if (!isSequenceStart && isSequenceEnd) // false
+  // {
+  //   return;
+  // }
+  // if (isSequenceStart) // true
+  // {
+  //   entryPoint.pickUp();
+  //   return;
+  // }
 
-  if (isSequenceProcessing)
-  {
-    followLine();
-  }
+  // if (isSequenceProcessing)
+  // {
+  //   followLine();
+  // }
 
-  if (mazePassed)
-    return;
+  // if (mazePassed)
+  //   return;
 }
