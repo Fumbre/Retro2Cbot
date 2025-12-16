@@ -11,12 +11,14 @@ int mapInit = 1;
 void setup()
 {
   Serial.begin(9600);
-  blueTooth.begin(9600);
+  // blueTooth.begin(9600);
   // #ifdef BB046
   // TODO: followLineSetup()
   // #endif
-  followLineSetup();
-  initNeopixelPins();
+  // setupMotor();
+  // setupSonar();
+  // initNeopixelPins();
+  mazeLineSetup();
 }
 
 void loop()
@@ -33,7 +35,7 @@ void loop()
     followLineSequence();
     break;
   case 2:
-    mazeLine();
+    // mazeLine();
     break;
   }
 }
