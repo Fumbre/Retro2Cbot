@@ -1,5 +1,5 @@
 #pragma once
-#include "common/tools/Reflective_sensor.h"
+#include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/movement/movement.h"
 
 void mazeLineSetup();

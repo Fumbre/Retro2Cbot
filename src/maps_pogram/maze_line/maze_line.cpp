@@ -1,7 +1,7 @@
 #include "maze_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD);
+ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 
 float slightConf = 0.8;
 float hardConf = 0;
@@ -20,10 +20,13 @@ void mazeLine(int speed)
     LineState currentLineStatus = rsMaze.pattern();
     if (isRotating)
     {
-        if(currentLineStatus != ALL_WHITE){
+        if (currentLineStatus != ALL_WHITE)
+        {
             isRotating = false;
-        }else{
-            currentLineStatus  = prevStatus;
+        }
+        else
+        {
+            currentLineStatus = prevStatus;
         }
     }
     int pwmValue = getPWMValue(speed);
