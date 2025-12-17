@@ -109,7 +109,7 @@ MazeMove MazeLogic::decide(LineState state) {
     // ================= TURNING =================
     case TURNING:
 
-        if (state != ALL_WHITE) {
+        if (state == CENTER) {
             robotState = FOLLOW_LINE;
             return GO_FORWARD;
         }
