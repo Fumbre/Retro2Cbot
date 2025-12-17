@@ -1,8 +1,8 @@
 #include "follow_single_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 100, 10);
-SequenceStart entryPoint(&rsLine);
+ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 220, 35);
+StartSequence entryPoint(&rsLine);
 
 bool isSequenceStart = true;
 bool isSequenceEnd = false;
@@ -17,13 +17,17 @@ bool isSequenceProcessing = false;
 void followLine()
 {
 
+  if (!entryPoint.pickUp())
+  {
+    entryPoint.onPossition(1);
+    return;
+  }
+
   LineState prevPattern;
 
   int fullSpeed = 255;
   float slightConf = .6;
   float hardConf = -.7;
-
-  Serial.println(rsLine.readBlackLine(), BIN);
 
   LineState currnetPattern = rsLine.pattern();
 
@@ -100,30 +104,31 @@ void followLineSetup()
 {
   setupMotor();
   setupGripper();
+  gripperUnCatch();
   setupSonar();
   rsLine.setup();
 }
 
-void followLineSequence()
-{
-  Serial.print("fsaf");
-  entryPoint.pickUp();
+// void followLineSequence()
+// {
+// Serial.print("fsaf");
+// entryPoint.pickUp();
 
-  // if (!isSequenceStart && isSequenceEnd) // false
-  // {
-  //   return;
-  // }
-  // if (isSequenceStart) // true
-  // {
-  //   entryPoint.pickUp();
-  //   return;
-  // }
+// if (!isSequenceStart && isSequenceEnd) // false
+// {
+//   return;
+// }
+// if (isSequenceStart) // true
+// {
+//   entryPoint.pickUp();
+//   return;
+// }
 
-  // if (isSequenceProcessing)
-  // {
-  //   followLine();
-  // }
+// if (isSequenceProcessing)
+// {
+//   followLine();
+// }
 
-  // if (mazePassed)
-  //   return;
-}
+// if (mazePassed)
+//   return;
+// }

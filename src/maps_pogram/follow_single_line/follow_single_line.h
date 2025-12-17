@@ -3,8 +3,7 @@
 #include "common/robot/sonar/sonar.h"
 #include "common/robot/gripper/gripper.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
-#include "common/sequence/start/Sequence_start.h"
+#include "common/tools/Start_sequence.h"
 
 void followLine();
 void followLineSetup();
-void followLineSequence();
