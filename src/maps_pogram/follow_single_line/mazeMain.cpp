@@ -11,7 +11,7 @@ int sensorPins[] = { A0, A1, A2, A3, A4, A5, A6, A7 };
 LineSensor sensor(sensorPins, 8, 700);
 LineInterpreter interpreter;
 
-// turn pref and cooldown value
+// turn pref 
 MazeLogic maze(RIGHT_FIRST);
 // turn speed and base speed
 MazeController controller(210, 255);
@@ -35,6 +35,9 @@ void loop() {
     if (move != NO_ACTION) {
         MotorCommand cmd = controller.execute(move);
         moveSpeed(cmd.left, cmd.right);
+    }
+    else {
+        moveSpeed(0, 0);
     }
 
 }

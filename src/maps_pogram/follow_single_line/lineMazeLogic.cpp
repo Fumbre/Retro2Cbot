@@ -4,7 +4,9 @@ MazeLogic::MazeLogic(TurnPreference pref)
     : pref(pref),
       robotState(FOLLOW_LINE),
       lastStableState(CENTER),
-      stackTop(1)
+      stackTop(1),
+      stopStartTime(0),
+      stopDurationMs(150)
 {}
 
 void MazeLogic::pushTurn(TurnDir dir) {
@@ -39,30 +41,44 @@ MazeMove MazeLogic::decide(LineState state) {
 
         if (state == ALL_WHITE) {
 
-            // Decide based on last stable
-            if (lastStableState == LEFT_TURN) {
-                robotState = TURNING;
-                return TURN_LEFT;
-            }
-
-            if (lastStableState == RIGHT_TURN) {
-                robotState = TURNING;
-                return TURN_RIGHT;
-            }
-
-            if (lastStableState == ALL_BLACK) {
-                robotState = TURNING;
-                return (pref == LEFT_FIRST) ? TURN_LEFT : TURN_RIGHT;
-            }
-
-            robotState = UTURNING;
-            return UTURN;
+            robotState = STOPPED;
+            stopStartTime = millis(); 
+            return NO_ACTION;
         }
 
         if (state == SLIGHT_LEFT)  return SOFT_LEFT;
         if (state == SLIGHT_RIGHT) return SOFT_RIGHT;
 
-        return GO_FORWARD;
+    return GO_FORWARD;
+
+    // ================= STOPPED =================
+
+    case STOPPED:
+
+    // Stay stopped until delay expires
+    if (millis() - stopStartTime < stopDurationMs) {
+        return NO_ACTION;
+    }
+
+    // Decide after stopping
+    if (lastStableState == LEFT_TURN) {
+        robotState = TURNING;
+        return TURN_LEFT;
+    }
+
+    if (lastStableState == RIGHT_TURN) {
+        robotState = TURNING;
+        return TURN_RIGHT;
+    }
+
+    if (lastStableState == ALL_BLACK) {
+        robotState = TURNING;
+        return (pref == LEFT_FIRST) ? TURN_LEFT : TURN_RIGHT;
+    }
+
+    robotState = UTURNING;
+    return UTURN;
+
 
     // ================= UTURNING =================
     case UTURNING:

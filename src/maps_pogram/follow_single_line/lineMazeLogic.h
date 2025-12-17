@@ -13,6 +13,7 @@ enum MazeMove {
 
 enum RobotState {
     FOLLOW_LINE,
+    STOPPED,
     TURNING,
     UTURNING,
     BACKTRACKING
@@ -38,6 +39,9 @@ private:
     RobotState robotState;
 
     LineState lastStableState;
+
+    unsigned long stopStartTime;
+    unsigned long stopDurationMs;
 
     // Turn memory stack
     static const int MAX_TURNS = 32;
