@@ -14,7 +14,8 @@ class StartSequence
 private:
   ReflectiveSensor *rsData;
 
-  bool idk = false;
+  bool isRotated = false;
+  bool catchObj = false;
 
   /**
    *@param time int how black should be detected to return true
@@ -47,7 +48,7 @@ public:
     {
       if (this->rsData->readBlackLine() == 0)
       {
-        moveStabilized(230, 230);
+        moveSpeed(230, 230);
       }
     }
   }
@@ -55,8 +56,7 @@ public:
   bool pickUp()
   {
     static Timer t;
-    Serial.print("sdf");
-    bool catchObj = false;
+    static Timer t1;
     bool blackSquereDetected = this->isDetecetingBlackSquare(125);
     if (blackSquereDetected)
     {
@@ -66,20 +66,29 @@ public:
     {
       gripperCatch();
 
-      if (!idk)
+      if (t1.executeOnce(0))
       {
-        idk = didMoveLeft(255, 18);
+        moveSpeed(220, 220);
       }
 
-      if (idk)
+      if (t1.timeout(300))
+      {
+        if (!isRotated)
+        {
+          isRotated = didMoveLeft(255, 10);
+        }
+      }
+
+      if (isRotated)
       {
         if (t.executeOnce(0))
         {
-          moveSpeed(200, 200);
+          stopMotors();
+          // moveSpeed(150, 150);
         }
       }
     }
 
-    return idk;
+    return isRotated;
   }
 };

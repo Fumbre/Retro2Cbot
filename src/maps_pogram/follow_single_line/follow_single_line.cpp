@@ -17,11 +17,14 @@ bool isSequenceProcessing = false;
 void followLine()
 {
 
-  if (!entryPoint.pickUp())
+  static Timer t;
+  if (t.executeOnce(0))
   {
     entryPoint.onPossition(1);
-    return;
   }
+
+  if (!entryPoint.pickUp())
+    return;
 
   LineState prevPattern;
 
