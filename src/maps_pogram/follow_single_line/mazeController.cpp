@@ -18,14 +18,11 @@ MotorCommand MazeController::execute(MazeMove move) {
         case SOFT_RIGHT:
             return { baseSpeed, baseSpeed * 0.5 };
 
-        case CROSSING:
-            return { baseSpeed, baseSpeed * 0.5 };
-
         case NO_ACTION:
             return { };
 
         case UTURN:
-            return { turnSpeed, -turnSpeed };
+            return { -turnSpeed + 10 , turnSpeed - 10};
 
         default:
             return { baseSpeed, baseSpeed };

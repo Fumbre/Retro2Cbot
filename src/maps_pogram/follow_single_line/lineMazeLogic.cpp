@@ -1,128 +1,104 @@
 #include "lineMazeLogic.h"
 
-MazeLogic::MazeLogic(TurnPreference pref, unsigned long cooldownMs)
+MazeLogic::MazeLogic(TurnPreference pref)
     : pref(pref),
-      cooldownMs(cooldownMs),
-      lastState(CENTER),
-      lastDecisionTime(0),
-      pendingState(CENTER),
-      pendingCount(0),
-      uturnActive(false),
-      turnActive(false),
-      activeTurn(GO_FORWARD),
-      turnStartTime(0),
-      minTurnDurationMs(120)
+      robotState(FOLLOW_LINE),
+      lastStableState(CENTER),
+      stackTop(1)
 {}
 
-MazeMove MazeLogic::decide(LineState state, unsigned long timeNow) {
+void MazeLogic::pushTurn(TurnDir dir) {
+    if (stackTop < MAX_TURNS)
+        turnStack[stackTop++] = dir;
+}
 
-    // --- U-TURN MODE ---
-if (uturnActive) {
+bool MazeLogic::popTurn(TurnDir &dir) {
+    if (stackTop == 0) return false;
+    dir = turnStack[--stackTop];
+    return true;
+}
 
-    // Exit condition: line found again
-    if (state != ALL_WHITE) {
-        uturnActive = false;
-        lastState = state;
-        lastDecisionTime = timeNow;
+MazeMove MazeLogic::decide(LineState state) {
+
+    switch (robotState) {
+
+    // ================= FOLLOW LINE =================
+    case FOLLOW_LINE:
+
+        if (state != ALL_WHITE)
+            lastStableState = state;
+
+        // Detect ignored turns
+        if (state == LEFT_TURN && pref == RIGHT_FIRST) {
+            pushTurn(LEFT_DIR);
+        }
+
+        if (state == RIGHT_TURN && pref == LEFT_FIRST) {
+            pushTurn(RIGHT_DIR);
+        }
+
+        if (state == ALL_WHITE) {
+
+            // Decide based on last stable
+            if (lastStableState == LEFT_TURN) {
+                robotState = TURNING;
+                return TURN_LEFT;
+            }
+
+            if (lastStableState == RIGHT_TURN) {
+                robotState = TURNING;
+                return TURN_RIGHT;
+            }
+
+            if (lastStableState == ALL_BLACK) {
+                robotState = TURNING;
+                return (pref == LEFT_FIRST) ? TURN_LEFT : TURN_RIGHT;
+            }
+
+            robotState = UTURNING;
+            return UTURN;
+        }
+
+        if (state == SLIGHT_LEFT)  return SOFT_LEFT;
+        if (state == SLIGHT_RIGHT) return SOFT_RIGHT;
+
         return GO_FORWARD;
-    }
 
-    // Still searching → keep turning
-    return UTURN;
-}
+    // ================= UTURNING =================
+    case UTURNING:
 
-
-    //  2-of-3 confirmation filter
-    if (state == pendingState) {
-        pendingCount++;
-    } else {
-        pendingState = state;
-        pendingCount = 1;
-    }
-
-    // require 2 identical readings in a row
-    if (pendingCount < 5) {
+        if (state != ALL_WHITE) {
+            robotState = BACKTRACKING;
+            return GO_FORWARD;
+        }
         return NO_ACTION;
-    }
 
-    // after confirming, clear counter so next change must be reconfirmed
-    pendingCount = 0;
+    // ================= BACKTRACKING =================
+    case BACKTRACKING:
 
-    // cooldown
-    if (timeNow - lastDecisionTime < cooldownMs) {
-        return NO_ACTION;
-    }
+        if (state == LEFT_TURN || state == RIGHT_TURN) {
 
-    if (pendingState == lastState) {
-        return NO_ACTION;
-    }
+            TurnDir dir;
+            if (popTurn(dir)) {
+                robotState = TURNING;
+                return (dir == LEFT_DIR) ? TURN_LEFT : TURN_RIGHT;
+            }
+        }
 
-    // accept final state
-    lastState = pendingState;
-    lastDecisionTime = timeNow;
+        if (state == SLIGHT_LEFT)  return SOFT_LEFT;
+        if (state == SLIGHT_RIGHT) return SOFT_RIGHT;
 
-
-    if (pendingState == CENTER)
         return GO_FORWARD;
 
-    if (pendingState == ALL_BLACK && pref == RIGHT_FIRST)
-        return TURN_RIGHT;
-    
-    if (pendingState == ALL_BLACK && pref == LEFT_FIRST)
-        return TURN_LEFT;
+    // ================= TURNING =================
+    case TURNING:
 
-    if (pendingState == SLIGHT_LEFT)
-        return SOFT_LEFT;
-
-    if (pendingState == SLIGHT_RIGHT)
-        return SOFT_RIGHT;
-
-// --- PREFERRED HARD TURNS ONLY ---
-
-// HARD / L TURN (LEFT)
-if ((pendingState == HARD_LEFT || pendingState == LEFT_TURN) &&
-    pref == LEFT_FIRST) {
-
-    turnActive = true;
-    activeTurn = TURN_LEFT;
-    turnStartTime = timeNow;
-    lastDecisionTime = timeNow;
-    return TURN_LEFT;
-}
-
-// HARD / R TURN (RIGHT)
-if ((pendingState == HARD_RIGHT || pendingState == RIGHT_TURN) &&
-    pref == RIGHT_FIRST) {
-
-    turnActive = true;
-    activeTurn = TURN_RIGHT;
-    turnStartTime = timeNow;
-    lastDecisionTime = timeNow;
-    return TURN_RIGHT;
-}
-
-
-    if (pendingState == LEFT_TURN)
-        return TURN_LEFT;
-
-    if (pendingState == RIGHT_TURN)
-        return TURN_RIGHT;
-
-
-    if (pendingState == ALL_WHITE) {
-    uturnActive = true;
-    lastDecisionTime = timeNow;
-    return UTURN;
+        if (state != ALL_WHITE) {
+            robotState = FOLLOW_LINE;
+            return GO_FORWARD;
+        }
+        return NO_ACTION;
     }
 
-    // Ignore non-preferred hard turns (side T-junctions)
-if (pendingState == HARD_LEFT || pendingState == HARD_RIGHT ||
-    pendingState == LEFT_TURN || pendingState == RIGHT_TURN) {
-
-    // Treat as straight / continue following
-    return GO_FORWARD;
-}
-
-
-    return GO_FORWARD;
+    return NO_ACTION;
 }
