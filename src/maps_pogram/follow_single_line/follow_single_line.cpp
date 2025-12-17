@@ -9,6 +9,8 @@ bool isSequenceEnd = false;
 bool mazePassed = false;
 bool isSequenceProcessing = false;
 
+bool isEndSequence = false;
+
 /**
  * @name followLine
  * @authors Aria & Fumbre (Vladyslav)
@@ -18,12 +20,13 @@ void followLine()
 {
 
   static Timer t;
+  static Timer t1;
   if (t.executeOnce(0))
   {
     entryPoint.onPossition(1);
   }
 
-  if (!entryPoint.pickUp())
+  if (!entryPoint.pickUp() && !isEndSequence)
     return;
 
   LineState prevPattern;
@@ -34,67 +37,89 @@ void followLine()
 
   LineState currnetPattern = rsLine.pattern();
 
-  switch (currnetPattern)
+  if (!isEndSequence)
   {
-  case CENTER:
-  {
-    moveSpeed(fullSpeed, fullSpeed);
-    prevPattern = CENTER;
-    Serial.println("center");
-    break;
-  };
-  case SLIGHT_LEFT:
-  {
-    moveSpeed(fullSpeed * slightConf, fullSpeed);
-    prevPattern = SLIGHT_LEFT;
-    Serial.println("SLIGHT_LEFT");
-    break;
-  };
-  case SLIGHT_RIGHT:
-  {
-    moveSpeed(fullSpeed, fullSpeed * slightConf);
-    prevPattern = SLIGHT_RIGHT;
+    switch (currnetPattern)
+    {
+    case CENTER:
+    {
+      moveSpeed(fullSpeed, fullSpeed);
+      prevPattern = CENTER;
+      Serial.println("center");
+      break;
+    };
+    case SLIGHT_LEFT:
+    {
+      moveSpeed(fullSpeed * slightConf, fullSpeed);
+      prevPattern = SLIGHT_LEFT;
+      Serial.println("SLIGHT_LEFT");
+      break;
+    };
+    case SLIGHT_RIGHT:
+    {
+      moveSpeed(fullSpeed, fullSpeed * slightConf);
+      prevPattern = SLIGHT_RIGHT;
 
-    Serial.println("SLIGHT_RIGHT");
-    break;
-  };
-  case HARD_LEFT:
-  {
-    moveSpeed(fullSpeed * hardConf, fullSpeed);
-    prevPattern = HARD_LEFT;
-    Serial.println("HARD_LEFT");
-    break;
-  };
-  case HARD_RIGHT:
-  {
-    moveSpeed(fullSpeed, fullSpeed * hardConf);
+      Serial.println("SLIGHT_RIGHT");
+      break;
+    };
+    case HARD_LEFT:
+    {
+      moveSpeed(fullSpeed * hardConf, fullSpeed);
+      prevPattern = HARD_LEFT;
+      Serial.println("HARD_LEFT");
+      break;
+    };
+    case HARD_RIGHT:
+    {
+      moveSpeed(fullSpeed, fullSpeed * hardConf);
 
-    prevPattern = HARD_RIGHT;
-    Serial.println("HARD_RIGHT");
-    break;
-  };
+      prevPattern = HARD_RIGHT;
+      Serial.println("HARD_RIGHT");
+      break;
+    };
 
-    // case ALL_WHITE:
-    // {
-    //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
+      // case ALL_WHITE:
+      // {
+      //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
 
-    //   Serial.println("ALL_WHITE");
-    //   break;
-    // };
+      //   Serial.println("ALL_WHITE");
+      //   break;
+      // };
 
-  case ALL_BLACK:
-  {
-    moveSpeed(fullSpeed, fullSpeed);
+    case ALL_BLACK:
+    {
+      isEndSequence = entryPoint.isDetecetingBlackSquare(62);
 
-    Serial.println("ALL_BLACK");
-    break;
-  };
+      moveSpeed(fullSpeed, fullSpeed);
 
-  default:
-  {
-    currnetPattern = prevPattern;
-    break;
+      Serial.println("ALL_BLACK");
+      break;
+    };
+
+    default:
+    {
+      currnetPattern = prevPattern;
+      break;
+    }
+    }
   }
+  else
+  {
+    if (t1.timeout(500))
+    {
+      gripperUnCatch();
+    }
+    if (!t.timeout(1000))
+    {
+      moveSpeed(fullSpeed * hardConf, fullSpeed * hardConf);
+    }
+    else
+    {
+      stopMotors();
+    }
+
+    // if (!t.)
   }
 }
 

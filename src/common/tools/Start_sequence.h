@@ -21,20 +21,6 @@ private:
    *@param time int how black should be detected to return true
    *@return bool
    */
-  bool isDetecetingBlackSquare(int time)
-  {
-    static Timer t;
-
-    if (t.timeout(time) && this->rsData->readBlackLine() == 255)
-    {
-      return true;
-    }
-    else if (this->rsData->readBlackLine() != 255)
-    {
-      t.resetTimeout();
-    }
-    return false;
-  }
 
 public:
   StartSequence(ReflectiveSensor *rsData)
@@ -51,6 +37,21 @@ public:
         moveSpeed(230, 230);
       }
     }
+  }
+
+  bool isDetecetingBlackSquare(int time)
+  {
+    static Timer t;
+
+    if (t.timeout(time) && this->rsData->readBlackLine() == 255)
+    {
+      return true;
+    }
+    else if (this->rsData->readBlackLine() != 255)
+    {
+      t.resetTimeout();
+    }
+    return false;
   }
 
   bool pickUp()
