@@ -10,6 +10,8 @@ const uint8_t allWhite[]            = { 0b00000000, };
 const uint8_t allBlack[]            = { 0b11111111, };
 const uint8_t leftTurn[]            = { 0b11111000, 0b11110000, 0b11111100, };
 const uint8_t rightTurn[]           = { 0b00011111, 0b00001111, 0b00111111, };
+const uint8_t test[]                = { 0b10000001, 0b11000011, 0b11100111, 0b10000011, 
+                                        0b11000001, 0b11100011, 0b11000111, 0b11100001, 0b10000111};
 
 
 
@@ -33,6 +35,8 @@ LineState LineInterpreter::interpret(uint8_t mask) {
 
     if (match(mask, allWhite, sizeof(allWhite))) return ALL_WHITE;
     if (match(mask, allBlack, sizeof(allBlack))) return ALL_BLACK;
+
+    if (match(mask, test, sizeof(test))) return TEST_PATTERN;
 
     return CENTER;
 }

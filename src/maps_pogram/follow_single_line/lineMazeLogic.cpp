@@ -1,4 +1,8 @@
 #include "lineMazeLogic.h"
+#include "common/tools/Timer.h"
+
+bool huj = false;
+
 
 MazeLogic::MazeLogic(TurnPreference pref)
     : pref(pref),
@@ -9,6 +13,17 @@ MazeLogic::MazeLogic(TurnPreference pref)
 {}
 
 MazeMove MazeLogic::decide(LineState state) {
+
+    static Timer t;
+
+    if (huj){
+        if (!t.timeout(80)) {
+            return TURN_RIGHT;
+        } else  {
+            huj = false;
+        }
+    }
+
 
     switch (robotState) {
 
@@ -51,13 +66,18 @@ MazeMove MazeLogic::decide(LineState state) {
         }
 
         // --- Normal line following ---
-        if (state == SLIGHT_LEFT)  return SOFT_LEFT;
-        if (state == SLIGHT_RIGHT) return SOFT_RIGHT;
-        if (state == HARD_LEFT)    return TURN_LEFT;
-        if (state == HARD_RIGHT)   return TURN_RIGHT;
-        if (state == RIGHT_TURN && pref == RIGHT_FIRST) return TURN_RIGHT;
-        if (state == LEFT_TURN && pref == LEFT_FIRST)   return TURN_LEFT;
-
+        //if (state == TEST_PATTERN && pref == RIGHT_FIRST) return TURN_RIGHT;
+        //if (state == TEST_PATTERN && pref == LEFT_FIRST)  return TURN_LEFT;
+        if (state == SLIGHT_LEFT)                         return SOFT_LEFT;
+        if (state == SLIGHT_RIGHT)                        return SOFT_RIGHT;
+        if (state == HARD_LEFT)                           return TURN_LEFT;
+        if (state == HARD_RIGHT)                          return TURN_RIGHT;
+        if (state == RIGHT_TURN && pref == RIGHT_FIRST)    {
+            huj = true;
+            t.resetTimeout();
+            return TURN_RIGHT;
+        };
+        if (state == LEFT_TURN && pref == LEFT_FIRST)     return TURN_LEFT;
         return GO_FORWARD;
 
     // ================= UTURNING =================

@@ -14,7 +14,7 @@ LineInterpreter interpreter;
 // turn pref 
 MazeLogic maze(RIGHT_FIRST);
 // turn speed and base speed
-MazeController controller(220, 255);
+MazeController controller(255, 230);
 
 void setup() {
     Serial.begin(9600);

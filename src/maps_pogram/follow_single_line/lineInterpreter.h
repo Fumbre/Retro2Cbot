@@ -12,7 +12,9 @@ enum LineState {
     ALL_BLACK,      
     
     LEFT_TURN,      
-    RIGHT_TURN      
+    RIGHT_TURN,
+    
+    TEST_PATTERN,
 };
 
 

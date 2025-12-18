@@ -6,11 +6,14 @@ MazeController::MazeController(int baseSpeed, int turnSpeed)
 MotorCommand MazeController::execute(MazeMove move) {
 
     switch(move) {
+        // case TEST_PATTERN:
+        //      return { turnSpeed, -turnSpeed };
+
         case TURN_LEFT:
-            return { -turnSpeed, turnSpeed };
+            return { -baseSpeed, turnSpeed };
 
         case TURN_RIGHT:
-            return { turnSpeed, -turnSpeed };
+            return { turnSpeed, -baseSpeed };
 
         case SOFT_LEFT:
             return { baseSpeed * 0.5, baseSpeed };
