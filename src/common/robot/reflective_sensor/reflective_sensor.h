@@ -277,7 +277,7 @@ public:
 
         uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, this->marginError);
 
-        return currentBlackStatus;
+        return currentBlackStatus; // 0b00011000
     }
 
     /**

@@ -11,6 +11,8 @@ bool isSequenceProcessing = false;
 
 bool isEndSequence = false;
 
+bool safeZone = true;
+
 /**
  * @name followLine
  * @authors Aria & Fumbre (Vladyslav)
@@ -26,8 +28,11 @@ void followLine()
     entryPoint.onPossition(1);
   }
 
-  if (!entryPoint.pickUp() && !isEndSequence)
-    return;
+  if (!isEndSequence)
+  {
+    if (!entryPoint.pickUp())
+      return;
+  }
 
   LineState prevPattern;
 
@@ -39,69 +44,92 @@ void followLine()
 
   if (!isEndSequence)
   {
-    switch (currnetPattern)
-    {
-    case CENTER:
-    {
-      moveSpeed(fullSpeed, fullSpeed);
-      prevPattern = CENTER;
-      Serial.println("center");
-      break;
-    };
-    case SLIGHT_LEFT:
-    {
-      moveSpeed(fullSpeed * slightConf, fullSpeed);
-      prevPattern = SLIGHT_LEFT;
-      Serial.println("SLIGHT_LEFT");
-      break;
-    };
-    case SLIGHT_RIGHT:
-    {
-      moveSpeed(fullSpeed, fullSpeed * slightConf);
-      prevPattern = SLIGHT_RIGHT;
 
-      Serial.println("SLIGHT_RIGHT");
-      break;
-    };
-    case HARD_LEFT:
+    float distance = getDistanceCM_Front();
+
+    if (!avoiding)
     {
-      moveSpeed(fullSpeed * hardConf, fullSpeed);
-      prevPattern = HARD_LEFT;
-      Serial.println("HARD_LEFT");
-      break;
-    };
-    case HARD_RIGHT:
-    {
-      moveSpeed(fullSpeed, fullSpeed * hardConf);
 
-      prevPattern = HARD_RIGHT;
-      Serial.println("HARD_RIGHT");
-      break;
-    };
+      if (safeZone && distance <= 20 && distance >= 2)
+      {
+        safeZone = false; // exiting safe zone
+        avoidObstacleSmoothNonBlocking(255);
+      }
+      else
+      {
+        if (distance > 20)
+        {
+          safeZone = true;
+        }
+        switch (currnetPattern)
+        {
+        case CENTER:
+        {
+          moveSpeed(fullSpeed, fullSpeed);
+          prevPattern = CENTER;
+          Serial.println("center");
+          break;
+        };
+        case SLIGHT_LEFT:
+        {
+          moveSpeed(fullSpeed * slightConf, fullSpeed);
+          prevPattern = SLIGHT_LEFT;
+          Serial.println("SLIGHT_LEFT");
+          break;
+        };
+        case SLIGHT_RIGHT:
+        {
+          moveSpeed(fullSpeed, fullSpeed * slightConf);
+          prevPattern = SLIGHT_RIGHT;
 
-      // case ALL_WHITE:
-      // {
-      //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
+          Serial.println("SLIGHT_RIGHT");
+          break;
+        };
+        case HARD_LEFT:
+        {
+          moveSpeed(fullSpeed * hardConf, fullSpeed);
+          prevPattern = HARD_LEFT;
+          Serial.println("HARD_LEFT");
+          break;
+        };
+        case HARD_RIGHT:
+        {
+          moveSpeed(fullSpeed, fullSpeed * hardConf);
 
-      //   Serial.println("ALL_WHITE");
-      //   break;
-      // };
+          prevPattern = HARD_RIGHT;
+          Serial.println("HARD_RIGHT");
+          break;
+        };
 
-    case ALL_BLACK:
-    {
-      isEndSequence = entryPoint.isDetecetingBlackSquare(62);
+          // case ALL_WHITE:
+          // {
+          //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
 
-      moveSpeed(fullSpeed, fullSpeed);
+          //   Serial.println("ALL_WHITE");
+          //   break;
+          // };
 
-      Serial.println("ALL_BLACK");
-      break;
-    };
+        case ALL_BLACK:
+        {
+          isEndSequence = entryPoint.isDetecetingBlackSquare(62);
 
-    default:
-    {
-      currnetPattern = prevPattern;
-      break;
+          moveSpeed(fullSpeed, fullSpeed);
+
+          Serial.println("ALL_BLACK");
+          break;
+        };
+
+        default:
+        {
+          currnetPattern = prevPattern;
+          break;
+        }
+        }
+      }
     }
+    else
+    {
+      avoidObstacleSmoothNonBlocking(255);
     }
   }
   else

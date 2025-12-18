@@ -6,6 +6,8 @@
 
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 
+#include "common/tools/tests/test_sonar/test_sonar.h"
+
 int mapInit = 1;
 
 void setup()
@@ -24,6 +26,7 @@ void setup()
 
 void loop()
 {
+  testSonar();
   switch (mapInit)
   {
   // case 0:

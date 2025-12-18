@@ -13,60 +13,99 @@ bool avoiding = false;
 
 void setupSonar()
 {
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // send ultrasonic pulses
-  pinMode(PIN_SONAR_ECHO, INPUT);  // receive reflected signal
+
+  pinMode(PIN_SONAR_TRIG, OUTPUT);
+  pinMode(PIN_SONAR_ECHO, INPUT);
+
+  // #ifdef BB011
+  //   pinMode(PIN_SONAR_TRIG_1, OUTPUT);
+  //   pinMode(PIN_SONAR_ECHO_1, INPUT);
+
+  //   pinMode(PIN_SONAR_TRIG_2, OUTPUT);
+  //   pinMode(PIN_SONAR_ECHO_2, INPUT);
+
+  //   pinMode(PIN_SONAR_TRIG_3, OUTPUT);
+  //   pinMode(PIN_SONAR_ECHO_3, INPUT);
+  // #endif
 }
 
-/**
- * @name getDistanceCM
- * @author Francisco
- * @date 15-11-2025
- * @details Sends a trigger pulse to the ultrasonic sensor and measures the time
- * taken for the reflected echo to return. This duration is then converted into
- * an estimated distance in centimeters based on the speed of sound.
- * @details The result represents the distance to the nearest object directly
- * in front of the sensor. A value of 0 usually indicates an invalid or missing echo.
- * @return float  Estimated distance in centimeters
- */
-
-float getDistanceCM()
+float measureDistance(int trig, int echo)
 {
-  digitalWrite(PIN_SONAR_TRIG, LOW);  // Ensure TRIG is low to start clean pulse
-  delayMicroseconds(2);               // Short delay to stabilize the pin
-  digitalWrite(PIN_SONAR_TRIG, HIGH); // Send a HIGH pulse to trigger the ultrasonic burst
-  delayMicroseconds(10);              // Pulse duration: 10 microseconds (required by HC-SR04)
-  digitalWrite(PIN_SONAR_TRIG, LOW);  // Stop the trigger pulse
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
 
-  unsigned long duration = pulseIn(PIN_SONAR_ECHO, HIGH); // Measure the time until echo is received (in microseconds)
+  unsigned long duration = pulseIn(echo, HIGH, 25000); // timeout 25ms
 
-  float distance = duration * 0.034 / 2;
-  return distance;
-}
-
-/**
- * @name isObstacleDetected
- * @author Francisco
- * @date 15-11-2025
- * @param limit_cm  Maximum distance (in cm) used to define what counts as an obstacle
- * @details Reads the current distance using getDistanceCM() and compares it with
- * the user-defined threshold. If the measured distance is positive and less than
- * or equal to the limit, the function considers that an obstacle is present.
- * @return bool: true if an obstacle is detected, false otherwise
- */
-
-bool isObstacleDetected(float limit_cm)
-{
-  float distance = getDistanceCM();
-
-  // Ignore all readings below ~2 cm
-  if (distance < 2)
+  if (duration == 0)
   {
-    return false;
+    return 400;
   }
 
-  // Return true only if the distance is within the limit
-  return (distance <= limit_cm);
+  return duration * 0.034 / 2;
 }
+
+float getDistanceCM_Front()
+{
+  return measureDistance(PIN_SONAR_TRIG, PIN_SONAR_ECHO);
+}
+
+// float getDistanceCM_Right()
+// {
+//   return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
+// }
+
+// float getDistanceCM_Left()
+// {
+//   return measureDistance(PIN_SONAR_TRIG_3, PIN_SONAR_ECHO_3);
+// }
+
+bool isObstacleFront(float limit)
+{
+  float d = getDistanceCM_Front();
+
+  if (d == 400)
+  {
+    return true;
+  }
+  if (d < 2)
+  {
+    return true;
+  }
+  return (d > 2 && d <= limit);
+}
+
+// bool isObstacleRight(float limit)
+// {
+//   float d = getDistanceCM_Right();
+
+//   if (d == 400)
+//   {
+//     return true;
+//   }
+//   if (d < 2)
+//   {
+//     return true;
+//   }
+//   return (d > 2 && d <= limit);
+// }
+
+// bool isObstacleLeft(float limit)
+// {
+//   float d = getDistanceCM_Left();
+
+//   if (d == 400)
+//   {
+//     return true;
+//   }
+//   if (d < 2)
+//   {
+//     return true;
+//   }
+//   return (d > 2 && d <= limit);
+// }
 
 /**
  * @name avoidObstacleSmoothNonBlocking
@@ -103,8 +142,9 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // turn left
   case 0:
-    switchDirection(40, 100); // Left curve
-    if (t.interval(1000))
+    moveSpeed(-150, speed);
+    // switchDirection(40, 100); // Left curve
+    if (t.interval(400))
     {         // After 800 ms
       step++; // Proceed to next movement
       t.resetInterval();
@@ -113,8 +153,10 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // turn right
   case 1:
-    switchDirection(100, 40); // Right curve
-    if (t.interval(1000))
+    moveSpeed(speed, speed);
+
+    // switchDirection(100, 40); // Right curve
+    if (t.interval(100))
     { // After 800 ms
       step++;
       t.resetInterval();
@@ -123,8 +165,8 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // move forward
   case 2:
-    moveForward(100); // move forward
-    if (t.interval(1000))
+    moveSpeed(speed, 160); // move forward
+    if (t.interval(200))
     { // After 800 ms
       step++;
       t.resetInterval();
@@ -133,27 +175,30 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // long right curve
   case 3:
-    switchDirection(100, 40); // right curve
-    if (t.interval(1000))
+    moveSpeed(speed, 120);
+    // switchDirection(100, 40); // right curve
+    if (t.interval(400))
     { // After 1000 ms
-      step++;
+      step = 6;
       t.resetInterval();
     }
     break;
 
   // long left curve
   case 4:
-    switchDirection(40, 100); // left curve
+    moveSpeed(160, 255);
+    // switchDirection(40, 100); // left curve
     if (t.interval(1000))
     { // After 1000 ms
-      step++;
+      step = 6;
+      // step++;
       t.resetInterval();
     }
     break;
 
   // short forward movement
   case 5:
-    moveForward(100); // Move forward
+    moveStabilized(255, 255); // move forward
     if (t.interval(200))
     { // After 1000 ms
       step++;
@@ -163,7 +208,7 @@ void avoidObstacleSmoothNonBlocking(int speed)
 
   // stop
   case 6:
-    stopMotors();
+    // stopMotors();
     avoiding = false;
     break;
   }

@@ -76,7 +76,7 @@ public:
       {
         if (!isRotated)
         {
-          isRotated = didMoveLeft(255, 10);
+          isRotated = didMoveLeft(255, 11);
         }
       }
 
