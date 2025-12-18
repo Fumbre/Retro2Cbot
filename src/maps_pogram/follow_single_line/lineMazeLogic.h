@@ -24,11 +24,6 @@ enum TurnPreference {
     RIGHT_FIRST
 };
 
-enum TurnDir {
-    LEFT_DIR,
-    RIGHT_DIR
-};
-
 class MazeLogic {
 public:
     MazeLogic(TurnPreference pref);
@@ -40,14 +35,7 @@ private:
 
     LineState lastStableState;
 
-    unsigned long stopStartTime;
-    unsigned long stopDurationMs;
-
-    // Turn memory stack
-    static const int MAX_TURNS = 32;
-    TurnDir turnStack[MAX_TURNS];
-    int stackTop;
-
-    void pushTurn(TurnDir dir);
-    bool popTurn(TurnDir &dir);
+    LineState pendingFollowState;
+    int pendingFollowCount;
+    static const int FOLLOW_CONFIRM_COUNT = 7;
 };

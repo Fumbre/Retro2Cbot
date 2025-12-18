@@ -14,7 +14,7 @@ LineInterpreter interpreter;
 // turn pref 
 MazeLogic maze(RIGHT_FIRST);
 // turn speed and base speed
-MazeController controller(210, 255);
+MazeController controller(220, 255);
 
 void setup() {
     Serial.begin(9600);
@@ -25,7 +25,7 @@ void setup() {
 
 void loop() {
 
-    unsigned long now = millis();  
+    unsigned long now = millis();
 
     LineReading reading = sensor.read();
     LineState state = interpreter.interpret(reading.mask);
@@ -36,8 +36,4 @@ void loop() {
         MotorCommand cmd = controller.execute(move);
         moveSpeed(cmd.left, cmd.right);
     }
-    else {
-        moveSpeed(0, 0);
-    }
-
 }

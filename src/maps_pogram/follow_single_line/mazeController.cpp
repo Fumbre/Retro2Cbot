@@ -22,7 +22,7 @@ MotorCommand MazeController::execute(MazeMove move) {
             return { };
 
         case UTURN:
-            return { -turnSpeed + 10 , turnSpeed - 10};
+            return { -turnSpeed, turnSpeed };
 
         default:
             return { baseSpeed, baseSpeed };
