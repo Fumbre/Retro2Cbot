@@ -4,140 +4,109 @@
 #include "common/robot/gripper/gripper.h"
 #include "common/tools/Timer.h"
 
-const int OBST_LIMIT_CM     = 20;     
-const int FWD_SPEED         = 225;    
-const int TURN_SPEED        = 200;    
-const int CORRECTION_SPEED  = 180;                  // small re-ajusts
-const unsigned long TURN_90_MS = 450;
-const unsigned long DC_MOVE_MS = 120;
+// --- TUNING ---
+const int OBST_LIMIT_CM   = 18;      
+const int FWD_SPEED       = 225;     
+const int TURN_SPEED      = 200;     
+const int TURN_90_MS      = 450;  // Adjust this for a perfect 90 degree turn
+const int PAUSE_MS        = 200;  // How long to wait for sensors to "settle"
 
-enum MazeState {
-    MAZE_FORWARD,
-    MAZE_DC_MOVE,
-    MAZE_DC_READ,
-    MAZE_TURN_LEFT_90,
-    MAZE_TURN_RIGHT_90
+enum MazeState { 
+    MAZE_FORWARD, 
+    MAZE_STOP_AND_WAIT, 
+    MAZE_DC_READ, 
+    MAZE_TURN_LEFT_90, 
+    MAZE_TURN_RIGHT_90,
+    MAZE_POST_TURN_PAUSE 
 };
 
-static MazeState mazeState = MAZE_FORWARD;
+int mazeState = MAZE_FORWARD; 
 
-static Timer dcTimer;
-static Timer turnTimer;
-
-static bool dcRight = false;
-static bool dcLeft  = false;
+static Timer actionTimer; // One timer to rule them all
 
 void mazeInit() {
     mazeState = MAZE_FORWARD;
-    dcTimer.hardReset();
-    turnTimer.hardReset();
+    actionTimer.hardReset();
 }
 
 void mazeStep() {
-
     gripper(1200);
 
     switch (mazeState) {
-
-        // forward
         case MAZE_FORWARD: {
-
-            bool front = isObstacleFront(OBST_LIMIT_CM);
-            bool right = isObstacleRight(OBST_LIMIT_CM);
-            bool left  = isObstacleLeft(OBST_LIMIT_CM);
-
-            // wall in front >> start double-check
-            if (front) {
-                moveStopAll();
-                dcTimer.resetTimeout();
-                mazeState = MAZE_DC_MOVE;
-                return;
-            }
-
-            // wall left and right >> go forward
-            if (right && left) {
-                moveStabilized(FWD_SPEED, FWD_SPEED);
-                return;
-            }
-            
-            // wall right >> go forward
-            if (right && !left) {
-                moveStabilized(CORRECTION_SPEED, FWD_SPEED);
-                return;
-            }
-            
-            // wall left >> go forward
-            if (left && !right) {
-                moveStabilized(FWD_SPEED, CORRECTION_SPEED);
-                return;
-            }
-
-            moveStabilized(FWD_SPEED, FWD_SPEED);
-            return;
-        }
-
-        // double-check move
-        case MAZE_DC_MOVE: {
-
-            // if dc's time hasn't ended yet, keep moving forward 
-            if (!dcTimer.timeout(DC_MOVE_MS)) {
-                moveStabilized(FWD_SPEED * 0.5, FWD_SPEED * 0.5);
-                return;
-            }
-
-            // DC_MOVE completed >> stop and proceed to read confirmation.
-            moveStopAll();
-            dcTimer.resetTimeout();
-            mazeState = MAZE_DC_READ;
-            return;
-        }
-
-        // side sonares only
-        case MAZE_DC_READ: {
-
-            dcRight = isObstacleRight(OBST_LIMIT_CM);
-            dcLeft  = isObstacleLeft(OBST_LIMIT_CM);
-
-            float distR = getDistanceCM_Right();
+            float distF = getDistanceCM_Front();
             float distL = getDistanceCM_Left();
+            float distR = getDistanceCM_Right();
 
-            turnTimer.resetTimeout();
+            // 1. FRONT CHECK
+            if (distF < OBST_LIMIT_CM && distF > 1.0) {
+                moveStopAll();
+                actionTimer.resetTimeout(); // Start timer for the pause
+                mazeState = MAZE_STOP_AND_WAIT;
+                return;
+            }
 
-            // choose the side with more space
-            if (distR > distL) {
+            // 2. SIDE STEERING (Keeping it centered)
+            if (distL < 10.0 && distL > 1.0) {
+                moveSpeed(140, 240); // Steer Right
+            } 
+            else if (distR < 10.0 && distR > 1.0) {
+                moveSpeed(240, 140); // Steer Left
+            } 
+            else {
+                moveSpeed(FWD_SPEED, FWD_SPEED); 
+            }
+            break;
+        }
+
+        case MAZE_STOP_AND_WAIT:
+            // Wait for physical vibration to stop before reading sensors
+            if (actionTimer.timeout(PAUSE_MS)) {
+                mazeState = MAZE_DC_READ;
+            }
+            break;
+
+        case MAZE_DC_READ: {
+            float l = getDistanceCM_Left();
+            float r = getDistanceCM_Right();
+            
+            actionTimer.resetTimeout(); // Reset for the actual turn duration
+            
+            // Decide direction based on where there is more space
+            if (l < r) {
                 mazeState = MAZE_TURN_RIGHT_90;
             } else {
                 mazeState = MAZE_TURN_LEFT_90;
             }
-            return;
+            break;
         }
 
-        // 90º left
-        case MAZE_TURN_LEFT_90: {
-
-            // if the turning point hasn't ended yet, keep turning
-            if (!turnTimer.timeout(TURN_90_MS)) {
-                moveStabilized(-TURN_SPEED, TURN_SPEED);
-                return;
+        case MAZE_TURN_LEFT_90:
+            if (!actionTimer.timeout(TURN_90_MS)) {
+                moveSpeed(-TURN_SPEED, TURN_SPEED); 
+            } else {
+                moveStopAll();
+                actionTimer.resetTimeout();
+                mazeState = MAZE_POST_TURN_PAUSE;
             }
+            break;
 
-            moveStopAll();
-            mazeState = MAZE_FORWARD;
-            return;
-        }
-
-        // 90º right
-        case MAZE_TURN_RIGHT_90: {
-
-            // if the turning point hasn't ended yet, keep turning
-            if (!turnTimer.timeout(TURN_90_MS)) {
-                moveStabilized(TURN_SPEED, -TURN_SPEED);
-                return;
+        case MAZE_TURN_RIGHT_90:
+            if (!actionTimer.timeout(TURN_90_MS)) {
+                moveSpeed(TURN_SPEED, -TURN_SPEED);
+            } else {
+                moveStopAll();
+                actionTimer.resetTimeout();
+                mazeState = MAZE_POST_TURN_PAUSE;
             }
+            break;
 
-            moveStopAll();
-            mazeState = MAZE_FORWARD;
-            return;
-        }
+        case MAZE_POST_TURN_PAUSE:
+            // Crucial: Wait so the Forward logic doesn't freak out 
+            // seeing the wall it just turned away from.
+            if (actionTimer.timeout(PAUSE_MS)) {
+                mazeState = MAZE_FORWARD;
+            }
+            break;
     }
 }

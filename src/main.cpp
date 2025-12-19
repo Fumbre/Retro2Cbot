@@ -1,115 +1,71 @@
-#include "common/constant/robot.h"
-#include "common/robot/motor/motor.h"
-#include "common/tools/bluetooth.h"
-#include "common/robot/movement/movement.h"
-#include "common/robot/reflective_sensor/reflective_sensor.h"
-#include "common/robot/sonar/sonar.h"
 #include <Arduino.h>
-#include "common/tools/Timer.h"
-#include "common/tools/tests/test_basic_movements/test_basic_movements.h"
-#include "common/tools/tests/test_reflective_sensor/test_reflective_sensor.h"
+
+// 1. FORCE THE BOARD TYPE (Must be before other includes)
+#define BB011
+
+#include "common/robot/motor/motor.h"
+#include "common/robot/sonar/sonar.h"
 #include "common/robot/gripper/gripper.h"
-#include "maps_pogram/follow_single_line/lineFollower.h"
 #include "maps_pogram/physical_maze/physical_maze.h"
+#include "common/robot/movement/movement.h"
 
-// const int SETTING_MODE = 2;
+// This lets the main file see what stage the maze is in
+extern int mazeState;
 
-Timer doCoolRotation;
-Timer test;
+void setup()
+{
+    // Standard baud rate for Serial Monitor
+    Serial.begin(9600);
 
-void setup() {
-  Serial.begin(9600);
-  // blueTooth.begin(9600);
-  setupMotor();
-  setupSonar();
-  setupGripper();
-  mazeInit();
+    // Initialize all hardware components
+    setupMotor();
+    setupSonar();
+    setupGripper();
+
+    // Initialize maze variables
+    mazeInit();
+
+    Serial.println("--- RELAYBOT READY: BB011 CONFIG ---");
+    Serial.println("Logic: Clean moveSpeed | Sensor: Anti-Crosstalk");
 }
 
-Timer stampForward;
-Timer stampBackward;
-Timer stampRotateLeft;
-Timer stampRotateRight;
-      
-// LineSensor sensor(PINS_RS, 8, 700);
-// LineInterpreter interpreter;
-// LineFollower follower(190, 250);
+void loop()
+{
+    // 1. Run the navigation brain
+    // This calls getDistanceCM internally (with the 35ms delays)
+    mazeStep();
 
-void loop() {
-  // ================== Physical Maze ==================  
-  mazeStep();
-  
-  Serial.print("F: ");
-  Serial.print(getDistanceCM_Front());
-  Serial.print(" | R: ");
-  Serial.print(getDistanceCM_Right());
-  Serial.print(" | L: ");
-  Serial.println(getDistanceCM_Left());
-  delay(200);
+    // 2. Log data every 400ms
+    // Increased slightly to give sensors more breathing room
+    static unsigned long lastLog = 0;
+    if (millis() - lastLog > 400)
+    {
+        float f = getDistanceCM_Front();
+        float r = getDistanceCM_Right();
+        float l = getDistanceCM_Left();
 
-  // ================== simple stop/forward ==================
+        Serial.print("STATE:");
+        Serial.print(mazeState);
+        Serial.print(" | F:");
+        Serial.print(f);
+        Serial.print(" L:");
+        Serial.print(l);
+        Serial.print(" R:");
+        Serial.print(r);
 
-  // float distance = getDistanceCM();
+        // Visual Obstacle Check (Using 18cm as threshold)
+        Serial.print(" | [");
+        Serial.print(f < 18.0 ? "F" : " ");
+        Serial.print(l < 15.0 ? "L" : " ");
+        Serial.print(r < 15.0 ? "R" : " ");
+        Serial.println("]");
 
-  // if (distance > 2 && distance <= 20) {
-  //   moveStopAll();           
-  // } else {
-  //   follower.follow(sensor, interpreter);
-  // }
+        // DIAGNOSTIC: If sensors are still 400, print a warning
+        if (f > 399 && r > 399 && l > 399)
+        {
+            Serial.println("!! SENSOR TIMEOUT: Check Pin 12 Trigger !!");
+        }
 
-  // ================== gripper ==================
-  // gripper(0);
-
-  // float d = getDistanceCM();
-
-  // if (d < 10 && d > 0) {                  // 0 < distance < 10
-  //     gripperCatch();                     // close gripper
-  // }
-
-  // if (d > 20) {                           // distance > 20
-  //     gripperUnCatch();                   // open gripper
-  // }
-
-  // ================== avoiding ==================
-
-  // static bool safeZone = true;
-
-  // float distance = getDistanceCM();
-
-  // if (!avoiding) {
-
-  //   if (safeZone && distance <= 20 && distance >= 2) {
-  //     safeZone = false;                   // exiting safe zone
-  //     avoidObstacleSmoothNonBlocking(255);
-  //   }
-  //   else {
-  //     moveStabilized(255, 255);
-
-  //     if (distance > 20) {                
-  //       safeZone = true;                
-  //     }
-  //   }
-  // } else {
-  //   avoidObstacleSmoothNonBlocking(255);
-  // }
-
-  //==============================
-
-  // testBasicMovement();
-
-  // if (current > 20)
-  // {
-  //   digitalWrite(PINS_MOTOR[0], LOW);
-  //   digitalWrite(PINS_MOTOR[1], LOW);
-  //   digitalWrite(PINS_MOTOR[2], LOW);
-  //   digitalWrite(PINS_MOTOR[3], LOW);
-
-  //   Serial.println("Its working");
-  // }
-
-  // currenRstData[3].mean + 20 > storedRsData[3].mean &&storedRsData[3].mean - 20 < currenRstData[3].mean
-
-  // Serial.println("why we stopped working");
-
-  // testPulses(20);
+        lastLog = millis();
+    }
 }
