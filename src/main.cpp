@@ -6,7 +6,7 @@
 
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 
-int mapInit = 1;
+int mapInit = 2;
 
 void setup()
 {
@@ -18,8 +18,8 @@ void setup()
   // setupMotor();
   // setupSonar();
   // initNeopixelPins();
-  // mazeLineSetup();
-  followLineSetup();
+  mazeLineSetup();
+  // followLineSetup();
 }
 
 void loop()
@@ -36,7 +36,7 @@ void loop()
     followLine();
     break;
   case 2:
-    // mazeLine();
+    mazeLine();
     break;
   }
 }
