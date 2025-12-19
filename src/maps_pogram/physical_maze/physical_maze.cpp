@@ -1,3 +1,8 @@
+/**
+ * @name physical maze
+ * @author Francisco
+ * @date 11-12-2025
+ */
 #include "physical_maze.h"
 #include "common/robot/movement/movement.h"
 #include "common/robot/sonar/sonar.h"
