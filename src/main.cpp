@@ -20,6 +20,7 @@ void setup()
   // setupMotor();
   // setupSonar();
   // initNeopixelPins();
+  // followLineSetup();
   mazeLineSetup();
   // followLineSetup();
 }
@@ -38,6 +39,7 @@ void loop()
     // followLine();
     break;
   case 2:
+    mazeLine();
     mazeLine();
     break;
   }

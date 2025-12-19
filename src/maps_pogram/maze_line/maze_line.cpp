@@ -3,87 +3,107 @@
 // RS - reflective sensor
 ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 
-float slightConf = 0.7;
-float hardConf = 0.3;
+float slightConf = 0.8;
+float hardConf = 0.1;
+bool isRotating = false;
+int baseSpeed = 255;
+unsigned long rotatingTime = 650;
+int turnSpeed = 200;
+LineState lastStatus = CENTER;
+LineState dir = CENTER;
 
-LineState prevStatus;
-
-bool huj = false;
-bool justNow = false;
+void mazeLineSetup()
+{
+  setupMotor();
+  rsMaze.setup();
+}
 
 void mazeLine()
 {
-  int speed = 220;
+  LineState currentStatus = rsMaze.pattern();
+  static Timer rotateTime;
 
-  static Timer t;
-  LineState currentLineStatus = rsMaze.pattern();
-
-  if (huj && !justNow)
+  if (isRotating)
   {
-    if (!t.timeout(100))
+    if (currentStatus != ALL_WHITE && lastStatus == ALL_WHITE)
     {
-      moveSpeed(255, -150);
-      return;
+      isRotating = false;
+      resetMoveRight();
     }
     else
     {
-      huj = false;
-      justNow = true;
+      currentStatus = lastStatus;
     }
   }
+  else
+  {
+    // lastStatus = currentStatus;
+    resetMoveRight();
+    rotateTime.resetTimeout();
+  }
 
-  switch (currentLineStatus)
+  switch (currentStatus)
   {
   case CENTER:
-
-    moveSpeed(speed, speed);
-    Serial.println("CENTER");
+    moveSpeed(baseSpeed, baseSpeed);
+    lastStatus = CENTER;
     break;
   case SLIGHT_LEFT:
-
-    moveSpeed(speed * slightConf, speed);
-    Serial.println("SLIGHT_LEFT");
+    lastStatus = SLIGHT_LEFT;
+    moveSpeed(baseSpeed * slightConf, baseSpeed);
     break;
   case SLIGHT_RIGHT:
-
-    moveSpeed(speed, speed * slightConf);
-    Serial.println("SLIGHT_RIGHT");
+    lastStatus = SLIGHT_RIGHT;
+    moveSpeed(baseSpeed, baseSpeed * slightConf);
     break;
-
   case LEFT_TURN:
-    moveSpeed(-150, speed);
-    prevStatus = LEFT_TURN;
-    Serial.println("LEFT_TURN");
+    lastStatus = LEFT_TURN;
+    dir = LEFT_TURN;
     break;
-
   case RIGHT_TURN:
-    moveSpeed(speed, -150);
-    huj = true;
-    justNow = false;
-    t.resetTimeout();
-    prevStatus = RIGHT_TURN;
-
-    Serial.println("RIGHT_TURN");
+    lastStatus = RIGHT_TURN;
+    if (!rotateTime.timeout(rotatingTime))
+    {
+      isRotating = true;
+      moveSpeed(baseSpeed, baseSpeed * hardConf);
+    }
+    else
+    {
+      isRotating = false;
+    }
     break;
   case ALL_WHITE:
-
-    if (prevStatus == RIGHT_TURN)
+    if (dir == LEFT_TURN)
     {
-      moveSpeed(speed, -255);
+      if (!rotateTime.timeout(rotatingTime))
+      {
+        isRotating = true;
+        moveSpeed(baseSpeed * hardConf, baseSpeed);
+        lastStatus = ALL_WHITE;
+      }
+      else
+      {
+        isRotating = false;
+        dir = CENTER;
+      }
     }
-
-    if (prevStatus == LEFT_TURN)
+    else
     {
-      moveSpeed(-255, speed);
+      lastStatus = ALL_WHITE;
+      isRotating = !didMoveRight(baseSpeed, 3);
     }
-
-    Serial.println("ALL_WHITE");
     break;
   case ALL_BLACK:
-    moveSpeed(speed, speed);
-    prevStatus = RIGHT_TURN;
-
-    Serial.println("ALL_BLACK");
+    lastStatus = ALL_BLACK;
+    if (!rotateTime.timeout(rotatingTime))
+    {
+      isRotating = true;
+      moveSpeed(baseSpeed, baseSpeed * hardConf);
+    }
+    else
+    {
+      isRotating = false;
+    }
     break;
   }
 }
