@@ -12,12 +12,6 @@ int turnSpeed = 200;
 LineState lastStatus = CENTER;
 LineState dir = CENTER;
 
-void mazeLineSetup()
-{
-  setupMotor();
-  rsMaze.setup();
-}
-
 void mazeLine()
 {
   LineState currentStatus = rsMaze.pattern();
