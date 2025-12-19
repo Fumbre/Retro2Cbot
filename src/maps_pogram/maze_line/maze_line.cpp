@@ -1,78 +1,102 @@
-// #include "maze_line.h"
+#include "maze_line.h"
 
-// // RS - reflective sensor
-// ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
+// RS - reflective sensor
+ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 
-// float slightConf = 0.8;
-// float hardConf = 0;
-// bool isRotating = false;
-// void mazeLineSetup()
-// {
-//     setupMotor();
-//     rsMaze.setup();
-// }
+float slightConf = 0.7;
+float hardConf = 0.3;
 
-// LineState prevStatus = CENTER;
+LineState prevStatus;
 
-// void mazeLine(int speed)
-// {
-//     // LineState currentLineStatus = isRotating ? prevStatus : rsMaze.pattern();
-//     LineState currentLineStatus = rsMaze.pattern();
-//     if (isRotating)
-//     {
-//         if (currentLineStatus != ALL_WHITE)
-//         {
-//             isRotating = false;
-//         }
-//         else
-//         {
-//             currentLineStatus = prevStatus;
-//         }
-//     }
-//     int pwmValue = getPWMValue(speed);
-//     switch (currentLineStatus)
-//     {
-//     case CENTER:
-//         moveSpeed(pwmValue, pwmValue);
-//         Serial.println("CENTER");
-//         break;
-//     case SLIGHT_LEFT:
-//         moveSpeed(pwmValue * slightConf, pwmValue);
-//         Serial.println("SLIGHT_LEFT");
-//         break;
-//     case SLIGHT_RIGHT:
-//         moveSpeed(pwmValue, pwmValue * slightConf);
-//         Serial.println("SLIGHT_RIGHT");
-//         break;
-//     case LEFT_TURN:
-//         moveSpeed(pwmValue * hardConf, pwmValue);
-//         isRotating = true;
-//         prevStatus = LEFT_TURN;
-//         Serial.println("LEFT_TURN");
-//         break;
-//     case RIGHT_TURN:
-//         moveSpeed(pwmValue, pwmValue * hardConf);
-//         isRotating = true;
-//         prevStatus = RIGHT_TURN;
-//         Serial.println("RIGHT_TURN");
-//         break;
-//     case ALL_WHITE:
-//         isRotating = !didMoveRight(pwmValue, PPR / 2);
-//         isRotating ? (prevStatus = currentLineStatus) : resetMoveRight();
-//         Serial.println("ALL_WHITE");
-//         break;
-//     case ALL_BLACK:
-//         moveSpeed(pwmValue, pwmValue * hardConf);
-//         isRotating = true;
-//         prevStatus = ALL_WHITE;
-//         Serial.println("ALL_BLACK");
-//         break;
-//     }
-// }
+bool huj = false;
+bool justNow = false;
 
-// int getPWMValue(int speed)
-// {
-//     speed = constrain(speed, 0, FULL_SPEED);
-//     int pwmValue = (float)speed / FULL_SPEED * FULL_PWM_VALUE;
-//     return constrain(pwmValue, 0, FULL_PWM_VALUE);
-// }
+void mazeLine()
+{
+  int speed = 220;
+
+  static Timer t;
+  LineState currentLineStatus = rsMaze.pattern();
+
+  if (huj && !justNow)
+  {
+    if (!t.timeout(100))
+    {
+      moveSpeed(255, -150);
+      return;
+    }
+    else
+    {
+      huj = false;
+      justNow = true;
+    }
+  }
+
+  switch (currentLineStatus)
+  {
+  case CENTER:
+
+    moveSpeed(speed, speed);
+    Serial.println("CENTER");
+    break;
+  case SLIGHT_LEFT:
+
+    moveSpeed(speed * slightConf, speed);
+    Serial.println("SLIGHT_LEFT");
+    break;
+  case SLIGHT_RIGHT:
+
+    moveSpeed(speed, speed * slightConf);
+    Serial.println("SLIGHT_RIGHT");
+    break;
+
+  case LEFT_TURN:
+    moveSpeed(-150, speed);
+    prevStatus = LEFT_TURN;
+    Serial.println("LEFT_TURN");
+    break;
+
+  case RIGHT_TURN:
+    moveSpeed(speed, -150);
+    huj = true;
+    justNow = false;
+    t.resetTimeout();
+    prevStatus = RIGHT_TURN;
+
+    Serial.println("RIGHT_TURN");
+    break;
+  case ALL_WHITE:
+
+    if (prevStatus == RIGHT_TURN)
+    {
+      moveSpeed(speed, -255);
+    }
+
+    if (prevStatus == LEFT_TURN)
+    {
+      moveSpeed(-255, speed);
+    }
+
+    Serial.println("ALL_WHITE");
+    break;
+  case ALL_BLACK:
+    moveSpeed(speed, speed);
+    prevStatus = RIGHT_TURN;
+
+    Serial.println("ALL_BLACK");
+    break;
+  }
+}
+
+int getPWMValue(int speed)
+{
+  speed = constrain(speed, 0, FULL_SPEED);
+  int pwm = (float)speed / FULL_SPEED * FULL_PWM_VALUE;
+  return constrain(pwm, 0, FULL_PWM_VALUE);
+}
+
+void mazeLineSetup()
+{
+  setupMotor();
+  rsMaze.setup();
+}

@@ -8,7 +8,7 @@
 
 #include "common/tools/tests/test_sonar/test_sonar.h"
 
-int mapInit = 1;
+int mapInit = 2;
 
 void setup()
 {
@@ -20,13 +20,12 @@ void setup()
   // setupMotor();
   // setupSonar();
   // initNeopixelPins();
-  // mazeLineSetup();
-  followLineSetup();
+  mazeLineSetup();
+  // followLineSetup();
 }
 
 void loop()
 {
-  testSonar();
   switch (mapInit)
   {
   // case 0:
@@ -36,10 +35,10 @@ void loop()
   //   }
   //   break;
   case 1:
-    followLine();
+    // followLine();
     break;
   case 2:
-    // mazeLine();
+    mazeLine();
     break;
   }
 }
