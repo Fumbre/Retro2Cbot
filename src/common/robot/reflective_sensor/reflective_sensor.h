@@ -164,14 +164,14 @@ private:
 
     /**
      * @name getLineStatusMoreThan
-     * @authors Fumbre (Vladyslav)
+     * @authors Fumbre (Vladyslav) & Sunny
      * @date 04-12-2025
      * @param compare use ReflectiveRead pointer (array) and compare it with current data
-     * @param reflectiveDifferenceMinus use this value to not consider small difference, currentRS is 700 + reflectiveDifferenceMinus > compare
+     * @param reflectiveDifferenceMargin use this value to not consider small difference, currentRS is 700 + reflectiveDifferenceMargin > compare
      * @return uint8_t as 1 for true 0 for false
      * @details return line status as BIN
      */
-    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMinus)
+    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMargin)
     {
         uint8_t status = 0;
 
@@ -179,7 +179,7 @@ private:
         this->currentSensors = getRSValue();
         for (int i = 0; i < pins_rs_length; i++)
         {
-            if (currentSensors[i].mean + reflectiveDifferenceMinus >= compare[i].mean)
+            if (currentSensors[i].mean + reflectiveDifferenceMargin >= compare[i].mean)
             {
                 status |= (128 >> i);
             }
@@ -193,7 +193,7 @@ private:
 
     /**
      * @name getLineDifference
-     * @authors Fumbre (Vladyslav)
+     * @authors Fumbre (Vladyslav) & Sunny
      * @date 10-12-2025
      * @details get first line status with difference
      * @param compare (ReflectiveRead instecnce, to compare with current surface data)
@@ -301,7 +301,7 @@ public:
 
     /**
      * @name pattern
-     * @authors Aria & Fumbre (Vladyslav)
+     * @authors Aria
      * @date 12-12-2025
      * @return LineState
      * @details return enum position if current pattern match array list of patterns, if no patterns found return CENTER
