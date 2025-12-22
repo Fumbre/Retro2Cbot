@@ -12,19 +12,15 @@
 void setupSonar()
 {
 
+#if defined(BB011)
+  pinMode(PIN_SONAR_TRIG, OUTPUT);      // Shared Trigger
+  pinMode(PIN_SONAR_ECHO, INPUT);       // Front Echo
+  pinMode(PIN_SONAR_ECHO_RIGHT, INPUT); // Right Echo
+  pinMode(PIN_SONAR_ECHO_LEFT, INPUT);  // Left
+#else
   pinMode(PIN_SONAR_TRIG, OUTPUT);
   pinMode(PIN_SONAR_ECHO, INPUT);
-
-  // #ifdef BB011
-  //   pinMode(PIN_SONAR_TRIG_1, OUTPUT);
-  //   pinMode(PIN_SONAR_ECHO_1, INPUT);
-
-  //   pinMode(PIN_SONAR_TRIG_2, OUTPUT);
-  //   pinMode(PIN_SONAR_ECHO_2, INPUT);
-
-  //   pinMode(PIN_SONAR_TRIG_3, OUTPUT);
-  //   pinMode(PIN_SONAR_ECHO_3, INPUT);
-  // #endif
+#endif
 }
 
 float measureDistance(int trig, int echo)
@@ -50,15 +46,19 @@ float getDistanceCM_Front()
   return measureDistance(PIN_SONAR_TRIG, PIN_SONAR_ECHO);
 }
 
-// float getDistanceCM_Right()
-// {
-//   return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
-// }
+#if defined(BB011)
 
-// float getDistanceCM_Left()
-// {
-//   return measureDistance(PIN_SONAR_TRIG_3, PIN_SONAR_ECHO_3);
-// }
+float getDistanceCM_Right()
+{
+  return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
+}
+
+float getDistanceCM_Left()
+{
+  return measureDistance(PIN_SONAR_TRIG_3, PIN_SONAR_ECHO_3);
+}
+
+#endif
 
 bool isObstacleFront(float limit)
 {

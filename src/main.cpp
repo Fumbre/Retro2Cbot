@@ -13,16 +13,21 @@ int mapInit = 2;
 void setup()
 {
   Serial.begin(9600);
-  // blueTooth.begin(9600);
-  // #ifdef BB046
-  // TODO: followLineSetup()
-  // #endif
-  // setupMotor();
-  // setupSonar();
-  // initNeopixelPins();
-  // followLineSetup();
-  mazeLineSetup();
-  // followLineSetup();
+  blueTooth.begin(9600);
+  initNeopixelPins();
+  switch (mapInit)
+  {
+  case 1:
+    followLineSetup();
+    break;
+  case 2:
+    mazeLineSetup();
+    break;
+  case 3:
+    // todo
+    // physicalMazeSetup();
+    break;
+  }
 }
 
 void loop()
@@ -30,17 +35,21 @@ void loop()
   switch (mapInit)
   {
   // case 0:
+  //  for this case figure out something use define or variable
   //   if (startSequencePassed)
   //   {
   //     mapInit += SETTING_MODE;
   //   }
   //   break;
   case 1:
-    // followLine();
+    followLine();
     break;
   case 2:
     mazeLine();
-    mazeLine();
+    break;
+  case 3:
+    // todo
+    // physicalMaze();
     break;
   }
 }
