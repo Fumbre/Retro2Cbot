@@ -164,58 +164,6 @@ void rotateRight(int speed)
     }
 };
 
-// /**
-//  * @name rotate
-//  * @author Sunny
-//  * @date 12-11-2025
-//  * @param speed (0-100%)
-//  * @param direction (left, right)
-//  * @param angle (0-360)
-//  */
-// void rotate(int speed, String direction, float angle)
-// {
-
-//     // reset encoder count
-//     motor_left_pulses_counter = 0;
-//     motor_right_pulses_counter = 0;
-
-//     // caculate the max number of rotation of wheels for rotate 180 degrees
-//     angle = constrain(angle, 0.0, 360.0);
-//     float rotateDistance = (angle / 360.0) * (2 * PI * ROBOT_RADUIS);
-//     float wheelTurns = rotateDistance / (2 * PI * WHEEL_RADUIS);
-//     int targetPulses = wheelTurns * PPR;
-
-//     // get PWM value
-//     int pwmValue = getPWMvalue(speed);
-//     leftPWM = pwmValue;
-//     rightPWM = pwmValue;
-//     adjustPWMvalueByPulse(&leftPWM, &rightPWM);
-//     if (direction.equalsIgnoreCase("right"))
-//     {
-//         // let right wheel go forward, let left wheel go backward
-//         analogWrite(PIN_MOTOR_LEFT_FORWARD, pwmValue);
-//         digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
-//         analogWrite(PIN_MOTOR_RIGHT_BACKWARD, pwmValue);
-//         digitalWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
-//     }
-//     else if (direction.equalsIgnoreCase("left"))
-//     {
-//         // let right wheel go forward, let left wheel go backward
-//         analogWrite(PIN_MOTOR_RIGHT_FORWARD, pwmValue);
-//         digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
-//         analogWrite(PIN_MOTOR_LEFT_BACKWARD, pwmValue);
-//         digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
-//     }
-//     // waiting rotate finish
-
-//     // TODO: FIGURE OUT WAY WITHOUT while
-
-//     while (motor_left_pulses_counter <= targetPulses && motor_right_pulses_counter <= targetPulses)
-//     {
-//     };
-//     stopMotors();
-// }
-
 /**
  * @name adjustPWMvalueByPulse
  * @author Sunny

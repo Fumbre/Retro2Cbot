@@ -5,6 +5,7 @@
  */
 #pragma once
 #include <Arduino.h>
+#include "common/tools/ARRAY_SIZE.h"
 #include "common/constant/reflective_sensor.h"
 #include "common/tools/Timer.h"
 
@@ -309,27 +310,27 @@ public:
     LineState pattern()
     {
 
-        if (match(centerPatterns, sizeof(centerPatterns) / sizeof(centerPatterns[0])))
+        if (match(centerPatterns, ARRAY_SIZE(centerPatterns)))
             return CENTER;
 
-        if (match(slightLeftPatterns, sizeof(slightLeftPatterns) / sizeof(slightLeftPatterns[0])))
+        if (match(slightLeftPatterns, ARRAY_SIZE(slightLeftPatterns)))
             return SLIGHT_LEFT;
-        if (match(slightRightPatterns, sizeof(slightRightPatterns) / sizeof(slightRightPatterns[0])))
+        if (match(slightRightPatterns, ARRAY_SIZE(slightRightPatterns)))
             return SLIGHT_RIGHT;
 
-        if (match(hardLeftPatterns, sizeof(hardLeftPatterns) / sizeof(hardLeftPatterns[0])))
+        if (match(hardLeftPatterns, ARRAY_SIZE(hardLeftPatterns)))
             return HARD_LEFT;
-        if (match(hardRightPatterns, sizeof(hardRightPatterns) / sizeof(hardRightPatterns[0])))
+        if (match(hardRightPatterns, ARRAY_SIZE(hardRightPatterns)))
             return HARD_RIGHT;
 
-        if (match(leftTurn, sizeof(leftTurn) / sizeof(leftTurn[0])))
+        if (match(leftTurn, ARRAY_SIZE(leftTurn)))
             return LEFT_TURN;
-        if (match(rightTurn, sizeof(rightTurn) / sizeof(rightTurn[0])))
+        if (match(rightTurn, ARRAY_SIZE(rightTurn)))
             return RIGHT_TURN;
 
-        if (match(allWhite, sizeof(allWhite) / sizeof(allWhite[0])))
+        if (match(allWhite, ARRAY_SIZE(allWhite)))
             return ALL_WHITE;
-        if (match(allBlack, sizeof(allBlack) / sizeof(allBlack[0])))
+        if (match(allBlack, ARRAY_SIZE(allBlack)))
             return ALL_BLACK;
 
         return CENTER;

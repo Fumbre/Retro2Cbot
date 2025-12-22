@@ -15,7 +15,7 @@ bool safeZone = true;
 
 /**
  * @name followLine
- * @authors Aria & Fumbre (Vladyslav)
+ * @authors Fumbre (Vladyslav) & Aria & Francisco
  * @date 15-12-2025
  */
 void followLine()
@@ -23,6 +23,7 @@ void followLine()
 
   static Timer t;
   static Timer t1;
+
   if (t.executeOnce(0))
   {
     entryPoint.onPossition(1);
@@ -53,7 +54,7 @@ void followLine()
       if (safeZone && distance <= 20 && distance >= 2)
       {
         safeZone = false; // exiting safe zone
-        avoidObstacleSmoothNonBlocking(255);
+        obstacleAvoidance(255);
       }
       else
       {
@@ -61,6 +62,7 @@ void followLine()
         {
           safeZone = true;
         }
+
         switch (currnetPattern)
         {
         case CENTER:
@@ -129,7 +131,7 @@ void followLine()
     }
     else
     {
-      avoidObstacleSmoothNonBlocking(255);
+      obstacleAvoidance(255);
     }
   }
   else
@@ -146,8 +148,6 @@ void followLine()
     {
       stopMotors();
     }
-
-    // if (!t.)
   }
 }
 
@@ -164,27 +164,3 @@ void followLineSetup()
   setupSonar();
   rsLine.setup();
 }
-
-// void followLineSequence()
-// {
-// Serial.print("fsaf");
-// entryPoint.pickUp();
-
-// if (!isSequenceStart && isSequenceEnd) // false
-// {
-//   return;
-// }
-// if (isSequenceStart) // true
-// {
-//   entryPoint.pickUp();
-//   return;
-// }
-
-// if (isSequenceProcessing)
-// {
-//   followLine();
-// }
-
-// if (mazePassed)
-//   return;
-// }
