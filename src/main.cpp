@@ -6,6 +6,8 @@
 
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 
+#include "maps_pogram/physical_maze/physical_maze.h"
+
 #include "common/tools/tests/test_sonar/test_sonar.h"
 
 int mapInit = 2;
@@ -24,8 +26,7 @@ void setup()
     mazeLineSetup();
     break;
   case 3:
-    // todo
-    // physicalMazeSetup();
+    physicalMazeSetup();
     break;
   }
 }
@@ -48,8 +49,7 @@ void loop()
     mazeLine();
     break;
   case 3:
-    // todo
-    // physicalMaze();
+    physicalMaze();
     break;
   }
 }

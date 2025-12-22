@@ -6,4 +6,6 @@
 #include "common/robot/gripper/gripper.h"
 #include "common/tools/Timer.h"
 
+void physicalMaze();
+
 void physicalMazeSetup();

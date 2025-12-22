@@ -23,84 +23,66 @@ void setupSonar()
 #endif
 }
 
-float measureDistance(int trig, int echo)
+float measureDistance(int echo)
 {
-  digitalWrite(trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig, LOW);
 
+  // Clean trigger pulse
+  digitalWrite(PIN_SONAR_TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PIN_SONAR_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_SONAR_TRIG, LOW);
+
+  // Read the bounce back
   unsigned long duration = pulseIn(echo, HIGH, 25000); // timeout 25ms
 
-  if (duration == 0)
-  {
-    return 400;
-  }
+  // If no echo (0) or out of range, return 400
+  if (duration == 0 || duration > 23200)
+    return 400.0;
 
   return duration * 0.034 / 2;
 }
 
 float getDistanceCM_Front()
 {
-  return measureDistance(PIN_SONAR_TRIG, PIN_SONAR_ECHO);
+  return measureDistance(PIN_SONAR_ECHO);
 }
 
-#if defined(BB011)
+// two additional sonar for BB011 robot
 
 float getDistanceCM_Right()
 {
-  return measureDistance(PIN_SONAR_TRIG_2, PIN_SONAR_ECHO_2);
+#if defined(BB011)
+  return measureDistance(PIN_SONAR_ECHO_RIGHT);
+#else
+  return 0;
+#endif
 }
 
 float getDistanceCM_Left()
 {
-  return measureDistance(PIN_SONAR_TRIG_3, PIN_SONAR_ECHO_3);
+#if defined(BB011)
+  return measureDistance(PIN_SONAR_ECHO_LEFT);
+#else
+  return 0;
+#endif
 }
 
-#endif
-
+// Obstacle Logic
 bool isObstacleFront(float limit)
 {
   float d = getDistanceCM_Front();
-
-  if (d == 400)
-  {
-    return true;
-  }
-  if (d < 2)
-  {
-    return true;
-  }
-  return (d > 2 && d <= limit);
+  return (d > 1.0 && d <= limit);
 }
 
-// bool isObstacleRight(float limit)
-// {
-//   float d = getDistanceCM_Right();
+bool isObstacleRight(float limit)
+{
+  float d = getDistanceCM_Right();
+  return (d > 1.0 && d <= limit);
+}
 
-//   if (d == 400)
-//   {
-//     return true;
-//   }
-//   if (d < 2)
-//   {
-//     return true;
-//   }
-//   return (d > 2 && d <= limit);
-// }
-
-// bool isObstacleLeft(float limit)
-// {
-//   float d = getDistanceCM_Left();
-
-//   if (d == 400)
-//   {
-//     return true;
-//   }
-//   if (d < 2)
-//   {
-//     return true;
-//   }
-//   return (d > 2 && d <= limit);
-// }
+bool isObstacleLeft(float limit)
+{
+  float d = getDistanceCM_Left();
+  return (d > 1.0 && d <= limit);
+}
