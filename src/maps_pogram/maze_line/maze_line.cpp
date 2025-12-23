@@ -3,82 +3,109 @@
 // RS - reflective sensor
 ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 
-int fullSpeed = 255;
-float slightConf = .6;
-float hardConf = -.7;
-
+float slightConf = 0.8;
+float hardConf = 0.1;
 bool isRotating = false;
-
-LineState prevStatus = CENTER;
+int baseSpeed = 255;
+unsigned long rotatingTime = 650;
+LineState lastStatus = CENTER;
+LineState dir = CENTER;
 
 void mazeLine()
 {
   LineState currentStatus = rsMaze.pattern();
-  static Timer t;
+  static Timer rotateTime;
 
-  if (prevStatus == RIGHT_TURN && isRotating)
+  if (isRotating)
   {
-    if (!t.timeout(40))
+    if (currentStatus != ALL_WHITE && lastStatus == ALL_WHITE)
     {
-      moveSpeed(255, 255);
+      isRotating = false;
+      resetMoveRight();
     }
     else
     {
-      moveSpeed(255, -220);
-      if (currentStatus == CENTER || currentStatus == SLIGHT_RIGHT)
-      {
-        isRotating = false;
-        t.resetTimeout();
-      }
+      currentStatus = lastStatus;
     }
-    return;
+  }
+  else
+  {
+    // lastStatus = currentStatus;
+    resetMoveRight();
+    rotateTime.resetTimeout();
   }
 
   switch (currentStatus)
   {
   case CENTER:
-  CENTER:
-    moveSpeed(fullSpeed, fullSpeed);
+    moveSpeed(baseSpeed, baseSpeed);
+    lastStatus = CENTER;
     break;
   case SLIGHT_LEFT:
-    moveSpeed(fullSpeed * slightConf, fullSpeed);
+    lastStatus = SLIGHT_LEFT;
+    moveSpeed(baseSpeed * slightConf, baseSpeed);
     break;
   case SLIGHT_RIGHT:
-    moveSpeed(fullSpeed, fullSpeed * slightConf);
-    break;
-  case HARD_LEFT:
-    moveSpeed(fullSpeed * hardConf, fullSpeed);
-    break;
-  case HARD_RIGHT:
-    moveSpeed(fullSpeed, fullSpeed * hardConf);
+    lastStatus = SLIGHT_RIGHT;
+    moveSpeed(baseSpeed, baseSpeed * slightConf);
     break;
   case LEFT_TURN:
-    prevStatus = LEFT_TURN;
-    goto CENTER;
+    lastStatus = LEFT_TURN;
+    dir = LEFT_TURN;
     break;
   case RIGHT_TURN:
-    prevStatus = RIGHT_TURN;
-    isRotating = true;
+    lastStatus = RIGHT_TURN;
+    if (!rotateTime.timeout(rotatingTime))
+    {
+      isRotating = true;
+      moveSpeed(baseSpeed, baseSpeed * hardConf);
+    }
+    else
+    {
+      isRotating = false;
+    }
     break;
   case ALL_WHITE:
-    if (prevStatus == LEFT_TURN)
+    if (dir == LEFT_TURN)
     {
-      moveSpeed(fullSpeed * hardConf, fullSpeed);
+      if (!rotateTime.timeout(rotatingTime))
+      {
+        isRotating = true;
+        moveSpeed(baseSpeed * hardConf, baseSpeed);
+        lastStatus = ALL_WHITE;
+      }
+      else
+      {
+        isRotating = false;
+        dir = CENTER;
+      }
     }
-    if (prevStatus == RIGHT_TURN)
+    else
     {
-      moveSpeed(fullSpeed, fullSpeed * hardConf);
-    }
-    if (prevStatus == ALL_BLACK)
-    {
-      moveSpeed(fullSpeed, fullSpeed * hardConf);
+      lastStatus = ALL_WHITE;
+      isRotating = !didMoveRight(baseSpeed, 3);
     }
     break;
   case ALL_BLACK:
-    prevStatus = ALL_BLACK;
-    goto CENTER;
+    lastStatus = ALL_BLACK;
+    if (!rotateTime.timeout(rotatingTime))
+    {
+      isRotating = true;
+      moveSpeed(baseSpeed, baseSpeed * hardConf);
+    }
+    else
+    {
+      isRotating = false;
+    }
     break;
   }
+}
+
+int getPWMValue(int speed)
+{
+  speed = constrain(speed, 0, FULL_SPEED);
+  int pwm = (float)speed / FULL_SPEED * FULL_PWM_VALUE;
+  return constrain(pwm, 0, FULL_PWM_VALUE);
 }
 
 void mazeLineSetup()
