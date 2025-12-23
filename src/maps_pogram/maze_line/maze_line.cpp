@@ -157,6 +157,7 @@ int getPWMValue(int speed)
 
 void mazeLineSetup()
 {
+  buildHC12Connection();
   setupMotor();
   setupGripper();
   setupSonar();

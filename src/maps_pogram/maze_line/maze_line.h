@@ -6,6 +6,7 @@
 #include "common/robot/gripper/gripper.h"
 #include "common/robot/sonar/sonar.h"
 #include "common/tools/Start_sequence.h"
+#include "common/robot/hc12/hc12.h"
 
 void mazeLineSetup();
 
