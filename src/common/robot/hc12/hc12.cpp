@@ -30,3 +30,18 @@ void sendDataFromHC12(String data)
     if(data.length() == 0) return;
     hc12.println(data);
 }
+
+/**
+ * @name receiveDataFromHC12
+ * @author Sunny
+ * @date 23-12-2025
+ * @details receive data from HC-12
+ * @return Json string
+ */
+String receiveDataFromHC12(){
+    String data = "";
+    if(hc12.available()>0){
+        data = hc12.readString();
+    }
+    return data;
+}

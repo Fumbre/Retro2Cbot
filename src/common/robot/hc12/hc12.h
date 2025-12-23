@@ -13,3 +13,5 @@ extern SoftwareSerial hc12;
 void buildHC12Connection();
 
 void sendDataFromHC12(String data);
+
+String receiveDataFromHC12();
