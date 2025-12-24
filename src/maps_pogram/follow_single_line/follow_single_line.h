@@ -5,6 +5,7 @@
 #include "common/robot/gripper/gripper.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/tools/Start_sequence.h"
+#include "common/robot/hc12/hc12.h"
 
 void followLine();
 void followLineSetup();

@@ -49,7 +49,6 @@ float getDistanceCM_Front()
 }
 
 // two additional sonar for BB011 robot
-
 float getDistanceCM_Right()
 {
 #if defined(BB011)

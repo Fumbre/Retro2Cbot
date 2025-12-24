@@ -4,13 +4,13 @@
 ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 220, 35);
 StartSequence entryPoint(&rsLine);
 
-bool isSequenceStart = true;
-bool isSequenceEnd = false;
+// variable to send data to next robot when maze is passed
 bool mazePassed = false;
-bool isSequenceProcessing = false;
 
+// end sequence variable
 bool isEndSequence = false;
 
+// variable for avoiding
 bool safeZone = true;
 
 /**
@@ -20,13 +20,14 @@ bool safeZone = true;
  */
 void followLine()
 {
-
+  // init timers
   static Timer t;
   static Timer t1;
 
+  // set poisition of robot
   if (t.executeOnce(0))
   {
-    entryPoint.onPossition(1);
+    entryPoint.onPossition(1); // this is first robot so it will go immediately
   }
 
   if (!isEndSequence)
@@ -35,14 +36,18 @@ void followLine()
       return;
   }
 
+  // previous pattern | if robot is too fast keep going with previous status |
   LineState prevPattern;
 
+  // for future possible to make it argument of function
   int fullSpeed = 255;
   float slightConf = .6;
   float hardConf = -.7;
 
+  // current patter
   LineState currnetPattern = rsLine.pattern();
 
+  // if it's not end of sequence do it
   if (!isEndSequence)
   {
 
@@ -53,16 +58,15 @@ void followLine()
 
       if (safeZone && distance <= 20 && distance >= 2)
       {
-        safeZone = false; // exiting safe zone
-        obstacleAvoidance(255);
+        safeZone = false;       // exiting safe zone
+        obstacleAvoidance(255); // first step to avoid
       }
       else
       {
         if (distance > 20)
-        {
-          safeZone = true;
-        }
+          safeZone = true; // no objects ahead
 
+        // main code
         switch (currnetPattern)
         {
         case CENTER:
@@ -102,7 +106,7 @@ void followLine()
           Serial.println("HARD_RIGHT");
           break;
         };
-
+          // we don't need case for all white
           // case ALL_WHITE:
           // {
           //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
@@ -123,6 +127,7 @@ void followLine()
 
         default:
         {
+          // if no match go to previous action
           currnetPattern = prevPattern;
           break;
         }
@@ -131,20 +136,21 @@ void followLine()
     }
     else
     {
-      obstacleAvoidance(255);
+      obstacleAvoidance(255); // continue avoiding
     }
   }
   else
   {
-    if (t1.timeout(500))
+    // this is end of sequence (black square)
+    if (t1.timeout(500)) // after 500ms uncatch an object
     {
       gripperUnCatch();
     }
-    if (!t.timeout(1000))
+    if (!t.timeout(1000)) // go back during 1s
     {
       moveSpeed(fullSpeed * hardConf, fullSpeed * hardConf);
     }
-    else
+    else // after 1s stop all motors
     {
       stopMotors();
     }
@@ -152,12 +158,14 @@ void followLine()
 }
 
 /**
- * @name followLine
- * @authors Aria & Fumbre (Vladyslav)
+ * @name followLineSetup
+ * @authors Fumbre (Vladyslav)
  * @date 15-12-2025
+ * @details makes setup functions for Follow Line maze
  */
 void followLineSetup()
 {
+  buildHC12Connection();
   setupMotor();
   setupGripper();
   gripperUnCatch();

@@ -6,18 +6,6 @@ int prevPulsesRigt = 0;
 Timer didMoveRightTimer;
 Timer didMoveLeftTimer;
 
-// bool didMoveRight(int speed, int ms)
-// {
-//     if (!didMoveRightTimer.timeout(ms)) {
-//         moveStabilized(speed, -speed);
-//         return false;
-//     }
-
-//     didMoveRightTimer.resetTimeout();
-//     return true;
-// }
-
-
 /**
  * @name resetMoveLeft
  * @author Fumbre(Vladyslav)
@@ -45,7 +33,7 @@ int resetMoveRight()
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
  * @param speed(0|255)
- * @param pulses(0 99)
+ * @param pulses(0|999)
  * @return bool
  * @details after pulses rotation return true, otherwise false
  */
@@ -74,7 +62,7 @@ bool didMoveRight(int speed, int pulses)
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
  * @param speed(0|255)
- * @param pulses(0 99)
+ * @param pulses(0|999)
  * @return bool
  * @details after pulses rotation return true, otherwise false
  */
@@ -97,7 +85,6 @@ bool didMoveLeft(int speed, int pulses)
     return false;
   }
 }
-
 
 /**
  * @name moveStop
@@ -169,74 +156,73 @@ void moveSpeed(int speedLeft, int speedRight)
  */
 void moveStabilized(int speedLeft, int speedRight)
 {
-    
-    #define LEFT_CORRECTION  1.00   
-    #define RIGHT_CORRECTION 0.93   
 
-    speedLeft  = speedLeft  * LEFT_CORRECTION;
-    speedRight = speedRight * RIGHT_CORRECTION;
+#define LEFT_CORRECTION 1.00
+#define RIGHT_CORRECTION 0.93
 
-    static int step = 0;
-    static Timer stampForward;
-    static Timer stampRotateLeft;
-    static Timer stampRotateRight;
+  speedLeft = speedLeft * LEFT_CORRECTION;
+  speedRight = speedRight * RIGHT_CORRECTION;
 
-    switch (step)
+  static int step = 0;
+  static Timer stampForward;
+  static Timer stampRotateLeft;
+  static Timer stampRotateRight;
+
+  switch (step)
+  {
+  case 0:
+    if (stampForward.interval(20))
     {
-    case 0:
-        if (stampForward.interval(20))
-        {
-            writeSpeed(speedLeft, speedRight);
-        }
-        if (stampForward.executeOnce(40))
-        {
-            step++;
-        }
-        break;
-
-    case 1:
-        if (motor_left_pulses_counter < motor_right_pulses_counter)
-        {
-            if (stampRotateLeft.interval(0))
-            {
-                writeSpeed(speedLeft, speedRight / 1.8);
-            }
-            if (stampRotateLeft.executeOnce(20))
-            {
-                step++;
-            }
-        }
-        else
-        {
-            step++;
-        }
-        break;
-
-    case 2:
-        if (motor_left_pulses_counter > motor_right_pulses_counter)
-        {
-            if (stampRotateRight.interval(0))
-            {
-                writeSpeed(speedLeft / 1.8, speedRight);
-            }
-            step++;
-        }
-        else
-        {
-            step++;
-        }
-        break;
-
-    case 3:
-        stampForward.hardReset();
-        stampRotateLeft.hardReset();
-        stampRotateRight.hardReset();
-
-        step = 0;
-        break;
+      writeSpeed(speedLeft, speedRight);
     }
-}
+    if (stampForward.executeOnce(40))
+    {
+      step++;
+    }
+    break;
 
+  case 1:
+    if (motor_left_pulses_counter < motor_right_pulses_counter)
+    {
+      if (stampRotateLeft.interval(0))
+      {
+        writeSpeed(speedLeft, speedRight / 1.8);
+      }
+      if (stampRotateLeft.executeOnce(20))
+      {
+        step++;
+      }
+    }
+    else
+    {
+      step++;
+    }
+    break;
+
+  case 2:
+    if (motor_left_pulses_counter > motor_right_pulses_counter)
+    {
+      if (stampRotateRight.interval(0))
+      {
+        writeSpeed(speedLeft / 1.8, speedRight);
+      }
+      step++;
+    }
+    else
+    {
+      step++;
+    }
+    break;
+
+  case 3:
+    stampForward.hardReset();
+    stampRotateLeft.hardReset();
+    stampRotateRight.hardReset();
+
+    step = 0;
+    break;
+  }
+}
 
 /**
  * @name writeSpeed

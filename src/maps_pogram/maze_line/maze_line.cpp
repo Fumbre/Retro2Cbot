@@ -19,8 +19,10 @@ void mazeLine()
   static Timer startPointTime;
   static Timer endPointTime;
 
+  // set poisition of robot
   if (startPointTime.executeOnce(0))
   {
+    // todo onPossition(2); wait until it recieve from hc12 start
     startPoint.onPossition(1);
   }
 
@@ -41,7 +43,9 @@ void mazeLine()
       if (!didMoveLeft(baseSpeed, PPR / 2))
       {
         return;
-      }else{
+      }
+      else
+      {
         resetMoveLeft();
       }
     }
@@ -132,7 +136,9 @@ void mazeLine()
       }
       break;
     }
-  }else{
+  }
+  else
+  {
     if (endPointTime.timeout(500))
     {
       gripperUnCatch();
