@@ -72,6 +72,7 @@ void mazeLine()
       rotateTime.resetTimeout();
     }
 
+    // todo include HARD _LEFT and _RIGHT to put robot in the center of line!!
     switch (currentStatus)
     {
     case CENTER:
