@@ -18,8 +18,8 @@ void setupSonar()
   pinMode(PIN_SONAR_ECHO_RIGHT, INPUT); // Right Echo
   pinMode(PIN_SONAR_ECHO_LEFT, INPUT);  // Left
 #else
-  pinMode(PIN_SONAR_TRIG, OUTPUT);
-  pinMode(PIN_SONAR_ECHO, INPUT);
+  pinMode(PIN_SONAR_TRIG, OUTPUT); // Trigger
+  pinMode(PIN_SONAR_ECHO, INPUT);  // Echo
 #endif
 }
 
