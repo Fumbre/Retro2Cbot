@@ -1,11 +1,14 @@
 #pragma once
 #include <Arduino.h>
 #include "common/constant/sonar.h"
-#include "common/robot/movement/movementPID.h"
+#include "common/constant/board.h"
 
 void setupSonar();
-float getDistanceCM();
-bool isObstacleDetected(float limit_cm);
-void avoidObstacleSmoothNonBlocking(int speed);
+float getDistanceCM_Front();
+bool isObstacleFront(float limit_cm);
 
-extern bool avoiding;
+bool isObstacleRight(float limit_cm);
+bool isObstacleLeft(float limit_cm);
+
+float getDistanceCM_Left();
+float getDistanceCM_Right();

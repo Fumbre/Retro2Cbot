@@ -1,6 +1,6 @@
 #include "movement.h"
 
-int prevPulsesLeft = 0;
+static int prevPulsesLeft = 0;
 int prevPulsesRigt = 0;
 
 Timer didMoveRightTimer;
@@ -10,11 +10,9 @@ Timer didMoveLeftTimer;
  * @name resetMoveLeft
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
- * @param speed(-255|255)
- * @param pulses(0 99)
  * @details reset didMoveLeft timer
  */
-void resetMoveLeft()
+int resetMoveLeft()
 {
   didMoveLeftTimer.resetExecuteOnce();
 }
@@ -23,11 +21,9 @@ void resetMoveLeft()
  * @name resetMoveRight
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
- * @param speed(-255|255)
- * @param pulses(0 99)
  * @details reset didMoveRight timer
  */
-void resetMoveRight()
+int resetMoveRight()
 {
   didMoveRightTimer.resetExecuteOnce();
 }
@@ -37,13 +33,12 @@ void resetMoveRight()
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
  * @param speed(0|255)
- * @param pulses(0 99)
+ * @param pulses(0|999)
  * @return bool
  * @details after pulses rotation return true, otherwise false
  */
 bool didMoveRight(int speed, int pulses)
 {
-
   if (didMoveRightTimer.executeOnce(0))
   {
     prevPulsesLeft = motor_left_pulses_counter;
@@ -51,27 +46,28 @@ bool didMoveRight(int speed, int pulses)
 
   if (motor_left_pulses_counter >= prevPulsesLeft + pulses)
   {
+    didMoveRightTimer.resetExecuteOnce();
+    moveStopAll();
     return true;
   }
   else
   {
-    moveStabilized(speed, speed * -1);
+    moveStabilized(speed, -speed);
     return false;
   }
-};
+}
 
 /**
  * @name didMoveLeft
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
  * @param speed(0|255)
- * @param pulses(0 99)
+ * @param pulses(0|999)
  * @return bool
  * @details after pulses rotation return true, otherwise false
  */
 bool didMoveLeft(int speed, int pulses)
 {
-
   if (didMoveLeftTimer.executeOnce(0))
   {
     prevPulsesRigt = motor_right_pulses_counter;
@@ -79,14 +75,16 @@ bool didMoveLeft(int speed, int pulses)
 
   if (motor_right_pulses_counter >= prevPulsesRigt + pulses)
   {
+    didMoveLeftTimer.resetExecuteOnce();
+    moveStopAll();
     return true;
   }
   else
   {
-    moveStabilized(speed * -1, speed);
+    moveStabilized(-speed, speed);
     return false;
   }
-};
+}
 
 /**
  * @name moveStop
@@ -158,6 +156,12 @@ void moveSpeed(int speedLeft, int speedRight)
  */
 void moveStabilized(int speedLeft, int speedRight)
 {
+
+#define LEFT_CORRECTION 1.00
+#define RIGHT_CORRECTION 0.93
+
+  speedLeft = speedLeft * LEFT_CORRECTION;
+  speedRight = speedRight * RIGHT_CORRECTION;
 
   static int step = 0;
   static Timer stampForward;
