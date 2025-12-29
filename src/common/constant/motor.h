@@ -1,10 +1,10 @@
 #pragma once
 
 const int FULL_PWM_VALUE = 255;
-const int FULL_SPEED = 100; // in precentage
+const int FULL_SPEED = 100;                         // in precentage
 
-// the 20 pulses in per rotation of wheel
-const int PPR = 20;
+// 20 pulses per wheel rotation
+const int PULSES_PER_ROTATION = 20;
 
 // ======================BB016======================
 
@@ -20,13 +20,13 @@ const int PIN_MOTOR_LEFT_PULSE = 2;
 const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // PID factors
-const float Kp_f = 4.5; // Proportional
-const float Ki_f = 2.9; // Integral
-const float Kd_f = 0.2; // Derivative
+const float Kp_front = 4.5;                 // Proportional
+const float Ki_front = 2.9;                 // Integral
+const float Kd_front = 0.2;                 // Derivative
 
-const float Kp_b = 5.0;
-const float Ki_b = 2.2;
-const float Kd_b = 0.12;
+const float Kp_back = 5.0;
+const float Ki_back = 2.2;
+const float Kd_back = 0.12;
 
 #endif
 
@@ -46,13 +46,13 @@ const int PIN_MOTOR_LEFT_PULSE = 2;
 const int PIN_MOTOR_RIGHT_PULSE = 3;
 
 // PID factors
-const float Kp_f = 4.5; // Proportional
-const float Ki_f = 2.9; // Integral
-const float Kd_f = 0.2; // Derivative
+const float Kp_front = 4.5; // Proportional
+const float Ki_front = 2.9; // Integral
+const float Kd_front = 0.2; // Derivative
 
-const float Kp_b = 5.0;
-const float Ki_b = 2.2;
-const float Kd_b = 0.12;
+const float Kp_back = 5.0;
+const float Ki_back = 2.2;
+const float Kd_back = 0.12;
 
 #endif
 
@@ -72,13 +72,13 @@ const int PIN_MOTOR_LEFT_PULSE = 3;  // shoud be 3 !
 const int PIN_MOTOR_RIGHT_PULSE = 2; // shoud be 2 !
 
 // PID factors
-const float Kp_f = 4.0;  // Proportional
-const float Ki_f = 1.9;  // Integral
-const float Kd_f = 0.12; // Derivative
+const float Kp_front = 4.0;  // Proportional
+const float Ki_front = 1.9;  // Integral
+const float Kd_front = 0.12; // Derivative
 
-const float Kp_b = 5.9;
-const float Ki_b = 2.2;
-const float Kd_b = 0.12;
+const float Kp_back = 5.9;
+const float Ki_back = 2.2;
+const float Kd_back = 0.12;
 
 #endif
 

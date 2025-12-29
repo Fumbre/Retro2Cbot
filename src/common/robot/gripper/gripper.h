@@ -6,5 +6,3 @@ void setupGripper();
 void gripper(int pulseMicroseconds);
 void gripperCatch();
 void gripperUnCatch();
-
-

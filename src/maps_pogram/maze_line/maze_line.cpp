@@ -40,7 +40,7 @@ void mazeLine()
     if (distance <= avoidingDistance)
     {
       // rotate 180 degree
-      if (!didMoveLeft(baseSpeed, PPR / 2))
+      if (!didMoveLeft(baseSpeed, PULSES_PER_ROTATION / 2))
       {
         return;
       }

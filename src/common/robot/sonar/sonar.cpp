@@ -1,30 +1,35 @@
 #include "sonar.h"
 
-/**
+/*
  * @name setupSonar
  * @author Francisco
  * @date 15-11-2025
- * @details Initializes the ultrasonic sensor (HC-SR04) by configuring the TRIG
- * pin as OUTPUT and the ECHO pin as INPUT. This setup enables the robot to send
- * ultrasonic pulses and detect their reflections for distance measurement.
- */
+ * @details Configures the ultrasonic sensor pins used for distance measurement.
+*/
 
-void setupSonar()
-{
+void setupSonar() {
 
 #if defined(BB011)
-  pinMode(PIN_SONAR_TRIG, OUTPUT);      // Shared Trigger
-  pinMode(PIN_SONAR_ECHO, INPUT);       // Front Echo
-  pinMode(PIN_SONAR_ECHO_RIGHT, INPUT); // Right Echo
-  pinMode(PIN_SONAR_ECHO_LEFT, INPUT);  // Left
+  pinMode(PIN_SONAR_TRIG, OUTPUT);                    // Shared Trigger
+  pinMode(PIN_SONAR_ECHO_FRONT, INPUT);                     
+  pinMode(PIN_SONAR_ECHO_RIGHT, INPUT);               
+  pinMode(PIN_SONAR_ECHO_LEFT, INPUT);                
 #else
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // Trigger
-  pinMode(PIN_SONAR_ECHO, INPUT);  // Echo
+  pinMode(PIN_SONAR_TRIG, OUTPUT);                    
+  pinMode(PIN_SONAR_ECHO_FRONT, INPUT);              
 #endif
 }
 
-float measureDistance(int echo)
-{
+/*
+ * @name measureDistance
+ * @author Francisco
+ * @date 15-11-2025
+ * @param echo Echo pin connected to the ultrasonic sensor.
+ * @details Sends an ultrasonic pulse and measures the returned echo
+ * to calculate the distance (cm).
+*/
+
+float measureDistance(int echo) {
 
   // Clean trigger pulse
   digitalWrite(PIN_SONAR_TRIG, LOW);
@@ -34,23 +39,34 @@ float measureDistance(int echo)
   digitalWrite(PIN_SONAR_TRIG, LOW);
 
   // Read the bounce back
-  unsigned long duration = pulseIn(echo, HIGH, 25000); // timeout 25ms
+  unsigned long duration = pulseIn(echo, HIGH, 25000);          // timeout 25ms
 
   // If no echo (0) or out of range, return 400
-  if (duration == 0 || duration > 23200)
+  if (duration == 0 || duration > 23200) {
     return 400.0;
-
+  }
   return duration * 0.034 / 2;
 }
 
-float getDistanceCM_Front()
-{
-  return measureDistance(PIN_SONAR_ECHO);
+/*
+ * @name getDistanceCM_Front
+ * @author Francisco
+ * @date 15-11-2025
+ * @details Measures the distance to an obstacle in front of the robot.
+*/
+
+float getDistanceCM_Front() {
+  return measureDistance(PIN_SONAR_ECHO_FRONT);
 }
 
-// two additional sonar for BB011 robot
-float getDistanceCM_Right()
-{
+/*
+ * @name getDistanceCM_Right
+ * @author Francisco
+ * @date 15-11-2025
+ * @details Measures the distance to an obstacle on the right side.
+*/
+
+float getDistanceCM_Right() {
 #if defined(BB011)
   return measureDistance(PIN_SONAR_ECHO_RIGHT);
 #else
@@ -58,8 +74,14 @@ float getDistanceCM_Right()
 #endif
 }
 
-float getDistanceCM_Left()
-{
+/*
+ * @name getDistanceCM_Left
+ * @author Francisco
+ * @date 15-11-2025
+ * @details Measures the distance to an obstacle on the left side.
+*/
+
+float getDistanceCM_Left() {
 #if defined(BB011)
   return measureDistance(PIN_SONAR_ECHO_LEFT);
 #else
@@ -67,21 +89,44 @@ float getDistanceCM_Left()
 #endif
 }
 
-// Obstacle Logic
-bool isObstacleFront(float limit)
-{
+/*
+ * @name isObstacleFront
+ * @author Francisco
+ * @date 15-11-2025
+ * @param Maximum distance limit (cm).
+ * @details Checks if there is an obstacle in front within a given range.
+*/
+
+bool isObstacleFront(float limit) {
+
   float d = getDistanceCM_Front();
   return (d > 1.0 && d <= limit);
 }
 
-bool isObstacleRight(float limit)
-{
+/*
+ * @name isObstacleRight
+ * @author Francisco
+ * @date 15-11-2025
+ * @param Maximum distance limit (cm).
+ * @details Checks if there is an obstacle on the right within a given range.
+*/
+
+bool isObstacleRight(float limit) {
+
   float d = getDistanceCM_Right();
   return (d > 1.0 && d <= limit);
 }
 
-bool isObstacleLeft(float limit)
-{
+/*
+ * @name isObstacleLeft
+ * @author Francisco
+ * @date 15-11-2025
+ * @param Maximum distance limit (cm).
+ * @details Checks if there is an obstacle on the left within a given range.
+*/
+
+bool isObstacleLeft(float limit) {
+
   float d = getDistanceCM_Left();
   return (d > 1.0 && d <= limit);
 }

@@ -7,15 +7,14 @@
 
 int resetMoveRight();
 int resetMoveLeft();
+
 bool didMoveRight(int speed, int pulses);
 bool didMoveLeft(int speed, int pulses);
 
 void moveStop(int motor_pin);
 void moveStopAll();
-
 void moveSpeed(int speedLeft, int speedRight);
 void moveStabilized(int speedLeft, int speedRight);
-
 void writeSpeed(int speedLeft, int speedRight);
 
 extern Timer didMoveRightTimer;
