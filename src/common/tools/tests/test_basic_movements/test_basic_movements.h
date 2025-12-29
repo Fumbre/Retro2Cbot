@@ -4,5 +4,5 @@
 #include "common/tools/Timer.h"
 #include "common/robot/movement/movementPID.h"
 
-// void testBasicMovementAvoidence();
+void testBasicMovementAvoidence();
 void testBasicMovement();
