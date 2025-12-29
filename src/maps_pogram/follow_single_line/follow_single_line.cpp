@@ -18,8 +18,7 @@ bool safeZone = true;
  * @authors Fumbre (Vladyslav) & Aria & Francisco
  * @date 15-12-2025
  */
-void followLine()
-{
+void followLine() {
   // init timers
   static Timer t;
   static Timer t1;
