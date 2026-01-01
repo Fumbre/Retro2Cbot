@@ -3,6 +3,7 @@
 // RS - reflective sensor
 ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 StartSequence startPoint(&rsMaze);
+StaticJsonDocument<256> doc;
 
 float slightConf = 0.8;
 float hardConf = 0.1;
@@ -16,13 +17,22 @@ float avoidingDistance = 15; // unit: cm
 
 void mazeLine()
 {
+  // wait until it recieve from hc12 start
+  String data = receiveDataFromHC12();
+  if (data == "")
+    return;
+  // parse data string to json
+  deserializeJson(doc, data);
+  String robotCode = doc["robotCode"];
+  String type = doc["type"];
+  if (type != "inside" && robotCode != "BB046")
+    return;
+
   static Timer startPointTime;
   static Timer endPointTime;
-
   // set poisition of robot
   if (startPointTime.executeOnce(0))
   {
-    // todo onPossition(2); wait until it recieve from hc12 start
     startPoint.onPossition(1);
   }
 
@@ -151,6 +161,12 @@ void mazeLine()
     else
     {
       stopMotors();
+      // send data to BB011
+      char jsonBuffer[256];
+      doc["robotCode"] = "BB011";
+      doc["type"] = "inside";
+      serializeJson(doc, jsonBuffer);
+      sendDataFromHC12(String(jsonBuffer));
     }
   }
 }
