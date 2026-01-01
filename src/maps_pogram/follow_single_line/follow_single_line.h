@@ -6,6 +6,7 @@
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/tools/Start_sequence.h"
 #include "common/robot/hc12/hc12.h"
+#include <ArduinoJson.h>
 
 void followLine();
 void followLineSetup();

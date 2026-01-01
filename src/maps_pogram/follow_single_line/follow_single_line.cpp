@@ -3,6 +3,8 @@
 // RS - reflective sensor
 ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 220, 35);
 StartSequence entryPoint(&rsLine);
+//Josn document class
+StaticJsonDocument<256> followingLineDoc;
 
 // variable to send data to next robot when maze is passed
 bool mazePassed = false;
@@ -153,6 +155,12 @@ void followLine()
     else // after 1s stop all motors
     {
       stopMotors();
+      // send command to BB046 to start;
+      char buf[256];
+      followingLineDoc["robotCode"] = "BB046";
+      followingLineDoc["type"] = "inside";
+      serializeJson(followingLineDoc,buf);
+      sendDataFromHC12(String(buf));
     }
   }
 }
