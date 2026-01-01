@@ -5,6 +5,7 @@
 #include "common/robot/motor/motor.h"
 #include "common/constant/robot.h"
 #include "common/tools/PID.h"
+#include "common/robot/globalvariable/globalVariable.h"
 
 extern float integral;
 

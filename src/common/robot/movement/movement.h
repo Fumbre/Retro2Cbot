@@ -4,6 +4,7 @@
 #include "common/constant/motor.h"
 #include "common/robot/motor/motor.h"
 #include "common/tools/Timer.h"
+#include "common/robot/globalvariable/globalVariable.h"
 
 int resetMoveRight();
 int resetMoveLeft();
