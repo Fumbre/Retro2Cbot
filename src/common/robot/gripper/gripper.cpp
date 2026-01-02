@@ -1,7 +1,7 @@
 #include "gripper.h"
 
 /**
- * @name ReflectiveSensor
+ * @name gripper
  * @authors Francisco
  * @date ?-1?-2025
  */
@@ -37,10 +37,12 @@ void gripperCatch()
 {
 
     gripper(1000); // Close the gripper
+    gripperStatus = false;
 }
 
 void gripperUnCatch()
 {
 
     gripper(2000); // Open the gripper
+    gripperStatus = true;
 }

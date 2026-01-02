@@ -45,14 +45,20 @@ float measureDistance(int echo)
 
 float getDistanceCM_Front()
 {
-  return measureDistance(PIN_SONAR_ECHO);
+  float distance = measureDistance(PIN_SONAR_ECHO);
+  //record front sonar distance
+  frontDistance = distance;
+  return distance;
 }
 
 // two additional sonar for BB011 robot
 float getDistanceCM_Right()
 {
 #if defined(BB011)
-  return measureDistance(PIN_SONAR_ECHO_RIGHT);
+  float distance = measureDistance(PIN_SONAR_ECHO);
+   //record right sonar distance
+  rigthDistance = distance;
+  return distance;
 #else
   return 0;
 #endif
@@ -61,7 +67,10 @@ float getDistanceCM_Right()
 float getDistanceCM_Left()
 {
 #if defined(BB011)
-  return measureDistance(PIN_SONAR_ECHO_LEFT);
+  float distance = measureDistance(PIN_SONAR_ECHO);
+  //record left sonar distance
+  leftDistance = distance;
+  return distance;
 #else
   return 0;
 #endif

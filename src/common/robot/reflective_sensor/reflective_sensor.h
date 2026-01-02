@@ -114,6 +114,8 @@ private:
         for (int i = 0; i < PINS_RS_LENGTH; ++i)
         {
             int v = analogRead(PINS_RS[i]);
+            // update a0 ~ a7 value
+            *PIN_VALUE_ARRAY[i] = v;
             stats[i].update(v);
         }
 
@@ -277,7 +279,13 @@ public:
             return 0;
 
         uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, this->marginError);
-
+        // update current status
+        String statusStr = "";
+        for (int i = 7; i >= 0; i--)
+        {
+            statusStr += (currentBlackStatus & (1 << i)) ? '1' : '0';
+        }
+        status = statusStr;
         return currentBlackStatus; // 0b00011000
     }
 
