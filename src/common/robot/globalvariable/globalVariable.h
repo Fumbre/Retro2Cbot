@@ -37,13 +37,13 @@ extern int a5;
 extern int a6;
 extern int a7;
 
-extern String status;
+extern String RSSendDataStatus;
 
-extern int* PIN_VALUE_ARRAY[8];
+extern int* RS_SEND_DATA_RAW_ARRAY[8];
 //=================================================================================
 
 //================================ sonar ==========================================
-extern float frontDistance;
-extern float leftDistance;
-extern float rigthDistance;
+extern float sonarSendDatafrontDistance;
+extern float sonarSendDataRightDistance;
+extern float sonarSendDataLeftDistance;
 //=================================================================================

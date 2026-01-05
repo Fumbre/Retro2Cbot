@@ -116,7 +116,7 @@ private:
         {
             int v = analogRead(PINS_RS[i]);
             // update a0 ~ a7 value
-            *PIN_VALUE_ARRAY[i] = v;
+            *RS_SEND_DATA_RAW_ARRAY[i] = v;
             stats[i].update(v);
         }
 
@@ -286,7 +286,7 @@ public:
         {
             statusStr += (currentBlackStatus & (1 << i)) ? '1' : '0';
         }
-        status = statusStr;
+        RSSendDataStatus = statusStr;
         return currentBlackStatus; // 0b00011000
     }
 

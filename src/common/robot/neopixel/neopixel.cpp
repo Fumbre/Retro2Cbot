@@ -28,6 +28,7 @@ void initNeopixelPins()
 void turnOnAllLeds(int R, int G, int B)
 {
   pixel.fill(0, NUMBER_OF_NEOPIXEL - 1, R, G, B);
+  //todo
   pixel.show();
 }
 

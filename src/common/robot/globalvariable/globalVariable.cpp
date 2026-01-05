@@ -5,7 +5,7 @@ volatile long motor_right_pulses_counter = 0;
 // =================================================================================
 
 // ============================== gripper ==========================================
-bool gripperStatus = true;
+bool gripperStatus = false;
 //==================================================================================
 
 // ============================== neopixels ========================================
@@ -36,13 +36,13 @@ int a5 = 0;
 int a6 = 0;
 int a7 = 0;
 
-int* PIN_VALUE_ARRAY[8] = {&a0,&a1,&a2,&a3,&a4,&a5,&a6,&a7};
+int* RS_SEND_DATA_RAW_ARRAY[8] = {&a0,&a1,&a2,&a3,&a4,&a5,&a6,&a7};
 
-String status = "00000000";
+String RSSendDataStatus = "00000000";
 //=================================================================================
 
 //================================ sonar ==========================================
-float frontDistance = 0.0;
-float leftDistance = 0.0;
-float rigthDistance = 0.0;
+float sonarSendDatafrontDistance = 0.0;
+float sonarSendDataLeftDistance = 0.0;
+float sonarSendDataRightDistance = 0.0;
 //=================================================================================

@@ -4,7 +4,7 @@
 ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
 StartSequence startPoint(&rsMaze);
 StaticJsonDocument<256> doc;
-
+bool isHC12SentForPM = false;
 float slightConf = 0.8;
 float hardConf = 0.1;
 bool isRotating = false;
@@ -18,15 +18,15 @@ float avoidingDistance = 15; // unit: cm
 void mazeLine()
 {
   // wait until it recieve from hc12 start
-  String data = receiveDataFromHC12();
-  if (data == "")
-    return;
-  // parse data string to json
-  deserializeJson(doc, data);
-  String robotCode = doc["robotCode"];
-  String type = doc["type"];
-  if (type != "inside" && robotCode != "BB046")
-    return;
+  // String data = receiveDataFromHC12();
+  // if (data == "")
+  //   return;
+  // // parse data string to json
+  // deserializeJson(doc, data);
+  // String robotCode = doc["robotCode"];
+  // String type = doc["type"];
+  // if (type != "inside" && robotCode != "BB046")
+  //   return;
 
   static Timer startPointTime;
   static Timer endPointTime;
@@ -86,14 +86,17 @@ void mazeLine()
     switch (currentStatus)
     {
     case CENTER:
+      dir = CENTER;
       moveSpeed(baseSpeed, baseSpeed);
       lastStatus = CENTER;
       break;
     case SLIGHT_LEFT:
+      dir = SLIGHT_LEFT;
       lastStatus = SLIGHT_LEFT;
       moveSpeed(baseSpeed * slightConf, baseSpeed);
       break;
     case SLIGHT_RIGHT:
+      dir = SLIGHT_RIGHT;
       lastStatus = SLIGHT_RIGHT;
       moveSpeed(baseSpeed, baseSpeed * slightConf);
       break;
@@ -160,13 +163,16 @@ void mazeLine()
     }
     else
     {
-      stopMotors();
-      // send data to BB011
-      char jsonBuffer[256];
-      doc["robotCode"] = "BB011";
-      doc["type"] = "inside";
-      serializeJson(doc, jsonBuffer);
-      sendDataFromHC12(String(jsonBuffer));
+      // stopMotors();
+      if (!isHC12SentForPM)
+      {
+        // send data to BB011
+        char jsonBuffer[256];
+        doc["robotCode"] = "BB011";
+        doc["type"] = "inside";
+        serializeJson(doc, jsonBuffer);
+        sendDataFromHC12(jsonBuffer);
+      }
     }
   }
 }

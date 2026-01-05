@@ -7,7 +7,7 @@
 #include "maps_pogram/physical_maze/physical_maze.h"
 
 
-int mapInit = 1;
+int mapInit = 2;
 
 void setup()
 {

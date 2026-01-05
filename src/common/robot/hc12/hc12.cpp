@@ -25,9 +25,9 @@ void buildHC12Connection()
  * @details send data through HC-12
  * @param data the data that needs send
  */
-void sendDataFromHC12(String data)
+void sendDataFromHC12(const char* data)
 {
-    if(data.length() == 0) return;
+    if(!data) return;
     hc12.println(data);
 }
 

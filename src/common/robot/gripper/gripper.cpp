@@ -37,12 +37,12 @@ void gripperCatch()
 {
 
     gripper(1000); // Close the gripper
-    gripperStatus = false;
+    gripperStatus = true;
 }
 
 void gripperUnCatch()
 {
 
     gripper(2000); // Open the gripper
-    gripperStatus = true;
+    gripperStatus = false;
 }

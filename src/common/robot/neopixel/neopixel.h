@@ -7,6 +7,7 @@
 #pragma once
 #include "common/constant/neopixel.h"
 #include "common/tools/Neopixel.h"
+#include "common/robot/globalvariable/globalVariable.h"
 
 void initNeopixelPins();
 
