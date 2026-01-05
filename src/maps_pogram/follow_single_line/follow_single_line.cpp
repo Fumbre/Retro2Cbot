@@ -25,7 +25,6 @@ void followLine()
   // init timers
   static Timer t;
   static Timer t1;
-
   // set poisition of robot
   if (t.executeOnce(0))
   {

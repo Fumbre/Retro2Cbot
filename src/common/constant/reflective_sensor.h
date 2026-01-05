@@ -34,5 +34,3 @@ const int PINS_RS[] = {
 const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
 // to store array length dynamically
 
-// pin value array for updating new value
-int* PIN_VALUE_ARRAY[8] = {&a7,&a6,&a5,&a4,&a3,&a2,&a1,&a0};

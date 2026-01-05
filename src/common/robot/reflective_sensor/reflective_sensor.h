@@ -9,6 +9,7 @@
 #include "common/constant/reflective_sensor.h"
 #include "common/tools/Timer.h"
 
+
 // --- bitmask tables ---
 const uint8_t centerPatterns[] = {0b00011000, 0b00111100};
 const uint8_t slightLeftPatterns[] = {
