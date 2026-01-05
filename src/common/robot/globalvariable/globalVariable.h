@@ -10,21 +10,7 @@ extern bool gripperStatus;
 //==================================================================================
 
 // ============================== neopixels ========================================
-extern int Red0;
-extern int Green0;
-extern int Blue0;
-
-extern int Red1;
-extern int Green1;
-extern int Blue1;
-
-extern int Red2;
-extern int Green2;
-extern int Blue2;
-
-extern int Red3;
-extern int Green3;
-extern int Blue3;
+extern int colorArray[4][3];
 //==================================================================================
 
 //================================ reflective sensor ===============================

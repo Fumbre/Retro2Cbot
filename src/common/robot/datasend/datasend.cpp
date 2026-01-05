@@ -94,30 +94,14 @@ void sendNeopixelData()
         doc["event"] = "neopixels";
         setBasicInformation(doc);
         JsonArray data = doc.createNestedArray("data");
-        JsonObject neopxiels0 = data.createNestedObject();
-        neopxiels0["robotCode"] = robotCode;
-        neopxiels0["neopixelIndex"] = "0";
-        neopxiels0["r"] = Red0;
-        neopxiels0["g"] = Green0;
-        neopxiels0["b"] = Blue0;
-        JsonObject neopxiels1 = data.createNestedObject();
-        neopxiels1["robotCode"] = robotCode;
-        neopxiels1["neopixelIndex"] = "1";
-        neopxiels1["r"] = Red1;
-        neopxiels1["g"] = Green1;
-        neopxiels1["b"] = Blue1;
-        JsonObject neopxiels2 = data.createNestedObject();
-        neopxiels2["robotCode"] = robotCode;
-        neopxiels2["neopixelIndex"] = "2";
-        neopxiels2["r"] = Red2;
-        neopxiels2["g"] = Green2;
-        neopxiels2["b"] = Blue2;
-        JsonObject neopxiels3 = data.createNestedObject();
-        neopxiels3["robotCode"] = robotCode;
-        neopxiels3["neopixelIndex"] = "3";
-        neopxiels3["r"] = Red3;
-        neopxiels3["g"] = Green3;
-        neopxiels3["b"] = Blue3;
+        for(int i = 0; i< 4; i++){
+            JsonObject neopxiel = data.createNestedObject();
+            neopxiel["robotCode"] = robotCode;
+            neopxiel["neopixelIndex"] = i;
+            neopxiel["r"] = colorArray[i][0];
+            neopxiel["g"] = colorArray[i][1];
+            neopxiel["b"] = colorArray[i][2];
+        }
         char buffer[256];
         serializeJson(doc, buffer);
         sendDataFromHC12(buffer);

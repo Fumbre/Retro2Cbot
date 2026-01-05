@@ -28,7 +28,11 @@ void initNeopixelPins()
 void turnOnAllLeds(int R, int G, int B)
 {
   pixel.fill(0, NUMBER_OF_NEOPIXEL - 1, R, G, B);
-  //todo
+  for(int i = 0; i < 4; i++){
+    colorArray[i][0] = R;
+    colorArray[i][1] = G;
+    colorArray[i][2] = B;
+  }
   pixel.show();
 }
 
@@ -40,6 +44,11 @@ void turnOnAllLeds(int R, int G, int B)
 void turnOffAllLeds()
 {
   pixel.clear();
+  for(int i = 0; i < 4; i++){
+    colorArray[i][0] = 0;
+    colorArray[i][1] = 0;
+    colorArray[i][2] = 0;
+  }
 }
 
 /**
@@ -56,6 +65,9 @@ void turnOnSomeLeds(int index[], int length, int R, int G, int B)
 {
   for (int i = 0; i < length; i++)
   {
+    colorArray[index[i]][0] = R;
+    colorArray[index[i]][1] = G;
+    colorArray[index[i]][2] = B;
     pixel.setNeoPixelColor(index[i], R, G, B);
   }
   pixel.show();
@@ -72,6 +84,9 @@ void turnOffSomeLeds(int index[], int length)
 {
   for (int i = 0; i < length; i++)
   {
+    colorArray[index[i]][0] = 0;
+    colorArray[index[i]][1] = 0;
+    colorArray[index[i]][2] = 0;
     pixel.setNeoPixelColor(index[i], 0, 0, 0);
   }
   pixel.show();
