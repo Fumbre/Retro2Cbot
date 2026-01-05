@@ -10,7 +10,7 @@
 
 #include "common/tools/tests/test_sonar/test_sonar.h"
 
-int mapInit = 2;
+int mapInit = 1;
 
 void setup()
 {

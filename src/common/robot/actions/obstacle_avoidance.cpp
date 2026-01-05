@@ -11,7 +11,6 @@ bool avoiding = false;
  * short forward movements to bypass an obstacle and then resumes
  * normal operation.
  */
-
 void obstacleAvoidance(int speed)
 {
 

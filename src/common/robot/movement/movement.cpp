@@ -11,9 +11,9 @@ Timer didMoveLeftTimer;
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
  * @details reset didMoveLeft timer
-*/
-
-int resetMoveLeft() {
+ */
+int resetMoveLeft()
+{
   didMoveLeftTimer.resetExecuteOnce();
 }
 
@@ -22,9 +22,9 @@ int resetMoveLeft() {
  * @author Fumbre(Vladyslav)
  * @date 27-11-2025
  * @details reset didMoveRight timer
-*/
-
-int resetMoveRight() {
+ */
+int resetMoveRight()
+{
   didMoveRightTimer.resetExecuteOnce();
 }
 
@@ -36,20 +36,23 @@ int resetMoveRight() {
  * @param pulses(0|999)
  * @return bool
  * @details after pulses rotation return true, otherwise false
-*/
+ */
+bool didMoveRight(int speed, int pulses)
+{
 
-bool didMoveRight(int speed, int pulses) {
-
-  if (didMoveRightTimer.executeOnce(0)) {
+  if (didMoveRightTimer.executeOnce(0))
+  {
     prevPulsesLeft = motor_left_pulses_counter;
   }
 
-  if (motor_left_pulses_counter >= prevPulsesLeft + pulses) {
+  if (motor_left_pulses_counter >= prevPulsesLeft + pulses)
+  {
     didMoveRightTimer.resetExecuteOnce();
     moveStopAll();
     return true;
   }
-  else {
+  else
+  {
     moveStabilized(speed, -speed);
     return false;
   }
@@ -63,19 +66,23 @@ bool didMoveRight(int speed, int pulses) {
  * @param pulses(0|999)
  * @return bool
  * @details after pulses rotation return true, otherwise false
-*/
+ */
+bool didMoveLeft(int speed, int pulses)
+{
 
-bool didMoveLeft(int speed, int pulses) {
-
-  if (didMoveLeftTimer.executeOnce(0)) {
+  if (didMoveLeftTimer.executeOnce(0))
+  {
     prevPulsesRigt = motor_right_pulses_counter;
   }
 
-  if (motor_right_pulses_counter >= prevPulsesRigt + pulses) {
+  if (motor_right_pulses_counter >= prevPulsesRigt + pulses)
+  {
     didMoveLeftTimer.resetExecuteOnce();
     moveStopAll();
     return true;
-  } else {
+  }
+  else
+  {
     moveStabilized(-speed, speed);
     return false;
   }
@@ -86,8 +93,7 @@ bool didMoveLeft(int speed, int pulses) {
  * @author Fumbre(Vladyslav)
  * @date 13-11-2025
  * @details stop specific motor pin
-*/
-
+ */
 void moveStop(int motor_pin) { digitalWrite(motor_pin, LOW); };
 
 /**
@@ -95,10 +101,11 @@ void moveStop(int motor_pin) { digitalWrite(motor_pin, LOW); };
  * @author Fumbre(Vladyslav)
  * @date 13-11-2025
  * @details stop all motor pins
-*/
-
-void moveStopAll() {
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
+ */
+void moveStopAll()
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
     digitalWrite(PINS_MOTOR[i], LOW);
   }
 };
@@ -112,23 +119,28 @@ void moveStopAll() {
  *
  * @details this function doesn't count your pulses
  * @details you can use speed from -255 to 255
-*/
+ */
+void moveSpeed(int speedLeft, int speedRight)
+{
 
-void moveSpeed(int speedLeft, int speedRight) {
-
-  if (speedLeft < 0) {
+  if (speedLeft < 0)
+  {
     analogWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
     analogWrite(PIN_MOTOR_LEFT_BACKWARD, speedLeft * -1);
   }
-  else {
+  else
+  {
     analogWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
     analogWrite(PIN_MOTOR_LEFT_FORWARD, speedLeft);
   }
 
-  if (speedRight < 0) {
+  if (speedRight < 0)
+  {
     analogWrite(PIN_MOTOR_RIGHT_FORWARD, LOW);
     analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speedRight * -1);
-  } else {
+  }
+  else
+  {
     analogWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
     analogWrite(PIN_MOTOR_RIGHT_FORWARD, speedRight);
   }
@@ -143,9 +155,9 @@ void moveSpeed(int speedLeft, int speedRight) {
  *
  * @details movement is stabilized by pulses
  * @details you can use speed from -255 to 255
-*/
-
-void moveStabilized(int speedLeft, int speedRight) {
+ */
+void moveStabilized(int speedLeft, int speedRight)
+{
 
 #define LEFT_CORRECTION 1.00
 #define RIGHT_CORRECTION 0.93
@@ -158,40 +170,51 @@ void moveStabilized(int speedLeft, int speedRight) {
   static Timer stampRotateLeft;
   static Timer stampRotateRight;
 
-  switch (step) {
+  switch (step)
+  {
 
   case 0:
-    if (stampForward.interval(20)) {
+    if (stampForward.interval(20))
+    {
       writeSpeed(speedLeft, speedRight);
     }
 
-    if (stampForward.executeOnce(40)) {
+    if (stampForward.executeOnce(40))
+    {
       step++;
     }
     break;
 
   case 1:
-    if (motor_left_pulses_counter < motor_right_pulses_counter) {
-      if (stampRotateLeft.interval(0)) {
+    if (motor_left_pulses_counter < motor_right_pulses_counter)
+    {
+      if (stampRotateLeft.interval(0))
+      {
         writeSpeed(speedLeft, speedRight / 1.8);
       }
 
-      if (stampRotateLeft.executeOnce(20)) {
+      if (stampRotateLeft.executeOnce(20))
+      {
         step++;
       }
-
-    } else {
+    }
+    else
+    {
       step++;
     }
     break;
 
   case 2:
-    if (motor_left_pulses_counter > motor_right_pulses_counter) {
-      if (stampRotateRight.interval(0)) {
+    if (motor_left_pulses_counter > motor_right_pulses_counter)
+    {
+      if (stampRotateRight.interval(0))
+      {
         writeSpeed(speedLeft / 1.8, speedRight);
       }
       step++;
-    } else {
+    }
+    else
+    {
       step++;
     }
     break;
@@ -216,23 +239,30 @@ void moveStabilized(int speedLeft, int speedRight) {
  * @details put to left and right motors high depending on values
  * @details for minus value motor go backward
  * @details this funciton put all pins to LOW (used for moveStabilized)
-*/
+ */
+void writeSpeed(int speedLeft, int speedRight)
+{
 
-void writeSpeed(int speedLeft, int speedRight) {
-  
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
     analogWrite(PINS_MOTOR[i], LOW);
   }
 
-  if (speedLeft < 0) {
+  if (speedLeft < 0)
+  {
     analogWrite(PIN_MOTOR_LEFT_BACKWARD, speedLeft * -1);
-  } else {
+  }
+  else
+  {
     analogWrite(PIN_MOTOR_LEFT_FORWARD, speedLeft);
   }
 
-  if (speedRight < 0) {
+  if (speedRight < 0)
+  {
     analogWrite(PIN_MOTOR_RIGHT_BACKWARD, speedRight * -1);
-  } else {
+  }
+  else
+  {
     analogWrite(PIN_MOTOR_RIGHT_FORWARD, speedRight);
   }
 }

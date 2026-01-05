@@ -230,7 +230,6 @@ private:
      * @param reflectiveDifference(how much difference will be okay as the same data)
      * @return uint8_t if there's some difference return 1 otherwise 0
      */
-
     uint8_t getLineDifference(ReflectiveRead *compare, int reflectiveDifference)
     {
         uint8_t status = 0;
@@ -266,7 +265,6 @@ public:
      * @param pins_rs_length length of pins array
      * @param threshold after what value second surface will be read
      */
-
     ReflectiveSensor(const int *pins, const int pins_rs_length, const float threshold, const int marginError)
     {
         this->pins = pins;
@@ -280,7 +278,6 @@ public:
      * @authors Sunny & Vlad
      * @date 08-12-2025
      */
-
     void setup()
     {
         for (int i = 0; i < pins_rs_length; i++)
