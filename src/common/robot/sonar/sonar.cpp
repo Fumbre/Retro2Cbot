@@ -1,5 +1,7 @@
 #include "sonar.h"
 
+#define SONAR_DELAY_MS 35   // tempo mínimo entre triggers
+
 /*
  * @name setupSonar
  * @author Francisco
@@ -7,45 +9,44 @@
  * @details Configures the ultrasonic sensor pins used for distance measurement.
 */
 
-void setupSonar() {
+void setupSonar()
+{
+    pinMode(PIN_SONAR_TRIG, OUTPUT);
+    digitalWrite(PIN_SONAR_TRIG, LOW);
 
 #if defined(BB011)
-  pinMode(PIN_SONAR_TRIG, OUTPUT);                    // Shared Trigger
-  pinMode(PIN_SONAR_ECHO_FRONT, INPUT);                     
-  pinMode(PIN_SONAR_ECHO_RIGHT, INPUT);               
-  pinMode(PIN_SONAR_ECHO_LEFT, INPUT);                
+    pinMode(PIN_SONAR_ECHO_FRONT, INPUT);
+    pinMode(PIN_SONAR_ECHO_LEFT, INPUT);
+    pinMode(PIN_SONAR_ECHO_RIGHT, INPUT);
 #else
-  pinMode(PIN_SONAR_TRIG, OUTPUT);                    
-  pinMode(PIN_SONAR_ECHO_FRONT, INPUT);              
+    pinMode(PIN_SONAR_ECHO_FRONT, INPUT);
 #endif
 }
 
-/*
- * @name measureDistance
- * @author Francisco
- * @date 15-11-2025
- * @param echo Echo pin connected to the ultrasonic sensor.
- * @details Sends an ultrasonic pulse and measures the returned echo
- * to calculate the distance (cm).
-*/
+void sonarTrigger()
+{
+    digitalWrite(PIN_SONAR_TRIG, LOW);
+    delayMicroseconds(2);
+    digitalWrite(PIN_SONAR_TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(PIN_SONAR_TRIG, LOW);
+}
 
-float measureDistance(int echo) {
+float measureEcho(int echoPin)
+{
+    unsigned long duration = pulseIn(echoPin, HIGH, 25000);
 
-  // Clean trigger pulse
-  digitalWrite(PIN_SONAR_TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(PIN_SONAR_TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(PIN_SONAR_TRIG, LOW);
+    if (duration == 0) {
+      return -1.0;
+    }
+        
+    float distance = duration * 0.034 / 2.0;
 
-  // Read the bounce back
-  unsigned long duration = pulseIn(echo, HIGH, 25000);          // timeout 25ms
-
-  // If no echo (0) or out of range, return 400
-  if (duration == 0 || duration > 23200) {
-    return 400.0;
-  }
-  return duration * 0.034 / 2;
+    if (distance < 1.0 || distance > 300.0) {
+      return -1.0;
+    }
+      
+    return distance;
 }
 
 /*
@@ -55,8 +56,12 @@ float measureDistance(int echo) {
  * @details Measures the distance to an obstacle in front of the robot.
 */
 
-float getDistanceCM_Front() {
-  return measureDistance(PIN_SONAR_ECHO_FRONT);
+float getDistanceCM_Front()
+{
+    sonarTrigger();
+    float d = measureEcho(PIN_SONAR_ECHO_FRONT);
+    delay(SONAR_DELAY_MS);
+    return d;
 }
 
 /*
@@ -67,10 +72,14 @@ float getDistanceCM_Front() {
 */
 
 float getDistanceCM_Right() {
+
 #if defined(BB011)
-  return measureDistance(PIN_SONAR_ECHO_RIGHT);
+    sonarTrigger();
+    float d = measureEcho(PIN_SONAR_ECHO_RIGHT);
+    delay(SONAR_DELAY_MS);
+    return d;
 #else
-  return 0;
+    return -1.0;
 #endif
 }
 
@@ -82,10 +91,14 @@ float getDistanceCM_Right() {
 */
 
 float getDistanceCM_Left() {
+  
 #if defined(BB011)
-  return measureDistance(PIN_SONAR_ECHO_LEFT);
+    sonarTrigger();
+    float d = measureEcho(PIN_SONAR_ECHO_LEFT);
+    delay(SONAR_DELAY_MS);
+    return d;
 #else
-  return 0;
+    return -1.0;
 #endif
 }
 

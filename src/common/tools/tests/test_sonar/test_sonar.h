@@ -4,3 +4,4 @@
 #include "common/tools/Timer.h"
 
 void testSonar();
+void testSonars();
