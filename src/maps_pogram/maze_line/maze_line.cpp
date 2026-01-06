@@ -21,6 +21,7 @@ bool isRotating = false;
 int baseSpeed = 255;
 
 unsigned long rotatingTime = 650;
+unsigned long directingTime = 1000;
 LineState lastStatus = CENTER;
 LineState dir = CENTER;
 bool isEndSpace = false;
@@ -28,17 +29,6 @@ float avoidingDistance = 15; // unit: cm
 
 void mazeLine()
 {
-  // wait until it recieve from hc12 start
-  // String data = receiveDataFromHC12();
-  // if (data == "")
-  //   return;
-  // // parse data string to json
-  // deserializeJson(doc, data);
-  // String robotCode = doc["robotCode"];
-  // String type = doc["type"];
-  // if (type != "inside" && robotCode != "BB046")
-  //   return;
-
   // init timers
   static Timer t;
   static Timer t1;
@@ -62,11 +52,28 @@ void mazeLine()
     if (!entryPoint2.startWithPickUp(255, 11))
       return;
   }
+
   if (!isEndSequence2)
   {
+    // get object distance
+    float distance = getDistanceCM_Front();
+    // if robot meet object, rotating 180 degree and go back
+    if (distance <= avoidingDistance)
+    {
+      // rotate 180 degree
+      if (!didMoveRight(baseSpeed, PPR / 2))
+      {
+        return;
+      }
+      else
+      {
+        resetMoveRight();
+      }
+    }
 
     LineState currentStatus = rsLine2.pattern();
     static Timer rotateTime;
+    static Timer directingTimer;
 
     if (isRotating)
     {
@@ -85,30 +92,33 @@ void mazeLine()
       // lastStatus = currentStatus;
       resetMoveRight();
       rotateTime.resetTimeout();
+      directingTimer.resetTimeout();
     }
 
     // todo include HARD _LEFT and _RIGHT to put robot in the center of line!!
     switch (currentStatus)
     {
     case CENTER:
-      dir = CENTER;
       moveSpeed(baseSpeed, baseSpeed);
       lastStatus = CENTER;
       break;
     case SLIGHT_LEFT:
-      dir = SLIGHT_LEFT;
       lastStatus = SLIGHT_LEFT;
       moveSpeed(baseSpeed * slightConf, baseSpeed);
       break;
     case SLIGHT_RIGHT:
-      dir = SLIGHT_RIGHT;
       lastStatus = SLIGHT_RIGHT;
       moveSpeed(baseSpeed, baseSpeed * slightConf);
       break;
+    case HARD_LEFT:
+      lastStatus = HARD_LEFT;
+      dir = HARD_LEFT;
+      break;  
     case LEFT_TURN:
       lastStatus = LEFT_TURN;
       dir = LEFT_TURN;
       break;
+    case HARD_RIGHT:  
     case RIGHT_TURN:
       lastStatus = RIGHT_TURN;
       if (!rotateTime.timeout(rotatingTime))
@@ -122,9 +132,9 @@ void mazeLine()
       }
       break;
     case ALL_WHITE:
-      if (dir == LEFT_TURN)
+      if (dir == LEFT_TURN || dir == HARD_LEFT)
       {
-        if (!rotateTime.timeout(rotatingTime))
+        if (!directingTimer.timeout(directingTime))
         {
           isRotating = true;
           moveSpeed(baseSpeed * hardConf, baseSpeed);
@@ -139,7 +149,9 @@ void mazeLine()
       else
       {
         lastStatus = ALL_WHITE;
-        isRotating = !didMoveRight(baseSpeed, 3);
+        // isRotating = !didMoveRight(baseSpeed, 3);
+        didMoveRight(baseSpeed,3);
+        isRotating = true;
       }
       break;
     case ALL_BLACK:
@@ -168,16 +180,7 @@ void mazeLine()
     }
     else
     {
-      // stopMotors();
-      if (!isHC12SentForPM)
-      {
-        // send data to BB011
-        // char jsonBuffer[256];
-        // doc["robotCode"] = "BB011";
-        // doc["type"] = "inside";
-        // serializeJson(doc, jsonBuffer);
-        // sendDataFromHC12(jsonBuffer);
-      }
+      stopMotors();
     }
   }
 }

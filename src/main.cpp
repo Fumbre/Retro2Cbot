@@ -6,7 +6,7 @@
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 #include "maps_pogram/physical_maze/physical_maze.h"
 
-int mapInit = 1;
+int mapInit = 2;
 
 void setup()
 {
@@ -31,13 +31,6 @@ void loop()
 {
   switch (mapInit)
   {
-  // case 0:
-  //  for this case figure out something use define or variable
-  //   if (startSequencePassed)
-  //   {
-  //     mapInit += SETTING_MODE;
-  //   }
-  //   break;
   case 1:
     followLine();
     break;
