@@ -5,6 +5,8 @@
 #include "common/robot/movement/movement.h"
 #include "common/robot/movement/movementPID.h"
 
+#include "common/robot/sonar/sonar.h"
+
 /**
  * @name StartSequence
  * @author Fumbre (Vladyslav)
@@ -26,19 +28,26 @@ public:
     this->rsData = rsData;
   }
 
-  void onPossition(int pos)
+  bool readyToStart(int pos)
   {
+    static Timer t;
     // the easiest approach to start sequence
     if (pos == 1)
     {
-      // if everything is white - go forward
-      if (this->rsData->readBlackLine() == 0)
+      if (t.intervalStart(100))
       {
-        moveSpeed(230, 230);
+        if (getDistanceCM_Front() > 20)
+        {
+          return true;
+        }
       }
+
+      return false;
     }
     // todo pos == 2
     // todo pos == 3
+
+    return false;
   }
 
   /**
@@ -72,7 +81,7 @@ public:
    * @details pick an object up and do a rotatation to the left
    * @return bool
    */
-  bool pickUp()
+  bool startWithPickUp(int robotSpeed, int rotatePulses)
   {
     static Timer t;
     static Timer t1;
@@ -90,7 +99,7 @@ public:
       // after catch go forward
       if (t1.executeOnce(0))
       {
-        moveSpeed(220, 220);
+        moveSpeed(robotSpeed, robotSpeed);
       }
 
       // stop going forward after timeout
@@ -98,7 +107,7 @@ public:
       {
         if (!isRotated)
         {
-          isRotated = didMoveLeft(255, 11); // when rotation done returns true
+          isRotated = didMoveLeft(255, rotatePulses); // when rotation done returns true
         }
       }
 
@@ -107,7 +116,11 @@ public:
         if (t.executeOnce(0))
         {
           // double check this idea
-          stopMotors(); // improve??
+          if (this->rsData->readBlackLine() == 0)
+          {
+            moveSpeed(robotSpeed, robotSpeed * -0.5);
+          }
+          // stopMotors(); // improve??
           // moveSpeed(150, 150);
         }
       }

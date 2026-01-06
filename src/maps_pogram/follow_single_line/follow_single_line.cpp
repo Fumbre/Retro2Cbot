@@ -15,6 +15,8 @@ bool isEndSequence = false;
 // variable for avoiding
 bool safeZone = true;
 
+bool isGoing = false;
+
 /**
  * @name followLine
  * @authors Fumbre (Vladyslav) & Aria & Francisco
@@ -26,14 +28,23 @@ void followLine()
   static Timer t;
   static Timer t1;
   // set poisition of robot
+  if (!entryPoint.readyToStart(1) && !isGoing)
+  {
+    return;
+  }
+  else if (!entryPoint.readyToStart(1))
+  {
+    isGoing = true;
+  }
+
   if (t.executeOnce(0))
   {
-    entryPoint.onPossition(1); // this is first robot so it will go immediately
+    moveSpeed(230, 230);
   }
 
   if (!isEndSequence)
   {
-    if (!entryPoint.pickUp())
+    if (!entryPoint.startWithPickUp(255, 11))
       return;
   }
 

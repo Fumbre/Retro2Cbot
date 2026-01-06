@@ -33,12 +33,12 @@ void mazeLine()
   // set poisition of robot
   if (startPointTime.executeOnce(0))
   {
-    startPoint.onPossition(1);
+    startPoint.readyToStart(1);
   }
 
   if (!isEndSpace)
   {
-    if (!startPoint.pickUp())
+    if (!startPoint.startWithPickUp(255, 11))
       return;
   }
 
