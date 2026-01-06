@@ -1,14 +1,25 @@
 #include "maze_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
-StartSequence startPoint(&rsMaze);
-StaticJsonDocument<256> doc;
+ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 220, 35);
+StartSequence entryPoint2(&rsLine2);
+// Josn document class
+StaticJsonDocument<256> followingLineDoc2;
+
+// variable to send data to next robot when maze is passed
+bool mazePassed2 = false;
+
+// end sequence variable
+bool isEndSequence2 = false;
+
+bool isGoing2 = false;
+
 bool isHC12SentForPM = false;
 float slightConf = 0.8;
 float hardConf = 0.1;
 bool isRotating = false;
 int baseSpeed = 255;
+
 unsigned long rotatingTime = 650;
 LineState lastStatus = CENTER;
 LineState dir = CENTER;
@@ -28,39 +39,33 @@ void mazeLine()
   // if (type != "inside" && robotCode != "BB046")
   //   return;
 
-  static Timer startPointTime;
-  static Timer endPointTime;
+  // init timers
+  static Timer t;
+  static Timer t1;
   // set poisition of robot
-  if (startPointTime.executeOnce(0))
+  if (!entryPoint2.readyToStart(1) && !isGoing2)
   {
-    startPoint.readyToStart(1);
+    return;
+  }
+  else if (!entryPoint2.readyToStart(1))
+  {
+    isGoing2 = true;
   }
 
-  if (!isEndSpace)
+  if (t.executeOnce(0))
   {
-    if (!startPoint.startWithPickUp(255, 11))
+    moveSpeed(230, 230);
+  }
+
+  if (!isEndSequence2)
+  {
+    if (!entryPoint2.startWithPickUp(255, 11))
       return;
   }
-
-  if (!isEndSpace)
+  if (!isEndSequence2)
   {
-    // get object distance
-    float distance = getDistanceCM_Front();
-    // if robot meet object, rotating 180 degree and go back
-    if (distance <= avoidingDistance)
-    {
-      // rotate 180 degree
-      if (!didMoveLeft(baseSpeed, PPR / 2))
-      {
-        return;
-      }
-      else
-      {
-        resetMoveLeft();
-      }
-    }
 
-    LineState currentStatus = rsMaze.pattern();
+    LineState currentStatus = rsLine2.pattern();
     static Timer rotateTime;
 
     if (isRotating)
@@ -153,11 +158,11 @@ void mazeLine()
   }
   else
   {
-    if (endPointTime.timeout(500))
+    if (t1.timeout(500))
     {
       gripperUnCatch();
     }
-    if (!startPointTime.timeout(1000))
+    if (!t.timeout(1000))
     {
       moveSpeed(baseSpeed * hardConf, baseSpeed * hardConf);
     }
@@ -167,21 +172,14 @@ void mazeLine()
       if (!isHC12SentForPM)
       {
         // send data to BB011
-        char jsonBuffer[256];
-        doc["robotCode"] = "BB011";
-        doc["type"] = "inside";
-        serializeJson(doc, jsonBuffer);
-        sendDataFromHC12(jsonBuffer);
+        // char jsonBuffer[256];
+        // doc["robotCode"] = "BB011";
+        // doc["type"] = "inside";
+        // serializeJson(doc, jsonBuffer);
+        // sendDataFromHC12(jsonBuffer);
       }
     }
   }
-}
-
-int getPWMValue(int speed)
-{
-  speed = constrain(speed, 0, FULL_SPEED);
-  int pwm = (float)speed / FULL_SPEED * FULL_PWM_VALUE;
-  return constrain(pwm, 0, FULL_PWM_VALUE);
 }
 
 void mazeLineSetup()
@@ -190,6 +188,6 @@ void mazeLineSetup()
   setupMotor();
   setupGripper();
   setupSonar();
-  rsMaze.setup();
+  rsLine2.setup();
   gripperUnCatch();
 }
