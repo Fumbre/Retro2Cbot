@@ -1,187 +1,124 @@
 #include "maze_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 220, 35);
+ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 35);
 StartSequence entryPoint2(&rsLine2);
-// Josn document class
-StaticJsonDocument<256> followingLineDoc2;
 
-// variable to send data to next robot when maze is passed
-bool mazePassed2 = false;
-
-// end sequence variable
-bool isEndSequence2 = false;
-
-bool isGoing2 = false;
-
-bool isHC12SentForPM = false;
-float slightConf = 0.8;
-float hardConf = 0.1;
-bool isRotating = false;
-int baseSpeed = 255;
-
-unsigned long rotatingTime = 650;
-unsigned long directingTime = 1000;
 LineState lastStatus = CENTER;
-LineState dir = CENTER;
-bool isEndSpace = false;
-float avoidingDistance = 15; // unit: cm
+LineState currentStatus;
+
+// speed conf
+int baseSpeed = 255;
+float slightConf = 0.7;
+float hardConf = 0.1;
+float reverseConf = -1;
+
+// timing
+unsigned long turningTime = 200;
+
+bool doRightRotation = false;
+bool doRightRotationLeft = false;
+
+static Timer t;
 
 void mazeLine()
 {
-  // init timers
-  static Timer t;
-  static Timer t1;
-  // set poisition of robot
-  if (!entryPoint2.readyToStart(1) && !isGoing2)
+  currentStatus = rsLine2.pattern();
+
+  if (doRightRotation)
   {
+    rotate(0);
     return;
   }
-  else if (!entryPoint2.readyToStart(1))
+
+  if (doRightRotationLeft)
   {
-    isGoing2 = true;
+    rotate(1);
+    return;
   }
 
-  if (t.executeOnce(0))
+  switch (currentStatus)
   {
-    moveSpeed(230, 230);
+  case CENTER:
+    moveSpeed(baseSpeed, baseSpeed);
+    break;
+  case SLIGHT_LEFT:
+    moveSpeed(baseSpeed * slightConf, baseSpeed);
+    break;
+  case SLIGHT_RIGHT:
+    moveSpeed(baseSpeed, baseSpeed * slightConf);
+    break;
+  case ALL_BLACK:
+    lastStatus = ALL_BLACK;
+    moveSpeed(baseSpeed, baseSpeed);
+    break;
+  case ALL_WHITE:
+    if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
+    {
+      doRightRotation = true;
+      rotate(0);
+    }
+
+    if (lastStatus == LEFT_TURN)
+    {
+      doRightRotationLeft = true;
+      rotate(1);
+    }
+    break;
+  case HARD_LEFT:
+    moveSpeed(baseSpeed * hardConf, baseSpeed);
+  case LEFT_TURN:
+    lastStatus = LEFT_TURN;
+    moveSpeed(baseSpeed, baseSpeed);
+    break;
+  case HARD_RIGHT:
+    moveSpeed(baseSpeed, baseSpeed * hardConf);
+
+  case RIGHT_TURN:
+    lastStatus = RIGHT_TURN;
+    doRightRotation = true;
+    rotate(0);
+    break;
+  }
+}
+
+// dir == 0 -right dir == 1 -left
+void rotate(int dir)
+{
+  bool end = false;
+
+  if (t.executeOnce(0, 100))
+  {
+    moveSpeed(baseSpeed, baseSpeed);
+    return;
   }
 
-  if (!isEndSequence2)
+  if (dir == 0)
   {
-    if (!entryPoint2.startWithPickUp(255, 11))
-      return;
+
+    // to do do move left until reach center
+    if (didMoveRight(baseSpeed, 12))
+    {
+      end = true;
+    }
   }
 
-  if (!isEndSequence2)
+  if (dir == 1)
   {
-    // get object distance
-    float distance = getDistanceCM_Front();
-    // if robot meet object, rotating 180 degree and go back
-    if (distance <= avoidingDistance)
+    if (didMoveLeft(baseSpeed, 12))
     {
-      // rotate 180 degree
-      if (!didMoveRight(baseSpeed, PPR / 2))
-      {
-        return;
-      }
-      else
-      {
-        resetMoveRight();
-      }
-    }
-
-    LineState currentStatus = rsLine2.pattern();
-    static Timer rotateTime;
-    static Timer directingTimer;
-
-    if (isRotating)
-    {
-      if (currentStatus != ALL_WHITE && lastStatus == ALL_WHITE)
-      {
-        isRotating = false;
-        resetMoveRight();
-      }
-      else
-      {
-        currentStatus = lastStatus;
-      }
-    }
-    else
-    {
-      // lastStatus = currentStatus;
-      resetMoveRight();
-      rotateTime.resetTimeout();
-      directingTimer.resetTimeout();
-    }
-
-    // todo include HARD _LEFT and _RIGHT to put robot in the center of line!!
-    switch (currentStatus)
-    {
-    case CENTER:
-      moveSpeed(baseSpeed, baseSpeed);
-      lastStatus = CENTER;
-      break;
-    case SLIGHT_LEFT:
-      lastStatus = SLIGHT_LEFT;
-      moveSpeed(baseSpeed * slightConf, baseSpeed);
-      break;
-    case SLIGHT_RIGHT:
-      lastStatus = SLIGHT_RIGHT;
-      moveSpeed(baseSpeed, baseSpeed * slightConf);
-      break;
-    case HARD_LEFT:
-      lastStatus = HARD_LEFT;
-      dir = HARD_LEFT;
-      break;  
-    case LEFT_TURN:
-      lastStatus = LEFT_TURN;
-      dir = LEFT_TURN;
-      break;
-    case HARD_RIGHT:  
-    case RIGHT_TURN:
-      lastStatus = RIGHT_TURN;
-      if (!rotateTime.timeout(rotatingTime))
-      {
-        isRotating = true;
-        moveSpeed(baseSpeed, baseSpeed * hardConf);
-      }
-      else
-      {
-        isRotating = false;
-      }
-      break;
-    case ALL_WHITE:
-      if (dir == LEFT_TURN || dir == HARD_LEFT)
-      {
-        if (!directingTimer.timeout(directingTime))
-        {
-          isRotating = true;
-          moveSpeed(baseSpeed * hardConf, baseSpeed);
-          lastStatus = ALL_WHITE;
-        }
-        else
-        {
-          isRotating = false;
-          dir = CENTER;
-        }
-      }
-      else
-      {
-        lastStatus = ALL_WHITE;
-        // isRotating = !didMoveRight(baseSpeed, 3);
-        didMoveRight(baseSpeed,3);
-        isRotating = true;
-      }
-      break;
-    case ALL_BLACK:
-      lastStatus = ALL_BLACK;
-      if (!rotateTime.timeout(rotatingTime))
-      {
-        isRotating = true;
-        moveSpeed(baseSpeed, baseSpeed * hardConf);
-      }
-      else
-      {
-        isRotating = false;
-      }
-      break;
+      end = true;
     }
   }
-  else
+
+  if (end)
   {
-    if (t1.timeout(500))
-    {
-      gripperUnCatch();
-    }
-    if (!t.timeout(1000))
-    {
-      moveSpeed(baseSpeed * hardConf, baseSpeed * hardConf);
-    }
-    else
-    {
-      stopMotors();
-    }
+    doRightRotation = false;
+    doRightRotationLeft = false;
+
+    resetMoveLeft();
+    resetMoveRight();
+    t.resetExecuteOnce();
   }
 }
 

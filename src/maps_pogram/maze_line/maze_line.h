@@ -13,4 +13,4 @@ void mazeLineSetup();
 
 void mazeLine();
 
-int getPWMValue(int speed);
+void rotate(int dir);
