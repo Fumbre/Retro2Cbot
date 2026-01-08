@@ -31,7 +31,7 @@ public:
     if (pos == 1) {
       // if everything is white - go forward
       if (this->rsData->readBlackLine() == 0) {
-        moveSpeed(230, 230);
+        moveSpeed(200, 230);
       }
     }
     // todo pos == 2
@@ -88,7 +88,7 @@ public:
       // stop going forward after timeout
       if (t1.timeout(300)) {
         if (!isRotated) {
-          isRotated = didMoveLeft(255, 11);             // when rotation done returns true
+          isRotated = didMoveLeft(255, 8);             // when rotation done returns true
         }
       }
 
