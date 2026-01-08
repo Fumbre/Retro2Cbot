@@ -9,15 +9,18 @@ LineState currentStatus;
 
 // speed conf
 int baseSpeed = 255;
-float slightConf = 0.7;
+float slightConf = 0.6;
 float hardConf = 0.1;
-float reverseConf = -.7;
+float reverseConf = -1;
 
 bool doRotationiRight = false;
 bool doRotationiLeft = false;
 bool rotated = false;
 
 static Timer t;
+
+static Timer t1;
+static Timer t2;
 
 void mazeLine()
 {
@@ -88,7 +91,7 @@ void rotate(int dir)
 {
   bool end = false;
 
-  if (!t.timeout(100))
+  if (!t.timeout(200)) // 200
   {
     moveSpeed(baseSpeed, baseSpeed);
   }
@@ -97,10 +100,14 @@ void rotate(int dir)
 
     if (dir == 0)
     {
-      // to do do move left until reach center
       if (!rotated)
       {
-        if (didMoveRight(baseSpeed, 5))
+        if (!t1.timeout(150))
+        {
+          moveSpeed(baseSpeed * .8, baseSpeed * .8 * reverseConf);
+          return;
+        }
+        else
         {
           rotated = true;
         }
@@ -111,7 +118,12 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (didMoveLeft(baseSpeed, 5))
+        if (!t2.timeout(150))
+        {
+          moveSpeed(baseSpeed * reverseConf * .8, baseSpeed * .8);
+          return;
+        }
+        else
         {
           rotated = true;
         }
@@ -120,19 +132,12 @@ void rotate(int dir)
 
     if (rotated)
     {
-      LineState pattern = rsLine2.pattern();
-      if (dir == 0)
-      {
-        moveSpeed(baseSpeed, baseSpeed * reverseConf);
-      }
 
-      if (dir == 1)
-      {
-        moveSpeed(baseSpeed * reverseConf, baseSpeed);
-      }
+      LineState pattern = rsLine2.pattern();
 
       if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
       {
+        moveStopAll();
         end = true;
       }
     }
@@ -148,6 +153,8 @@ void rotate(int dir)
     resetMoveLeft();
     resetMoveRight();
     t.resetTimeout();
+    t1.resetTimeout();
+    t2.resetTimeout();
   }
 }
 
