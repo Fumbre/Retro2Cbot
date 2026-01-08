@@ -11,13 +11,11 @@ LineState currentStatus;
 int baseSpeed = 255;
 float slightConf = 0.7;
 float hardConf = 0.1;
-float reverseConf = -1;
+float reverseConf = -.7;
 
-// timing
-unsigned long turningTime = 200;
-
-bool doRightRotation = false;
-bool doRightRotationLeft = false;
+bool doRotationiRight = false;
+bool doRotationiLeft = false;
+bool rotated = false;
 
 static Timer t;
 
@@ -25,13 +23,13 @@ void mazeLine()
 {
   currentStatus = rsLine2.pattern();
 
-  if (doRightRotation)
+  if (doRotationiRight)
   {
     rotate(0);
     return;
   }
 
-  if (doRightRotationLeft)
+  if (doRotationiLeft)
   {
     rotate(1);
     return;
@@ -55,13 +53,13 @@ void mazeLine()
   case ALL_WHITE:
     if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
     {
-      doRightRotation = true;
+      doRotationiRight = true;
       rotate(0);
     }
 
     if (lastStatus == LEFT_TURN)
     {
-      doRightRotationLeft = true;
+      doRotationiLeft = true;
       rotate(1);
     }
     break;
@@ -76,9 +74,12 @@ void mazeLine()
 
   case RIGHT_TURN:
     lastStatus = RIGHT_TURN;
-    doRightRotation = true;
+    doRotationiRight = true;
     rotate(0);
     break;
+    // case OTHER:
+    //   currentStatus = lastStatus;
+    //   break;
   }
 }
 
@@ -87,38 +88,66 @@ void rotate(int dir)
 {
   bool end = false;
 
-  if (t.executeOnce(0, 100))
+  if (!t.timeout(100))
   {
     moveSpeed(baseSpeed, baseSpeed);
-    return;
   }
-
-  if (dir == 0)
+  else
   {
 
-    // to do do move left until reach center
-    if (didMoveRight(baseSpeed, 12))
+    if (dir == 0)
     {
-      end = true;
+      // to do do move left until reach center
+      if (!rotated)
+      {
+        if (didMoveRight(baseSpeed, 5))
+        {
+          rotated = true;
+        }
+      }
     }
-  }
 
-  if (dir == 1)
-  {
-    if (didMoveLeft(baseSpeed, 12))
+    if (dir == 1)
     {
-      end = true;
+      if (!rotated)
+      {
+        if (didMoveLeft(baseSpeed, 5))
+        {
+          rotated = true;
+        }
+      }
+    }
+
+    if (rotated)
+    {
+      LineState pattern = rsLine2.pattern();
+      if (dir == 0)
+      {
+        moveSpeed(baseSpeed, baseSpeed * reverseConf);
+      }
+
+      if (dir == 1)
+      {
+        moveSpeed(baseSpeed * reverseConf, baseSpeed);
+      }
+
+      if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
+      {
+        end = true;
+      }
     }
   }
 
   if (end)
   {
-    doRightRotation = false;
-    doRightRotationLeft = false;
+    rotated = false;
+
+    doRotationiRight = false;
+    doRotationiLeft = false;
 
     resetMoveLeft();
     resetMoveRight();
-    t.resetExecuteOnce();
+    t.resetTimeout();
   }
 }
 

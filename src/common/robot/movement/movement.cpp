@@ -52,7 +52,7 @@ bool didMoveRight(int speed, int pulses)
   }
   else
   {
-    moveStabilized(speed, -speed);
+    moveStabilized(speed, speed * -1);
     return false;
   }
 }
@@ -81,7 +81,7 @@ bool didMoveLeft(int speed, int pulses)
   }
   else
   {
-    moveStabilized(-speed, speed);
+    moveStabilized(speed * -1, speed);
     return false;
   }
 }
