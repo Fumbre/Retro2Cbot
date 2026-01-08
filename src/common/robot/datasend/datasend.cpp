@@ -1,15 +1,15 @@
 #include "datasend.h"
 
-int interval = 1000;
+int interval = 2000;
 String type = "outside";
 String method = "POST";
 
 void dataSend()
 {
-    sendGripperData();
-    sendNeopixelData();
-    sendPulsesData();
-    sendReflectiveSensorData();
+    // sendGripperData();
+    // sendNeopixelData();
+    // sendPulsesData();
+    // sendReflectiveSensorData();
     sendSonarData();
 }
 
@@ -39,6 +39,7 @@ void sendSonarData()
         frontSonar["robotCode"] = robotCode;
         char buffer[256];
         serializeJson(doc, buffer);
+        Serial.println(String(buffer));
         sendDataFromHC12(buffer);
     }
 }
@@ -56,6 +57,7 @@ void sendGripperData()
         gripper["gripperStatus"] = gripperStatus;
         char buffer[256];
         serializeJson(doc, buffer);
+        Serial.println(String(buffer));
         sendDataFromHC12(buffer);
     }
 }
@@ -79,32 +81,36 @@ void sendReflectiveSensorData()
         rs["a6"] = a6;
         rs["a7"] = a7;
         rs["currentStatus"] = RSSendDataStatus;
-        char buffer[256];
+        char buffer[200];
         serializeJson(doc, buffer);
+        Serial.println(String(buffer));
         sendDataFromHC12(buffer);
     }
 }
 void sendNeopixelData()
 {
     static Timer timer;
-    static JsonDocument doc;
+    static JsonDocument doch;
     if (timer.intervalStart(interval))
     {
         String robotCode = getCurrentRobotCode();
-        doc["event"] = "neopixels";
-        setBasicInformation(doc);
-        JsonArray data = doc.createNestedArray("data");
-        for(int i = 0; i< 4; i++){
+        for (int i = 0; i < 4; i++)
+        {
+            doch.clear();
+            doch["event"] = "neopixels";
+            setBasicInformation(doch);
+            JsonArray data = doch.createNestedArray("data");
             JsonObject neopxiel = data.createNestedObject();
             neopxiel["robotCode"] = robotCode;
             neopxiel["neopixelIndex"] = i;
             neopxiel["r"] = colorArray[i][0];
             neopxiel["g"] = colorArray[i][1];
             neopxiel["b"] = colorArray[i][2];
+            char buffer[200];
+            serializeJson(doch, buffer, sizeof(buffer));
+            Serial.println(String(buffer));
+            sendDataFromHC12(buffer);
         }
-        char buffer[256];
-        serializeJson(doc, buffer);
-        sendDataFromHC12(buffer);
     }
 }
 void sendPulsesData()
@@ -122,6 +128,7 @@ void sendPulsesData()
         pulses["rightWheelPulses"] = motor_right_pulses_counter;
         char buffer[256];
         serializeJson(doc, buffer);
+        Serial.println(String(buffer));
         sendDataFromHC12(buffer);
     }
 }

@@ -5,8 +5,9 @@
 #include "maps_pogram/maze_line/maze_line.h"
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 #include "maps_pogram/physical_maze/physical_maze.h"
+#include "common/robot/datasend/datasend.h"
 
-int mapInit = 2;
+int mapInit = 1;
 
 void setup()
 {
@@ -29,16 +30,17 @@ void setup()
 
 void loop()
 {
-  switch (mapInit)
-  {
-  case 1:
-    followLine();
-    break;
-  case 2:
-    mazeLine();
-    break;
-  case 3:
-    physicalMaze();
-    break;
-  }
+  // switch (mapInit)
+  // {
+  // case 1:
+  //   followLine();
+  //   break;
+  // case 2:
+  //   mazeLine();
+  //   break;
+  // case 3:
+  //   physicalMaze();
+  //   break;
+  // }
+  dataSend();
 }
