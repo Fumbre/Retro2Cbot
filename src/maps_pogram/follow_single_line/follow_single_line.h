@@ -6,6 +6,8 @@
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/actions/Sequence.h"
 
+#include "common/robot/datasend/datasend.h"
+
 void followLine();
 void followLineSetup();
 void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slightConf, float hardConf);
