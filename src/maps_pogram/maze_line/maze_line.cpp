@@ -1,165 +1,194 @@
 #include "maze_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsMaze(PINS_RS, PINS_RS_LENGTH, THRESHOLD, MARGIN_SURFACE);
-StartSequence startPoint(&rsMaze);
+ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 35);
+Sequence mazeSequence2(&rsLine2);
 
-float slightConf = 0.8;
-float hardConf = 0.1;
-bool isRotating = false;
-int baseSpeed = 255;
-unsigned long rotatingTime = 650;
 LineState lastStatus = CENTER;
-LineState dir = CENTER;
-bool isEndSpace = false;
-float avoidingDistance = 15; // unit: cm
+LineState currentStatus;
+
+// speed conf
+int baseSpeed = 255;
+float slightConf = 0.6;
+float hardConf = 0.1;
+float reverseConf = -1;
+
+bool doRotationiRight = false;
+bool doRotationiLeft = false;
+bool rotated = false;
+
+// maze variables
+bool isMazeStarted2 = false;
+bool isEndSequence2 = false;
+bool mazePassed2 = false;
+
+// maybe put it inside roatation function
+static Timer t;
 
 void mazeLine()
 {
-  static Timer startPointTime;
-  static Timer endPointTime;
+  // init timers
+  static Timer t;
+  static Timer t1;
 
   // set poisition of robot
-  if (startPointTime.executeOnce(0))
+  if (!isMazeStarted2)
   {
-    // todo onPossition(2); wait until it recieve from hc12 start
-    startPoint.onPossition(1);
+    if (mazeSequence2.readyToStart(2))
+    {
+      isMazeStarted2 = true;
+    }
+    return;
   }
 
-  if (!isEndSpace)
+  if (t.executeOnce(0))
   {
-    if (!startPoint.pickUp())
+    moveSpeed(230, 230);
+  }
+
+  if (!isEndSequence2)
+  {
+    if (!mazeSequence2.start(255))
       return;
   }
 
-  if (!isEndSpace)
+  currentStatus = rsLine2.pattern();
+
+  // if rotation do only rotation
+  if (doRotationiRight)
   {
-    // get object distance
-    float distance = getDistanceCM_Front();
-    // if robot meet object, rotating 180 degree and go back
-    if (distance <= avoidingDistance)
-    {
-      // rotate 180 degree
-      if (!didMoveLeft(baseSpeed, PULSES_PER_ROTATION / 2))
-      {
-        return;
-      }
-      else
-      {
-        resetMoveLeft();
-      }
-    }
+    rotate(0);
+    return;
+  }
+  // left one
+  if (doRotationiLeft)
+  {
+    rotate(1);
+    return;
+  }
 
-    LineState currentStatus = rsMaze.pattern();
-    static Timer rotateTime;
-
-    if (isRotating)
-    {
-      if (currentStatus != ALL_WHITE && lastStatus == ALL_WHITE)
-      {
-        isRotating = false;
-        resetMoveRight();
-      }
-      else
-      {
-        currentStatus = lastStatus;
-      }
-    }
-    else
-    {
-      // lastStatus = currentStatus;
-      resetMoveRight();
-      rotateTime.resetTimeout();
-    }
-
-    // todo include HARD _LEFT and _RIGHT to put robot in the center of line!!
+  if (!isEndSequence2)
+  {
+    // main maze line code
     switch (currentStatus)
     {
     case CENTER:
       moveSpeed(baseSpeed, baseSpeed);
-      lastStatus = CENTER;
       break;
     case SLIGHT_LEFT:
-      lastStatus = SLIGHT_LEFT;
       moveSpeed(baseSpeed * slightConf, baseSpeed);
       break;
     case SLIGHT_RIGHT:
-      lastStatus = SLIGHT_RIGHT;
       moveSpeed(baseSpeed, baseSpeed * slightConf);
       break;
-    case LEFT_TURN:
-      lastStatus = LEFT_TURN;
-      dir = LEFT_TURN;
-      break;
-    case RIGHT_TURN:
-      lastStatus = RIGHT_TURN;
-      if (!rotateTime.timeout(rotatingTime))
-      {
-        isRotating = true;
-        moveSpeed(baseSpeed, baseSpeed * hardConf);
-      }
-      else
-      {
-        isRotating = false;
-      }
+    case ALL_BLACK:
+      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
+
+      lastStatus = ALL_BLACK;
+      moveSpeed(baseSpeed, baseSpeed);
       break;
     case ALL_WHITE:
-      if (dir == LEFT_TURN)
+      if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
       {
-        if (!rotateTime.timeout(rotatingTime))
-        {
-          isRotating = true;
-          moveSpeed(baseSpeed * hardConf, baseSpeed);
-          lastStatus = ALL_WHITE;
-        }
-        else
-        {
-          isRotating = false;
-          dir = CENTER;
-        }
+        doRotationiRight = true;
+        rotate(0);
       }
-      else
+
+      if (lastStatus == LEFT_TURN)
       {
-        lastStatus = ALL_WHITE;
-        isRotating = !didMoveRight(baseSpeed, 3);
+        doRotationiLeft = true;
+        rotate(1);
       }
       break;
-    case ALL_BLACK:
-      lastStatus = ALL_BLACK;
-      if (!rotateTime.timeout(rotatingTime))
-      {
-        isRotating = true;
-        moveSpeed(baseSpeed, baseSpeed * hardConf);
-      }
-      else
-      {
-        isRotating = false;
-      }
+    case HARD_LEFT:
+      moveSpeed(baseSpeed * hardConf, baseSpeed);
+    case LEFT_TURN:
+      lastStatus = LEFT_TURN;
+      moveSpeed(baseSpeed, baseSpeed);
+      break;
+    case HARD_RIGHT:
+      moveSpeed(baseSpeed, baseSpeed * hardConf);
+    case RIGHT_TURN:
+      lastStatus = RIGHT_TURN;
+      doRotationiRight = true;
+      rotate(0);
       break;
     }
   }
-  else
+
+  if (isEndSequence2)
   {
-    if (endPointTime.timeout(500))
-    {
-      gripperUnCatch();
-    }
-    if (!startPointTime.timeout(1000))
-    {
-      moveSpeed(baseSpeed * hardConf, baseSpeed * hardConf);
-    }
-    else
-    {
-      stopMotors();
-    }
+    mazeSequence2.end(&mazePassed2, "BB016");
   }
 }
 
-int getPWMValue(int speed)
+// dir == 0 -right; dir == 1 -left
+void rotate(int dir)
 {
-  speed = constrain(speed, 0, FULL_SPEED);
-  int pwm = (float)speed / FULL_SPEED * FULL_PWM_VALUE;
-  return constrain(pwm, 0, FULL_PWM_VALUE);
+  bool end = false;
+
+  if (!t.timeout(200)) // execute for 200 milliseconds
+  {
+    moveSpeed(baseSpeed, baseSpeed);
+  }
+  else
+  {
+
+    if (dir == 0)
+    {
+      if (!rotated)
+      {
+        if (t.executeOnce(0, 150))
+        {
+          moveSpeed(baseSpeed * .8, baseSpeed * .8 * reverseConf);
+          return;
+        }
+        else
+        {
+          rotated = true;
+        }
+      }
+    }
+
+    if (dir == 1)
+    {
+      if (!rotated)
+      {
+        if (t.executeOnce(0, 150))
+        {
+          moveSpeed(baseSpeed * reverseConf * .8, baseSpeed * .8);
+          return;
+        }
+        else
+        {
+          rotated = true;
+        }
+      }
+    }
+
+    if (rotated)
+    {
+
+      LineState pattern = rsLine2.pattern();
+
+      if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
+      {
+        moveStopAll();
+        end = true;
+      }
+    }
+  }
+
+  if (end)
+  {
+    rotated = false;
+
+    doRotationiRight = false;
+    doRotationiLeft = false;
+
+    t.resetTimeout();
+    t.resetExecuteOnce();
+  }
 }
 
 void mazeLineSetup()
@@ -168,6 +197,6 @@ void mazeLineSetup()
   setupMotor();
   setupGripper();
   setupSonar();
-  rsMaze.setup();
+  rsLine2.setup();
   gripperUnCatch();
 }

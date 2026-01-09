@@ -8,6 +8,7 @@
 
 #include "common/constant/neopixel.h"
 #include "common/tools/Neopixel.h"
+#include "common/robot/globalvariable/globalVariable.h"
 
 void initNeopixelPins();
 void turnOnAllLeds(int R, int G, int B);

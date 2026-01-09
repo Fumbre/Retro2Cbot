@@ -46,15 +46,11 @@ const uint8_t allWhite[] = {0b00000000};
 
 const uint8_t allBlack[] = {0b11111111};
 
-// 0b11111110 // 0b11111100
-const uint8_t leftTurn[] = {
-    0b11111000,
-    0b11110000};
+// 0b11111110 //
+const uint8_t leftTurn[] = {0b11111000, 0b11110000, 0b11111100};
 
-// 0b01111111 // 0b00111111
-const uint8_t rightTurn[] = {
-    0b00011111,
-    0b00001111};
+// 0b01111111 //
+const uint8_t rightTurn[] = {0b00011111, 0b00001111, 0b00111111};
 
 enum LineState
 {
@@ -68,7 +64,9 @@ enum LineState
     ALL_BLACK,
 
     LEFT_TURN,
-    RIGHT_TURN
+    RIGHT_TURN,
+
+    OTHER
 };
 
 /**
@@ -139,6 +137,8 @@ private:
         {
 
             int v = analogRead(PINS_RS[i]);
+            // update a0 ~ a7 value
+            *RS_SEND_DATA_RAW_ARRAY[i] = v;
             stats[i].update(v);
         }
         return stats;
@@ -311,7 +311,13 @@ public:
         }
 
         uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, this->marginError);
-
+        // update current status
+        String statusStr = "";
+        for (int i = 7; i >= 0; i--)
+        {
+            statusStr += (currentBlackStatus & (1 << i)) ? '1' : '0';
+        }
+        RSSendDataStatus = statusStr;
         return currentBlackStatus; // 0b00011000
     }
 
@@ -377,6 +383,6 @@ public:
         if (match(allBlack, ARRAY_SIZE(allBlack)))
             return ALL_BLACK;
 
-        return CENTER;
+        return OTHER;
     }
 };

@@ -4,8 +4,10 @@
 #include "common/robot/actions/obstacle_avoidance.h"
 #include "common/robot/gripper/gripper.h"
 #include "common/robot/reflective_sensor/reflective_sensor.h"
-#include "common/tools/Start_sequence.h"
-#include "common/robot/hc12/hc12.h"
+#include "common/robot/actions/Sequence.h"
+
+#include "common/robot/datasend/datasend.h"
 
 void followLine();
 void followLineSetup();
+void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slightConf, float hardConf);

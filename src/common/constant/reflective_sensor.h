@@ -1,8 +1,9 @@
 #pragma once
 #include <Arduino.h>
+#include "common/robot/globalvariable/globalVariable.h"
 
 // RS = reflective sensor
-const int PIN_RS_D8 = A0; 
+const int PIN_RS_D8 = A0;
 const int PIN_RS_D7 = A1;
 const int PIN_RS_D6 = A2;
 const int PIN_RS_D5 = A3;
@@ -31,4 +32,4 @@ const int PINS_RS[] = {
 
 // store array length dynamically
 const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
-
+// to store array length dynamically

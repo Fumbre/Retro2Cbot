@@ -3,12 +3,9 @@
 #include <Arduino.h>
 #include "common/robot/neopixel/neopixel.h"
 #include "maps_pogram/maze_line/maze_line.h"
-
 #include "maps_pogram/follow_single_line/follow_single_line.h"
-
 #include "maps_pogram/physical_maze/physical_maze.h"
-
-#include "common/tools/tests/test_sonar/test_sonar.h"
+#include "common/robot/datasend/datasend.h"
 
 int mapInit = 1;
 
@@ -35,13 +32,6 @@ void loop()
 {
   switch (mapInit)
   {
-  // case 0:
-  //  for this case figure out something use define or variable
-  //   if (startSequencePassed)
-  //   {
-  //     mapInit += SETTING_MODE;
-  //   }
-  //   break;
   case 1:
     followLine();
     break;
@@ -52,4 +42,5 @@ void loop()
     physicalMaze();
     break;
   }
+  dataSend();
 }

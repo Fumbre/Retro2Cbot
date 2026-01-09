@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include "common/constant/sonar.h"
 #include "common/constant/board.h"
+#include "common/robot/globalvariable/globalVariable.h"
 
 void setupSonar();
 

@@ -4,27 +4,32 @@
 #include "common/tools/Timer.h"
 #include "common/robot/gripper/gripper.h"
 #include "common/robot/movement/movement.h"
-#include "common/robot/movement/movementPID.h"
-
 #include "common/robot/sonar/sonar.h"
 
+#include "common/robot/hc12/hc12.h"
+
+#include <ArduinoJson.h>
+
 /**
- * @name StartSequence
+ * @name Sequence
  * @author Fumbre (Vladyslav)
  * @date 16-12-2025
- * @details StartSequence class to start sequence
+ * @details Sequence class to start and end sequence
  */
 
-class StartSequence
+class Sequence
 {
 private:
   ReflectiveSensor *rsData;
+
+  // Josn document class
+  StaticJsonDocument<256> doc;
 
   bool isRotated = false;
   bool catchObj = false;
 
 public:
-  StartSequence(ReflectiveSensor *rsData)
+  Sequence(ReflectiveSensor *rsData)
   {
     this->rsData = rsData;
   }
@@ -69,7 +74,6 @@ public:
    * @details if black squeare (11111111) detected longer than @param time return true, otherwise false
    * @return bool
    */
-
   bool isDetecetingBlackSquare(int time)
   {
     static Timer t;
@@ -88,13 +92,13 @@ public:
   }
 
   /**
-   * @name pickUp
+   * @name start
    * @author Fumbre (Vladyslav)
    * @date 16-12-2025
    * @details pick an object up and do a rotatation to the left
    * @return bool
    */
-  bool startWithPickUp(int robotSpeed)
+  bool start(int robotSpeed)
   {
     static Timer t;
     static Timer t1;
@@ -120,7 +124,6 @@ public:
       {
         if (!isRotated)
         {
-          // try to use
           moveSpeed(-255, 255);
           LineState pattern = rsData->pattern();
           if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
@@ -128,26 +131,45 @@ public:
             moveStopAll();
             isRotated = true;
           }
-
-          // isRotated = didMoveLeft(255, rotatePulses); // when rotation done returns true
         }
       }
-
-      // delte this if prev thing works
-      // if (isRotated)
-      // {
-      //   if (t.executeOnce(0))
-      //   {
-      //     // double check this idea
-      //     if (this->rsData->readBlackLine() == 0)
-      //     {
-      //       moveSpeed(robotSpeed, robotSpeed * -0.5);
-      //     }
-      //     // stopMotors(); // improve??
-      //     // moveSpeed(150, 150);
-      //   }
-      // }
     }
     return isRotated;
+  }
+
+  void end(bool *mazePassed, String robotCode)
+  {
+    static Timer t;
+    static Timer t1;
+
+    if (!t.timeout(1000)) // go back during 1s
+    {
+      moveSpeed(-255, -255);
+    }
+    else // after 1s stop all motors
+    {
+      moveStopAll();
+      if (!mazePassed)
+      {
+        *mazePassed = true;
+        // send command to BB046 to start;
+        char buf[100];
+        this->doc.clear();
+        this->doc["robotCode"] = robotCode;
+        this->doc["type"] = "inside";
+        serializeJson(this->doc, buf);
+        sendDataFromHC12(buf);
+      }
+      return;
+    }
+
+    // this is end of sequence (black square)
+    if (t1.timeout(500)) // after 500ms uncatch an object
+    {
+      if (t1.executeOnce(0))
+      {
+        gripperUnCatch();
+      }
+    }
   }
 };
