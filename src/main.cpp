@@ -30,17 +30,17 @@ void setup()
 
 void loop()
 {
-  // switch (mapInit)
-  // {
-  // case 1:
-  //   followLine();
-  //   break;
-  // case 2:
-  //   mazeLine();
-  //   break;
-  // case 3:
-  //   physicalMaze();
-  //   break;
-  // }
+  switch (mapInit)
+  {
+  case 1:
+    followLine();
+    break;
+  case 2:
+    mazeLine();
+    break;
+  case 3:
+    physicalMaze();
+    break;
+  }
   dataSend();
 }

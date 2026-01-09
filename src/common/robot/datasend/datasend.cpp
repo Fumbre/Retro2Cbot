@@ -1,143 +1,127 @@
 #include "datasend.h"
 
 int interval = 2000;
-String type = "outside";
-String method = "POST";
+String type = "o";
+
+Timer timer;
 
 void dataSend()
 {
     // sendGripperData();
     // sendNeopixelData();
     // sendPulsesData();
-    // sendReflectiveSensorData();
-    sendSonarData();
+    sendReflectiveSensorData();
+    // sendSonarData();
 }
 
-void sendSonarData()
-{
-    static Timer timer;
-    static JsonDocument doc;
-    if (timer.intervalStart(interval))
-    {
-        String robotCode = getCurrentRobotCode();
-        setBasicInformation(doc);
-        doc["event"] = "sonar";
-        JsonArray data = doc.createNestedArray("data");
-#ifdef BB011
-        JsonObject leftSonar = data.createNestedObject();
-        leftSonar["sonarDistance"] = sonarSendDataLeftDistance;
-        leftSonar["direction"] = "2";
-        leftSonar["robotCode"] = robotCode;
-        JsonObject rightSonar = data.createNestedObject();
-        rightSonar["sonarDistance"] = sonarSendDataRightDistance;
-        rightSonar["direction"] = "1";
-        rightSonar["robotCode"] = robotCode;
-#endif
-        JsonObject frontSonar = data.createNestedObject();
-        frontSonar["sonarDistance"] = sonarSendDatafrontDistance;
-        frontSonar["direction"] = "0";
-        frontSonar["robotCode"] = robotCode;
-        char buffer[256];
-        serializeJson(doc, buffer);
-        Serial.println(String(buffer));
-        sendDataFromHC12(buffer);
-    }
-}
-void sendGripperData()
-{
-    static Timer timer;
-    static JsonDocument doc;
-    if (timer.interval(interval))
-    {
-        doc["event"] = "gripper";
-        setBasicInformation(doc);
-        JsonArray data = doc.createNestedArray("data");
-        JsonObject gripper = data.createNestedObject();
-        gripper["robotCode"] = getCurrentRobotCode();
-        gripper["gripperStatus"] = gripperStatus;
-        char buffer[256];
-        serializeJson(doc, buffer);
-        Serial.println(String(buffer));
-        sendDataFromHC12(buffer);
-    }
-}
+// void sendSonarData()
+// {
+//     if (timer.interval(interval))
+//     {
+//         doc.clear();
+//         String robotCode = getCurrentRobotCode();
+//         setBasicInformation(doc);
+//         doc["e"] = "so";
+//         doc["rc"] = robotCode;
+//         JsonArray data = doc.createNestedArray("d");
+// #ifdef BB011
+//         JsonObject leftSonar = data.createNestedObject();
+//         leftSonar["sd"] = sonarSendDataLeftDistance;
+//         leftSonar["d"] = "2";
+//         JsonObject rightSonar = data.createNestedObject();
+//         rightSonar["sd"] = sonarSendDataRightDistance;
+//         rightSonar["d"] = "1";
+// #endif
+//         JsonObject frontSonar = data.createNestedObject();
+//         frontSonar["sd"] = sonarSendDatafrontDistance;
+//         frontSonar["d"] = "0";
+//         serializeJson(doc, buffer);
+//         Serial.println(buffer);
+//         sendDataFromHC12(buffer);
+//     }
+// }
+// void sendGripperData()
+// {
+//     if (timer.timeout(interval))
+//     {
+//         doc.clear();
+//         doc["e"] = "g";
+//         setBasicInformation(doc);
+//         JsonObject gripper = doc.createNestedObject("d");
+//         gripper["rc"] = getCurrentRobotCode();
+//         gripper["g"] = gripperStatus;
+//         serializeJson(doc, buffer);
+//         sendDataFromHC12(buffer);
+//         Serial.println(buffer);
+//         timer.resetTimeout();
+//     }
+// }
+
 void sendReflectiveSensorData()
 {
-    static Timer timer;
-    static JsonDocument doc;
-    if (timer.intervalStart(interval))
+    if (timer.executeOnce(interval))
     {
-        doc["event"] = "rs";
-        setBasicInformation(doc);
-        JsonArray data = doc.createNestedArray("data");
-        JsonObject rs = data.createNestedObject();
-        rs["robotCode"] = getCurrentRobotCode();
-        rs["a0"] = a0;
-        rs["a1"] = a1;
-        rs["a2"] = a2;
-        rs["a3"] = a3;
-        rs["a4"] = a4;
-        rs["a5"] = a5;
-        rs["a6"] = a6;
-        rs["a7"] = a7;
-        rs["currentStatus"] = RSSendDataStatus;
-        char buffer[200];
-        serializeJson(doc, buffer);
-        Serial.println(String(buffer));
-        sendDataFromHC12(buffer);
-    }
-}
-void sendNeopixelData()
-{
-    static Timer timer;
-    static JsonDocument doch;
-    if (timer.intervalStart(interval))
-    {
-        String robotCode = getCurrentRobotCode();
-        for (int i = 0; i < 4; i++)
+        String msg = "o,rs,";
+        msg += getCurrentRobotCode();
+        for (int i = 0; i < 8; i++)
         {
-            doch.clear();
-            doch["event"] = "neopixels";
-            setBasicInformation(doch);
-            JsonArray data = doch.createNestedArray("data");
-            JsonObject neopxiel = data.createNestedObject();
-            neopxiel["robotCode"] = robotCode;
-            neopxiel["neopixelIndex"] = i;
-            neopxiel["r"] = colorArray[i][0];
-            neopxiel["g"] = colorArray[i][1];
-            neopxiel["b"] = colorArray[i][2];
-            char buffer[200];
-            serializeJson(doch, buffer, sizeof(buffer));
-            Serial.println(String(buffer));
-            sendDataFromHC12(buffer);
+            msg += ",";
+            msg += *RS_SEND_DATA_RAW_ARRAY[i];
         }
-    }
-}
-void sendPulsesData()
-{
-    static Timer timer;
-    static JsonDocument doc;
-    if (timer.intervalStart(interval))
-    {
-        doc["event"] = "pulses";
-        setBasicInformation(doc);
-        JsonArray data = doc.createNestedArray("data");
-        JsonObject pulses = data.createNestedObject();
-        pulses["robotCode"] = getCurrentRobotCode();
-        pulses["leftWheelPulses"] = motor_left_pulses_counter;
-        pulses["rightWheelPulses"] = motor_right_pulses_counter;
-        char buffer[256];
-        serializeJson(doc, buffer);
-        Serial.println(String(buffer));
-        sendDataFromHC12(buffer);
+        msg += ",";
+        msg += RSSendDataStatus;
+        Serial.println(msg); 
+        sendDataFromHC12(msg);
+        timer.resetExecuteOnce();
     }
 }
 
-void setBasicInformation(JsonDocument &doc)
-{
-    doc["type"] = type;
-    doc["method"] = method;
-}
+// void sendNeopixelData()
+// {
+//     if (timer.interval(interval))
+//     {
+//         String robotCode = getCurrentRobotCode();
+//         for (int i = 0; i < 4; i++)
+//         {
+//             doc.clear();
+//             doc["e"] = "n";
+//             setBasicInformation(doc);
+//             JsonArray data = doc.createNestedArray("d");
+//             JsonObject neopxiel = data.createNestedObject();
+//             neopxiel["rc"] = robotCode;
+//             neopxiel["n"] = i;
+//             neopxiel["r"] = colorArray[i][0];
+//             neopxiel["g"] = colorArray[i][1];
+//             neopxiel["b"] = colorArray[i][2];
+//             serializeJson(doc, buffer, sizeof(buffer));
+//             Serial.println(buffer);
+//             sendDataFromHC12(buffer);
+//         }
+//         timer.resetInterval();
+//     }
+// }
+// void sendPulsesData()
+// {
+//     if (timer.timeout(interval))
+//     {
+//         doc.clear();
+//         doc["e"] = "pu";
+//         setBasicInformation(doc);
+//         JsonObject data = doc.createNestedObject("d");
+//         doc["rc"] = getCurrentRobotCode();
+//         data["l"] = motor_left_pulses_counter;
+//         data["r"] = motor_right_pulses_counter;
+//         serializeJson(doc, buffer);
+//         Serial.println(buffer);
+//         sendDataFromHC12(buffer);
+//         timer.resetTimeout();
+//     }
+// }
+
+// void setBasicInformation(JsonDocument &doc)
+// {
+//     doc["t"] = type;
+// }
 
 String getCurrentRobotCode()
 {
