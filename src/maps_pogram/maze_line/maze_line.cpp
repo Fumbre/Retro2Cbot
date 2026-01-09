@@ -2,7 +2,7 @@
 
 // RS - reflective sensor
 ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 35);
-StartSequence entryPoint2(&rsLine2);
+Sequence mazeSequence2(&rsLine2);
 
 LineState lastStatus = CENTER;
 LineState currentStatus;
@@ -20,22 +20,36 @@ bool rotated = false;
 // maze variables
 bool isMazeStarted2 = false;
 bool isEndSequence2 = false;
+bool mazePassed2 = false;
 
+// maybe put it inside roatation function
 static Timer t;
 
 void mazeLine()
 {
+  // init timers
+  static Timer t;
+  static Timer t1;
 
+  // set poisition of robot
   if (!isMazeStarted2)
   {
-    if (!entryPoint2.readyToStart(2))
+    if (mazeSequence2.readyToStart(2))
     {
+      isMazeStarted2 = true;
     }
     return;
   }
-  else if (!entryPoint2.readyToStart(1))
+
+  if (t.executeOnce(0))
   {
-    isMazeStarted2 = true;
+    moveSpeed(230, 230);
+  }
+
+  if (!isEndSequence2)
+  {
+    if (!mazeSequence2.start(255))
+      return;
   }
 
   currentStatus = rsLine2.pattern();
@@ -53,54 +67,62 @@ void mazeLine()
     return;
   }
 
-  // main maze line code
-  switch (currentStatus)
+  if (!isEndSequence2)
   {
-  case CENTER:
-    moveSpeed(baseSpeed, baseSpeed);
-    break;
-  case SLIGHT_LEFT:
-    moveSpeed(baseSpeed * slightConf, baseSpeed);
-    break;
-  case SLIGHT_RIGHT:
-    moveSpeed(baseSpeed, baseSpeed * slightConf);
-    break;
-  case ALL_BLACK:
-    isEndSequence2 = entryPoint2.isDetecetingBlackSquare(62);
-
-    lastStatus = ALL_BLACK;
-    moveSpeed(baseSpeed, baseSpeed);
-    break;
-  case ALL_WHITE:
-    if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
+    // main maze line code
+    switch (currentStatus)
     {
+    case CENTER:
+      moveSpeed(baseSpeed, baseSpeed);
+      break;
+    case SLIGHT_LEFT:
+      moveSpeed(baseSpeed * slightConf, baseSpeed);
+      break;
+    case SLIGHT_RIGHT:
+      moveSpeed(baseSpeed, baseSpeed * slightConf);
+      break;
+    case ALL_BLACK:
+      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
+
+      lastStatus = ALL_BLACK;
+      moveSpeed(baseSpeed, baseSpeed);
+      break;
+    case ALL_WHITE:
+      if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
+      {
+        doRotationiRight = true;
+        rotate(0);
+      }
+
+      if (lastStatus == LEFT_TURN)
+      {
+        doRotationiLeft = true;
+        rotate(1);
+      }
+      break;
+    case HARD_LEFT:
+      moveSpeed(baseSpeed * hardConf, baseSpeed);
+    case LEFT_TURN:
+      lastStatus = LEFT_TURN;
+      moveSpeed(baseSpeed, baseSpeed);
+      break;
+    case HARD_RIGHT:
+      moveSpeed(baseSpeed, baseSpeed * hardConf);
+    case RIGHT_TURN:
+      lastStatus = RIGHT_TURN;
       doRotationiRight = true;
       rotate(0);
+      break;
     }
+  }
 
-    if (lastStatus == LEFT_TURN)
-    {
-      doRotationiLeft = true;
-      rotate(1);
-    }
-    break;
-  case HARD_LEFT:
-    moveSpeed(baseSpeed * hardConf, baseSpeed);
-  case LEFT_TURN:
-    lastStatus = LEFT_TURN;
-    moveSpeed(baseSpeed, baseSpeed);
-    break;
-  case HARD_RIGHT:
-    moveSpeed(baseSpeed, baseSpeed * hardConf);
-  case RIGHT_TURN:
-    lastStatus = RIGHT_TURN;
-    doRotationiRight = true;
-    rotate(0);
-    break;
+  if (isEndSequence2)
+  {
+    mazeSequence2.end(&mazePassed2, "BB016");
   }
 }
 
-// dir == 0 -right dir == 1 -left
+// dir == 0 -right; dir == 1 -left
 void rotate(int dir)
 {
   bool end = false;

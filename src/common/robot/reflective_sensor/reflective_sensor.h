@@ -3,20 +3,26 @@
  * @authors Fumbre (Vladyslav) & Aria & Sunny & Uraib
  * @date 08-12-2025
  */
+
 #pragma once
+
 #include <Arduino.h>
 #include "common/tools/ARRAY_SIZE.h"
 #include "common/constant/reflective_sensor.h"
 #include "common/tools/Timer.h"
 
-// --- bitmask tables ---
-const uint8_t centerPatterns[] = {0b00011000, 0b00111100};
+// bitmask tables
+const uint8_t centerPatterns[] = {
+    0b00011000,
+    0b00111100};
+
 const uint8_t slightLeftPatterns[] = {
     0b01100000,
     0b00110000,
     0b01110000,
     0b0011100,
 };
+
 const uint8_t slightRightPatterns[] = {
     0b00000110,
     0b00001100,
@@ -29,6 +35,7 @@ const uint8_t hardLeftPatterns[] = {
     0b11000000,
     0b10000000,
 };
+
 const uint8_t hardRightPatterns[] = {
     0b00000111,
     0b00000011,
@@ -36,6 +43,7 @@ const uint8_t hardRightPatterns[] = {
 };
 
 const uint8_t allWhite[] = {0b00000000};
+
 const uint8_t allBlack[] = {0b11111111};
 
 // 0b11111110 //
@@ -66,24 +74,35 @@ enum LineState
  * @authors Uraib
  * @date 04-12-2025
  */
+
 struct ReflectiveRead
 {
+
     unsigned long count = 0;
     double mean = 0.0;
     double m2 = 0.0; // sum of squares of differences for variance
     int minimum = 1023;
     int maximum = 0;
+
     void update(int x)
     {
         count = 1;
         double dx = x - mean;
+
         mean += dx / count;
         double dx2 = x - mean;
+
         m2 += dx * dx2;
+
         if (x < minimum)
+        {
             minimum = x;
+        }
+
         if (x > maximum)
+        {
             maximum = x;
+        }
     }
 };
 
@@ -108,6 +127,7 @@ private:
      * @date 04-12-2025
      * @return ReflectiveRead array (analog read data of reflective sensor)
      */
+
     ReflectiveRead *getRSValue()
     {
         ReflectiveRead *stats = new ReflectiveRead[8];
@@ -115,12 +135,12 @@ private:
         // Read and update stats
         for (int i = 0; i < PINS_RS_LENGTH; ++i)
         {
+
             int v = analogRead(PINS_RS[i]);
             // update a0 ~ a7 value
             *RS_SEND_DATA_RAW_ARRAY[i] = v;
             stats[i].update(v);
         }
-
         return stats;
     }
 
@@ -130,8 +150,10 @@ private:
      * @date 10-12-2025
      * @details get first surface data to reflectiveRead property
      */
+
     void calibrationInit()
     {
+
         // calibrate for first surface
         free(this->reflectiveReadInit);
         this->reflectiveReadInit = getRSValue();
@@ -143,8 +165,10 @@ private:
      * @date 10-12-2025
      * @details calibration for second surface data
      */
+
     void calibrationBlack()
     {
+
         if (this->blackCalibratedLength < this->pins_rs_length)
         {
             uint8_t reflectiveReadChange = this->getLineDifference(this->reflectiveReadInit, this->threshold);
@@ -176,6 +200,7 @@ private:
      * @return uint8_t as 1 for true 0 for false
      * @details return line status as BIN
      */
+
     uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMargin)
     {
         uint8_t status = 0;
@@ -211,6 +236,7 @@ private:
 
         free(this->currentSensors);
         this->currentSensors = getRSValue();
+
         for (int i = 0; i < pins_rs_length; i++)
         {
             if ((
@@ -267,6 +293,7 @@ public:
      * @return uint8_t if black is detecter return 1 otherwise 0 as bit mask
      * @details first surface is written than we calibrate second one, and return uint8_t based on second surface data and current rs data
      */
+
     uint8_t readBlackLine()
     {
         static Timer t;
@@ -275,10 +302,13 @@ public:
         {
             this->calibrationInit();
         }
+
         this->calibrationBlack();
 
         if (!this->isBlackCalibrated)
+        {
             return 0;
+        }
 
         uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, this->marginError);
         // update current status
@@ -300,12 +330,17 @@ public:
      * @return bool
      * @details compare pattern list with current uint8_t Black line read (second surface)
      */
+
     bool match(const uint8_t *patterns, int elementCount)
     {
+
         for (int i = 0; i < elementCount; i++)
         {
+
             if (this->readBlackLine() == patterns[i])
+            {
                 return true;
+            }
         }
         return false;
     }
@@ -317,6 +352,7 @@ public:
      * @return LineState
      * @details return enum position if current pattern match array list of patterns, if no patterns found return CENTER
      */
+
     LineState pattern()
     {
 
@@ -325,21 +361,25 @@ public:
 
         if (match(slightLeftPatterns, ARRAY_SIZE(slightLeftPatterns)))
             return SLIGHT_LEFT;
+
         if (match(slightRightPatterns, ARRAY_SIZE(slightRightPatterns)))
             return SLIGHT_RIGHT;
 
         if (match(hardLeftPatterns, ARRAY_SIZE(hardLeftPatterns)))
             return HARD_LEFT;
+
         if (match(hardRightPatterns, ARRAY_SIZE(hardRightPatterns)))
             return HARD_RIGHT;
 
         if (match(leftTurn, ARRAY_SIZE(leftTurn)))
             return LEFT_TURN;
+
         if (match(rightTurn, ARRAY_SIZE(rightTurn)))
             return RIGHT_TURN;
 
         if (match(allWhite, ARRAY_SIZE(allWhite)))
             return ALL_WHITE;
+
         if (match(allBlack, ARRAY_SIZE(allBlack)))
             return ALL_BLACK;
 

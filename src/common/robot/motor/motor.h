@@ -7,13 +7,13 @@
 
 void setupMotor();
 
+void setupMotor();
 void countLeftPulses();
 void countRightPulses();
+void setupPulseCounter();
 
 struct Stability
 {
   int speedLeft;
   int speedRight;
 };
-
-void setupPulseCounter();

@@ -3,17 +3,29 @@
 /**
  * @name gripper
  * @authors Francisco
- * @date ?-1?-2025
+ * @date 3-12-2025
+ * @details Configures the gripper control pin and ensures
+ * the servo signal starts in a safe LOW state.
  */
+
 void setupGripper()
 {
-    pinMode(GRIPPER, OUTPUT);   // Set the gripper pin as an OUTPUT
-    digitalWrite(GRIPPER, LOW); // Ensure the servo signal starts LOW
+    pinMode(GRIPPER, OUTPUT);
+    digitalWrite(GRIPPER, LOW);
 }
+
+/**
+ * @name gripper
+ * @authors Francisco
+ * @date 3-12-2025
+ * @details Generates non-blocking servo control pulses in software.
+ * @param pulseMicroseconds Pulse width in microseconds that sets
+ * the gripper position (e.g. 1000–2000 µs).
+ */
 
 void gripper(int pulseMicroseconds)
 {
-    static unsigned long nextPulseTime = 0; // Stores the next time (in ms) when a new servo pulse should be generated
+    static unsigned long nextPulseTime = 0; // Stores the next time when a new servo pulse should be generated
     static int lastPulse = 2000;            // 2000 µs = gripper fully open
 
     if (pulseMicroseconds > 0)
@@ -32,6 +44,13 @@ void gripper(int pulseMicroseconds)
         digitalWrite(GRIPPER, LOW);   // End the pulse—servo reads the pulse width to set its angle
     }
 }
+
+/**
+ * @name gripperCatch
+ * @authors Francisco
+ * @date 3-12-2025
+ * @details Closes the gripper.
+ */
 
 void gripperCatch()
 {

@@ -7,7 +7,6 @@
  * @date 14-11-2025
  * @details Timer class for easier access to millis calculation
  */
-
 class Timer
 {
 private:
@@ -33,7 +32,9 @@ public:
   bool interval(unsigned long milliseconds, unsigned long executionTime = 0)
   {
     if (timestampInterval == 0)
+    {
       timestampInterval = millis();
+    }
 
     unsigned long now = millis();
     if (now - timestampInterval >= milliseconds)
@@ -61,6 +62,7 @@ public:
    */
   bool intervalStart(unsigned long milliseconds, unsigned long executionTime = 0)
   {
+
     if (timestampIntervalStart == 0)
     {
       timestampIntervalStart = millis();
@@ -71,6 +73,7 @@ public:
 
     if (now - timestampIntervalStart >= milliseconds)
     {
+
       if (now - timestampIntervalStart >= milliseconds + executionTime)
       {
         timestampIntervalStart = now;
@@ -91,20 +94,24 @@ public:
   bool executeOnce(unsigned long milliseconds, unsigned long executedTime = 0)
   {
     if (isTriggeredExecuteOnce)
+    {
       return false;
+    }
 
     unsigned long now = millis();
 
     if (timestampExecuteOnce == 0)
+    {
       timestampExecuteOnce = now;
+    }
 
     if (now - timestampExecuteOnce >= milliseconds)
     {
+
       if (now - timestampExecuteOnce >= milliseconds + executedTime)
       {
         isTriggeredExecuteOnce = true;
       }
-
       return true;
     }
     return false;
@@ -120,10 +127,14 @@ public:
    */
   bool timeout(unsigned long shouldPass)
   {
+
     if (timestampTimeout == 0)
+    {
       timestampTimeout = millis();
+    }
 
     unsigned long now = millis();
+
     if (now - timestampTimeout >= shouldPass)
     {
       return true;
@@ -157,10 +168,17 @@ public:
     timestampInterval = 0;
   }
 
+  /**
+   * @name resetIntervalStart
+   * @author Fumbre (Vladyslav)
+   * @date 14-11-2025
+   * @details reset intervalStart timer
+   */
   void resetIntervalStart()
   {
     timestampIntervalStart = 0;
   }
+
   /**
    * @name resetExecuteOnce
    * @author Fumbre (Vladyslav)

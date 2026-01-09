@@ -3,6 +3,7 @@
  * @author Sunny
  * @date 24-11-2025
  */
+
 #include "neopixel.h"
 
 // define Neopixel class
@@ -13,10 +14,12 @@ Neopixel pixel(PIN_NI, NUMBER_OF_NEOPIXEL);
  * @author Sunny
  * @date 24-11-2025
  */
+
 void initNeopixelPins()
 {
   pixel.begin();
 }
+
 /**
  * @name initNeopixelPins
  * @author Sunny
@@ -25,10 +28,12 @@ void initNeopixelPins()
  * @param G green color value (0-255)
  * @param B blue color value (0-255)
  */
+
 void turnOnAllLeds(int R, int G, int B)
 {
   pixel.fill(0, NUMBER_OF_NEOPIXEL - 1, R, G, B);
-  for(int i = 0; i < 4; i++){
+  for (int i = 0; i < 4; i++)
+  {
     colorArray[i][0] = R;
     colorArray[i][1] = G;
     colorArray[i][2] = B;
@@ -41,10 +46,12 @@ void turnOnAllLeds(int R, int G, int B)
  * @author Sunny
  * @date 26-11-2025
  */
+
 void turnOffAllLeds()
 {
   pixel.clear();
-  for(int i = 0; i < 4; i++){
+  for (int i = 0; i < 4; i++)
+  {
     colorArray[i][0] = 0;
     colorArray[i][1] = 0;
     colorArray[i][2] = 0;
@@ -70,6 +77,7 @@ void turnOnSomeLeds(int index[], int length, int R, int G, int B)
     colorArray[index[i]][2] = B;
     pixel.setNeoPixelColor(index[i], R, G, B);
   }
+
   pixel.show();
 }
 
@@ -89,5 +97,6 @@ void turnOffSomeLeds(int index[], int length)
     colorArray[index[i]][2] = 0;
     pixel.setNeoPixelColor(index[i], 0, 0, 0);
   }
+
   pixel.show();
 }

@@ -2,26 +2,23 @@
 
 // RS - reflective sensor
 ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 220, 35);
-StartSequence entryPoint(&rsLine);
-// Josn document class
-StaticJsonDocument<256> followingLineDoc;
+Sequence mazeSequence(&rsLine);
 
-// variable to send data to next robot when maze is passed
-bool mazePassed = false;
-
+// maze variables
+bool mazePassed = false; // send data to next robot when maze is passed
 // end sequence variable
 bool isEndSequence = false;
+bool isMazeStarted = false;
 
 // variable for avoiding
 bool safeZone = true;
-
-bool isMazeStarted = false;
 
 /**
  * @name followLine
  * @authors Fumbre (Vladyslav) & Aria & Francisco
  * @date 15-12-2025
  */
+
 void followLine()
 {
   // init timers
@@ -31,7 +28,7 @@ void followLine()
   // set poisition of robot
   if (!isMazeStarted)
   {
-    if (entryPoint.readyToStart(1))
+    if (mazeSequence.readyToStart(1))
     {
       isMazeStarted = true;
     }
@@ -45,7 +42,7 @@ void followLine()
 
   if (!isEndSequence)
   {
-    if (!entryPoint.startWithPickUp(255, 11))
+    if (!mazeSequence.start(255))
       return;
   }
 
@@ -63,7 +60,6 @@ void followLine()
   // if it's not end of sequence do it
   if (!isEndSequence)
   {
-
     float distance = getDistanceCM_Front();
 
     if (!avoiding)
@@ -91,35 +87,7 @@ void followLine()
 
   if (isEndSequence)
   {
-    if (!t.timeout(1000)) // go back during 1s
-    {
-      moveSpeed(fullSpeed * hardConf, fullSpeed * hardConf);
-    }
-    else // after 1s stop all motors
-    {
-      stopMotors();
-      if (!mazePassed)
-      {
-        mazePassed = true;
-        // send command to BB046 to start;
-        char buf[128];
-        followingLineDoc.clear();
-        followingLineDoc["robotCode"] = "BB046";
-        followingLineDoc["type"] = "inside";
-        serializeJson(followingLineDoc, buf);
-        sendDataFromHC12(buf);
-      }
-      return;
-    }
-
-    // this is end of sequence (black square)
-    if (t1.timeout(500)) // after 500ms uncatch an object
-    {
-      if (t1.executeOnce(0))
-      {
-        gripperUnCatch();
-      }
-    }
+    mazeSequence.end(&mazePassed, "BB046");
   }
 }
 
@@ -169,7 +137,7 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   };
   case ALL_BLACK:
   {
-    isEndSequence = entryPoint.isDetecetingBlackSquare(62);
+    isEndSequence = mazeSequence.isDetecetingBlackSquare(62);
 
     moveSpeed(fullSpeed, fullSpeed);
 
