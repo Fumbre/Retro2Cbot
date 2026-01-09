@@ -42,7 +42,6 @@ void gripperCatch()
 
 void gripperUnCatch()
 {
-
     gripper(2000); // Open the gripper
     gripperStatus = false;
 }

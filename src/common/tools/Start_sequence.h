@@ -36,12 +36,18 @@ public:
     {
       if (t.intervalStart(100))
       {
+        Serial.print(getDistanceCM_Front());
         if (getDistanceCM_Front() > 20)
         {
           return true;
         }
       }
 
+      return false;
+    }
+    if (pos == 2)
+    {
+      // recieved data return true
       return false;
     }
     // todo pos == 2
@@ -107,23 +113,33 @@ public:
       {
         if (!isRotated)
         {
-          isRotated = didMoveLeft(255, rotatePulses); // when rotation done returns true
+          // try to use
+          moveSpeed(-255, 255);
+          LineState pattern = rsData->pattern();
+          if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
+          {
+            moveStopAll();
+            isRotated = true;
+          }
+
+          // isRotated = didMoveLeft(255, rotatePulses); // when rotation done returns true
         }
       }
 
-      if (isRotated)
-      {
-        if (t.executeOnce(0))
-        {
-          // double check this idea
-          if (this->rsData->readBlackLine() == 0)
-          {
-            moveSpeed(robotSpeed, robotSpeed * -0.5);
-          }
-          // stopMotors(); // improve??
-          // moveSpeed(150, 150);
-        }
-      }
+      // delte this if prev thing works
+      // if (isRotated)
+      // {
+      //   if (t.executeOnce(0))
+      //   {
+      //     // double check this idea
+      //     if (this->rsData->readBlackLine() == 0)
+      //     {
+      //       moveSpeed(robotSpeed, robotSpeed * -0.5);
+      //     }
+      //     // stopMotors(); // improve??
+      //     // moveSpeed(150, 150);
+      //   }
+      // }
     }
 
     return isRotated;

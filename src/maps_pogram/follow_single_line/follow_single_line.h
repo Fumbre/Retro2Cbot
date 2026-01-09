@@ -10,3 +10,4 @@
 
 void followLine();
 void followLineSetup();
+void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slightConf, float hardConf);

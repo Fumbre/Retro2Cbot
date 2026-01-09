@@ -17,27 +17,43 @@ bool doRotationiRight = false;
 bool doRotationiLeft = false;
 bool rotated = false;
 
-static Timer t;
+// maze variables
+bool isMazeStarted2 = false;
+bool isEndSequence2 = false;
 
-static Timer t1;
-static Timer t2;
+static Timer t;
 
 void mazeLine()
 {
+
+  if (!isMazeStarted2)
+  {
+    if (!entryPoint2.readyToStart(2))
+    {
+    }
+    return;
+  }
+  else if (!entryPoint2.readyToStart(1))
+  {
+    isMazeStarted2 = true;
+  }
+
   currentStatus = rsLine2.pattern();
 
+  // if rotation do only rotation
   if (doRotationiRight)
   {
     rotate(0);
     return;
   }
-
+  // left one
   if (doRotationiLeft)
   {
     rotate(1);
     return;
   }
 
+  // main maze line code
   switch (currentStatus)
   {
   case CENTER:
@@ -50,6 +66,8 @@ void mazeLine()
     moveSpeed(baseSpeed, baseSpeed * slightConf);
     break;
   case ALL_BLACK:
+    isEndSequence2 = entryPoint2.isDetecetingBlackSquare(62);
+
     lastStatus = ALL_BLACK;
     moveSpeed(baseSpeed, baseSpeed);
     break;
@@ -74,15 +92,11 @@ void mazeLine()
     break;
   case HARD_RIGHT:
     moveSpeed(baseSpeed, baseSpeed * hardConf);
-
   case RIGHT_TURN:
     lastStatus = RIGHT_TURN;
     doRotationiRight = true;
     rotate(0);
     break;
-    // case OTHER:
-    //   currentStatus = lastStatus;
-    //   break;
   }
 }
 
@@ -91,7 +105,7 @@ void rotate(int dir)
 {
   bool end = false;
 
-  if (!t.timeout(200)) // 200
+  if (!t.timeout(200)) // execute for 200 milliseconds
   {
     moveSpeed(baseSpeed, baseSpeed);
   }
@@ -102,7 +116,7 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (!t1.timeout(150))
+        if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed * .8, baseSpeed * .8 * reverseConf);
           return;
@@ -118,7 +132,7 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (!t2.timeout(150))
+        if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed * reverseConf * .8, baseSpeed * .8);
           return;
@@ -150,11 +164,8 @@ void rotate(int dir)
     doRotationiRight = false;
     doRotationiLeft = false;
 
-    resetMoveLeft();
-    resetMoveRight();
     t.resetTimeout();
-    t1.resetTimeout();
-    t2.resetTimeout();
+    t.resetExecuteOnce();
   }
 }
 

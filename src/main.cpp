@@ -6,7 +6,7 @@
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 #include "maps_pogram/physical_maze/physical_maze.h"
 
-int mapInit = 2;
+int mapInit = 1;
 
 void setup()
 {
