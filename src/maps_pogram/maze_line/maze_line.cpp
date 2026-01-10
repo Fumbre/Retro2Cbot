@@ -13,8 +13,8 @@ float slightConf = 0.6;
 float hardConf = 0.1;
 float reverseConf = -1;
 
-bool doRotationiRight = false;
-bool doRotationiLeft = false;
+bool doRotationRight = false;
+bool doRotationLeft = false;
 bool rotated = false;
 
 // maze variables
@@ -29,7 +29,6 @@ void mazeLine()
 {
   // init timers
   static Timer t;
-  static Timer t1;
 
   // set poisition of robot
   if (!isMazeStarted2)
@@ -55,13 +54,13 @@ void mazeLine()
   currentStatus = rsLine2.pattern();
 
   // if rotation do only rotation
-  if (doRotationiRight)
+  if (doRotationRight)
   {
     rotate(0);
     return;
   }
   // left one
-  if (doRotationiLeft)
+  if (doRotationLeft)
   {
     rotate(1);
     return;
@@ -69,6 +68,27 @@ void mazeLine()
 
   if (!isEndSequence2)
   {
+
+    float distance = getDistanceCM_Front();
+
+    if (distance < 20)
+    {
+      // check if the object is still there after 30 millis
+      if (t.timeout(30))
+      {
+        if (distance < 20)
+        {
+          doRotationRight = true;
+          rotate(0);
+          return;
+        }
+      }
+    }
+    else
+    {
+      t.resetTimeout();
+    }
+
     // main maze line code
     switch (currentStatus)
     {
@@ -90,13 +110,13 @@ void mazeLine()
     case ALL_WHITE:
       if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
       {
-        doRotationiRight = true;
+        doRotationRight = true;
         rotate(0);
       }
 
       if (lastStatus == LEFT_TURN)
       {
-        doRotationiLeft = true;
+        doRotationLeft = true;
         rotate(1);
       }
       break;
@@ -110,7 +130,7 @@ void mazeLine()
       moveSpeed(baseSpeed, baseSpeed * hardConf);
     case RIGHT_TURN:
       lastStatus = RIGHT_TURN;
-      doRotationiRight = true;
+      doRotationRight = true;
       rotate(0);
       break;
     }
@@ -183,8 +203,8 @@ void rotate(int dir)
   {
     rotated = false;
 
-    doRotationiRight = false;
-    doRotationiLeft = false;
+    doRotationRight = false;
+    doRotationLeft = false;
 
     t.resetTimeout();
     t.resetExecuteOnce();
