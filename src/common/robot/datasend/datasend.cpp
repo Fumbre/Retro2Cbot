@@ -30,7 +30,7 @@ void sendSonarData()
         msg += ",2,";
         msg += sonarSendDataLeftDistance;
 
-        Serial.println(msg);
+        // Serial.println(msg);
         sendDataFromHC12(msg);
 
         timer.resetInterval();
@@ -44,7 +44,7 @@ void sendGripperData()
         String msg = "o,g,";
         msg += (robotCode + ",");
         msg += (gripperStatus ? "1" : "0");
-        Serial.println(msg);
+        // Serial.println(msg);
         sendDataFromHC12(msg);
     }
 }
@@ -62,7 +62,7 @@ void sendReflectiveSensorData()
         }
         msg += ",";
         msg += RSSendDataStatus;
-        Serial.println(msg);
+        // Serial.println(msg);
         sendDataFromHC12(msg);
         timer.resetExecuteOnce();
     }
@@ -88,7 +88,7 @@ void sendNeopixelData()
                 }
             }
         }
-        Serial.println(msg);
+        // Serial.println(msg);
 
         sendDataFromHC12(msg);
         timer.resetTimeout();

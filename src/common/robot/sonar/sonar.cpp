@@ -31,10 +31,10 @@ float measureDistance(int echo) {
   // the habibi waits for 25ms for an echo
 
   // If no echo (0) or out of range, return 400
-  if (duration == 0 || duration > 25000) {
+  if (duration == 0) {
     return 400.0;
   }
-
+        
   // sound travels to wall AND back, so divide by 2
   return duration * 0.034 / 2;
 }
@@ -50,24 +50,22 @@ float getDistanceCM_Front() {
 float getDistanceCM_Right()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_RIGHT);
-  // record right sonar distance
-  sonarSendDataRightDistance = distance;
-  return distance;
+    float distance = measureDistance(PIN_SONAR_ECHO_RIGHT);
+    sonarSendDataRightDistance = distance;
+    return distance;
 #else
-  return 0;
+    return 400.0;
 #endif
 }
 
 float getDistanceCM_Left()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
-  // record left sonar distance
-  sonarSendDataLeftDistance = distance;
-  return distance;
+    float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
+    sonarSendDataLeftDistance = distance;
+    return distance;
 #else
-  return 0;
+    return 400.0;
 #endif
 }
 
@@ -75,17 +73,17 @@ float getDistanceCM_Left()
 bool isObstacleFront(float limit)
 {
   float d = getDistanceCM_Front();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
 
 bool isObstacleRight(float limit)
 {
   float d = getDistanceCM_Right();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
 
 bool isObstacleLeft(float limit)
 {
   float d = getDistanceCM_Left();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
