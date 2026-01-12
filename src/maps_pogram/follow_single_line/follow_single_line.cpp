@@ -13,6 +13,11 @@ bool isMazeStarted = false;
 // variable for avoiding
 bool safeZone = true;
 
+// for future possible to make it argument of function
+int fullSpeed = 255;
+float slightConf = .65; // try .8
+float hardConf = -.45;
+
 /**
  * @name followLine
  * @authors Fumbre (Vladyslav) & Aria & Francisco
@@ -23,9 +28,10 @@ static Timer t;
 
 void followLine()
 {
-  // set poisition of robot
+  // wait until recieve a signal to start a maze
   if (!isMazeStarted)
   {
+    // set poisition of robot to start properly in order
     if (mazeSequence.readyToStart(1))
     {
       isMazeStarted = true;
@@ -33,29 +39,24 @@ void followLine()
     return;
   }
 
+  // go only once after signal
   if (t.executeOnce(0))
   {
     moveSpeed(255, 255);
   }
 
+  // current reflective sensor patter
+  LineState currnetPattern = rsLine.pattern();
+
+  // if it's not end of maze
   if (!isEndSequence)
   {
     dataSend();
 
+    // wait until robot rotate after black square
     if (!mazeSequence.start(235))
       return;
   }
-
-  // previous pattern | if robot is too fast keep going with previous status |
-  // LineState prevPattern;
-
-  // for future possible to make it argument of function
-  int fullSpeed = 255;
-  float slightConf = .6;
-  float hardConf = -.7;
-
-  // current patter
-  LineState currnetPattern = rsLine.pattern();
 
   // if it's not end of sequence do it
   if (!isEndSequence)
@@ -65,10 +66,10 @@ void followLine()
     if (!avoiding)
     {
 
-      if (safeZone && distance <= 20 && distance >= 2)
+      if (safeZone && distance <= 15 && distance >= 2)
       {
         // dobule check if object is still there
-        if (t.timeout(35))
+        if (t.interval(35))
         {
           safeZone = false;       // exiting safe zone
           obstacleAvoidance(255); // first step to avoid
@@ -76,10 +77,10 @@ void followLine()
       }
       else
       {
-        if (distance > 20)
+        if (distance > 15)
         {
-          safeZone = true;  // no objects ahead
-          t.resetTimeout(); // reset timeout
+          safeZone = true;   // no objects ahead
+          t.resetInterval(); // reset timeout
         }
 
         // main code
@@ -102,15 +103,15 @@ void followLine()
   }
 }
 
+// the buisness logic of follow single line
 void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slightConf, float hardConf)
 {
+  // depending on current pattern use logic
   switch (currnetPattern)
   {
   case CENTER:
   {
     moveSpeed(fullSpeed, fullSpeed);
-
-    // prevPattern = CENTER;
 
     break;
   };
@@ -118,15 +119,11 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   {
     moveSpeed(fullSpeed * slightConf, fullSpeed);
 
-    // prevPattern = SLIGHT_LEFT;
-
     break;
   };
   case SLIGHT_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * slightConf);
-
-    // prevPattern = SLIGHT_RIGHT;
 
     break;
   };
@@ -134,15 +131,11 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   {
     moveSpeed(fullSpeed * hardConf, fullSpeed);
 
-    // prevPattern = HARD_LEFT;
-
     break;
   };
   case HARD_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * hardConf);
-
-    // prevPattern = HARD_RIGHT;
 
     break;
   };
@@ -152,16 +145,6 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
 
     moveSpeed(fullSpeed, fullSpeed);
 
-    break;
-  };
-
-  default:
-  {
-    // if no match go to previous action
-
-    // currnetPattern = prevPattern;
-
-    // this doesn't make sense because of the looop you can just put break;
     break;
   };
   }

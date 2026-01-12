@@ -25,11 +25,10 @@ bool mazePassed2 = false;
 // maybe put it inside roatation function
 // init timers
 static Timer t;
+static Timer t1;
 
 void mazeLine()
 {
-  static Timer t1;
-
   // set poisition of robot
   if (!isMazeStarted2)
   {
@@ -49,7 +48,7 @@ void mazeLine()
   {
     dataSend();
 
-    if (!mazeSequence2.start(230))
+    if (!mazeSequence2.start(255)) // 230
       return;
   }
 
@@ -73,12 +72,12 @@ void mazeLine()
 
     float distance = getDistanceCM_Front();
 
-    if (distance < 20)
+    if (distance < 15)
     {
       // check if the object is still there after 30 millis
-      if (t.timeout(30))
+      if (t.interval(45))
       {
-        if (distance < 20)
+        if (distance < 15)
         {
           doRotationLeft = true;
           rotate(1);
@@ -88,7 +87,7 @@ void mazeLine()
     }
     else
     {
-      t.resetTimeout();
+      t.resetInterval();
     }
 
     // main maze line code

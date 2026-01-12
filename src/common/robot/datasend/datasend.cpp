@@ -1,6 +1,6 @@
 #include "datasend.h"
 
-int interval = 1500;
+int interval = 2000;
 String type = "o";
 
 Timer timer;
