@@ -2,7 +2,7 @@
  * @name physical maze
  * @author Francisco
  * @date 11-12-2025
- */
+*/
 
 #include "physical_maze.h"
 
@@ -125,20 +125,16 @@ void solvingPhysicalMaze()
     {
         float distF = getDistanceCM_Front();
 
-        if (distF > 1.0 && distF < OBST_LIMIT_CM)
-        {
-            wallFront = true;
-            moveStopAll();
-            actionTimer.resetTimeout();
-            mazeState = MAZE_STOP_AND_WAIT;
+            if (distF > 2.0 && distF < OBST_LIMIT_CM) {
+                moveStopAll();
+                actionTimer.resetTimeout();
+                mazeState = MAZE_STOP_AND_WAIT;
+            }
+            else {
+                moveStabilized(FWD_SPEED, FWD_SPEED);
+            }
+            break;
         }
-        else
-        {
-            wallFront = false;
-            moveStabilized(FWD_SPEED, FWD_SPEED);
-        }
-        break;
-    }
 
     // ------------------------------------------
     case MAZE_STOP_AND_WAIT:
@@ -148,46 +144,41 @@ void solvingPhysicalMaze()
         }
         break;
 
-    // ------------------------------------------
-    case MAZE_DECIDE:
-    {
-        float l = getDistanceCM_Left();
-        float r = getDistanceCM_Right();
+        // ------------------------------------------
+        case MAZE_DECIDE: {
+            
+            float f = getDistanceCM_Front();
+            float l = getDistanceCM_Left();
+            float r = getDistanceCM_Right();
 
-        bool wallLeft = (l > 1.0 && l < SIDE_LIMIT_CM);
-        bool wallRight = (r > 1.0 && r < SIDE_LIMIT_CM);
+            bool wallFront = (f > 2.0 && f < OBST_LIMIT_CM);
+            bool wallLeft  = (l > 2.0 && l < SIDE_LIMIT_CM);
+            bool wallRight = (r > 2.0 && r < SIDE_LIMIT_CM);
 
         actionTimer.resetTimeout();
 
-        // 3 walls
-        if (wallLeft && wallRight)
-        {
-            mazeState = MAZE_TURN_180;
-        }
-        // just wall in front
-        else if (!wallLeft && !wallRight)
-        {
-            if (l > r)
-            {
+            // 3 walls
+            if (wallLeft && wallRight && wallFront) {
+                mazeState = MAZE_TURN_180;
+            }
+            // only wall in front
+            else if (wallFront && !wallLeft && !wallRight) {
+                if (l > r) {
+                    mazeState = MAZE_TURN_LEFT_90;
+                } else {
+                    mazeState = MAZE_TURN_RIGHT_90;
+                }
+            }
+            // left free
+            else if (!wallLeft && wallFront) {
                 mazeState = MAZE_TURN_LEFT_90;
             }
-            else
-            {
+            // right free
+            else {
                 mazeState = MAZE_TURN_RIGHT_90;
             }
+            break;
         }
-        // left free
-        else if (!wallLeft)
-        {
-            mazeState = MAZE_TURN_LEFT_90;
-        }
-        // right free
-        else
-        {
-            mazeState = MAZE_TURN_RIGHT_90;
-        }
-        break;
-    }
 
     // ------------------------------------------
     case MAZE_TURN_LEFT_90:
