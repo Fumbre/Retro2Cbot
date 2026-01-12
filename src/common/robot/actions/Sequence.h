@@ -125,11 +125,14 @@ public:
         if (!isRotated)
         {
           moveSpeed(-255, 255);
-          LineState pattern = rsData->pattern();
-          if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
+          if (t.timeout(90))
           {
-            moveStopAll();
-            isRotated = true;
+            LineState pattern = rsData->pattern();
+            if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
+            {
+              moveStopAll();
+              isRotated = true;
+            }
           }
         }
       }

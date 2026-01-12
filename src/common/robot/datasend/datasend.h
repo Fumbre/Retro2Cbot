@@ -7,10 +7,10 @@
 #include "common/robot/hc12/hc12.h"
 
 void dataSend();
-// void sendSonarData();
-// void sendGripperData();
+void sendSonarData();
+void sendGripperData();
 void sendReflectiveSensorData();
-// void sendNeopixelData();
+void sendNeopixelData();
 // void sendPulsesData();
 String getCurrentRobotCode();
 // void setBasicInformation(JsonDocument& doc);
