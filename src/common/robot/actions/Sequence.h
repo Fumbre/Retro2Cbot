@@ -8,8 +8,6 @@
 
 #include "common/robot/hc12/hc12.h"
 
-#include <ArduinoJson.h>
-
 /**
  * @name Sequence
  * @author Fumbre (Vladyslav)
@@ -21,9 +19,6 @@ class Sequence
 {
 private:
   ReflectiveSensor *rsData;
-
-  // Josn document class
-  StaticJsonDocument<256> doc;
 
   bool isRotated = false;
   bool catchObj = false;
@@ -56,7 +51,14 @@ public:
     if (pos == 2)
     {
       // recieved data return true
-      return true;
+      String data = receiveDataFromHC12();
+      if (data.length() != 0)
+      {
+        Serial.print(data);
+        return data == "i,BB046";
+      }
+
+      return false;
     }
 
     if (pos == 3)
@@ -160,12 +162,8 @@ public:
       {
         *mazePassed = true;
         // send command to BB046 to start;
-        char buf[100];
-        this->doc.clear();
-        this->doc["robotCode"] = robotCode;
-        this->doc["type"] = "inside";
-        serializeJson(this->doc, buf);
-        sendDataFromHC12(buf);
+        String msg = "i," + robotCode;
+        sendDataFromHC12(robotCode);
       }
       return;
     }

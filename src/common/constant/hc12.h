@@ -7,16 +7,16 @@
 #include "common/constant/board.h"
 
 #ifdef BB016
-const int RX = 12;
+const int RX = 11;
 const int TX = 13;
 #endif
 
 #ifdef BB046
-const int RX = 12;
-const int TX = 13;
+const int RX = 13;
+const int TX = 4;
 #endif
 
 #ifdef BB011
-const int RX = 12;
+const int RX = 11;
 const int TX = 13;
 #endif

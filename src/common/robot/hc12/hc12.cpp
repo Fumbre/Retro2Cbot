@@ -47,9 +47,10 @@ String receiveDataFromHC12()
 {
     String data = ""; // create an empty string to store incoming data
 
-    if (hc12.available() > 0)
-    {                             // check if there is data available to read from the HC-12 module
-        data = hc12.readString(); // read all available incoming data as a string
+    if (hc12.available())
+    {
+        // check if there is data available to read from the HC-12 module
+        data = hc12.readStringUntil('\n');
     }
 
     return data; // return the received data

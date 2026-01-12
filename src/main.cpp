@@ -42,5 +42,5 @@ void loop()
     physicalMaze();
     break;
   }
-  dataSend();
+  // dataSend();
 }
