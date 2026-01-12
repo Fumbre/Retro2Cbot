@@ -1,33 +1,35 @@
 /**
- * @name physical maze - TEST MODE
- * @description All start sequences disabled. Runs Maze Logic immediately.
-*/
+ * @name physical maze - PRO VERSION
+ * @author Francisco & Uraib
+ * @description Timed movement with Active Safety and Right-Hand Rule Priority.
+ */
 
 #include "physical_maze.h"
 
 // --- CONSTANTS ---
-const int OBST_LIMIT_CM = 20;
-const int SIDE_LIMIT_CM = 20;
-
-const int FWD_SPEED = 150;
+const int FWD_SPEED = 230;
 const int TURN_SPEED = 200;
-const int TURN_90_MS = 420;
-const int TURN_180_MS = 840;
-const int PAUSE_MS = 200;
 
-// --- MAZE VARIABLES ---
+const int TURN_90_MS = 450;
+const int TURN_180_MS = 1000;
+
+const int FORWARD_TIME_MS = 600;
+const int CHECK_PAUSE_MS = 150;
+
+const float WALL_DIST = 18.0; // Slightly increased for safety
+const float SONAR_MIN = 2.0;
+const float EMERGENCY_STOP_DIST = 10.0; // Stop immediately if front wall is this close
+
 enum MazeState
 {
-    MAZE_FORWARD,
-    MAZE_STOP_AND_WAIT,
-    MAZE_DECIDE,
+    MAZE_FORWARD_TIMED,
+    MAZE_CHECK,
     MAZE_TURN_LEFT_90,
     MAZE_TURN_RIGHT_90,
-    MAZE_TURN_180,
-    MAZE_POST_TURN_PAUSE
+    MAZE_TURN_180
 };
 
-int mazeState = MAZE_FORWARD;
+int mazeState = MAZE_FORWARD_TIMED;
 static Timer actionTimer;
 
 void physicalMazeSetup()
@@ -37,115 +39,108 @@ void physicalMazeSetup()
     setupGripper();
 }
 
-// --- SIMPLIFIED MAIN HANDLER ---
 void physicalMaze()
 {
-    // Jump straight to the maze logic
     solvingPhysicalMaze();
 }
 
-// --- MAZE SOLVING LOGIC ---
 void solvingPhysicalMaze()
 {
     switch (mazeState)
     {
-    case MAZE_FORWARD:
-    {
-        float distF = getDistanceCM_Front();
-        float distL = getDistanceCM_Left();
-        float distR = getDistanceCM_Right();
-
-        // 1. Obstacle Detection (Front)
-        if (distF > 2.0 && distF < OBST_LIMIT_CM) 
+    // --- STEP 1: MOVE FORWARD WITH SAFETY ---
+    case MAZE_FORWARD_TIMED:
+        if (!actionTimer.timeout(FORWARD_TIME_MS))
         {
-            moveStopAll();
-            actionTimer.resetTimeout();
-            mazeState = MAZE_STOP_AND_WAIT;
-        }
-        else 
-        {
-            // 2. Centering Logic (The "Nervous System")
-            if (distL < 12.0 && distL > 1.0) 
+            // SAFETY CHECK: While moving, make sure we aren't about to hit a wall
+            if (getDistanceCM_Front() < EMERGENCY_STOP_DIST)
             {
-                // Nudge Right
-                moveSpeed(FWD_SPEED - 40, FWD_SPEED + 40); 
+                moveStopAll();
+                actionTimer.resetTimeout();
+                mazeState = MAZE_CHECK;
             }
-            else if (distR < 12.0 && distR > 1.0) 
-            {
-                // Nudge Left
-                moveSpeed(FWD_SPEED + 40, FWD_SPEED - 40);
-            }
-            else 
+            else
             {
                 moveStabilized(FWD_SPEED, FWD_SPEED);
             }
         }
-        break;
-    }
-
-    case MAZE_STOP_AND_WAIT:
-        if (actionTimer.timeout(PAUSE_MS))
+        else
         {
-            mazeState = MAZE_DECIDE;
+            moveStopAll();
+            actionTimer.resetTimeout();
+            mazeState = MAZE_CHECK;
         }
         break;
 
-    case MAZE_DECIDE: 
+    // --- STEP 2: DECIDE WHERE TO GO (Right-Hand Rule) ---
+    case MAZE_CHECK:
     {
-        float l = getDistanceCM_Left();
+        delay(CHECK_PAUSE_MS); // Let sensors settle
+
         float r = getDistanceCM_Right();
+        float f = getDistanceCM_Front();
+        float l = getDistanceCM_Left();
 
-        actionTimer.resetTimeout();
-
-        // Right-Hand Rule: Check Right gap, then Left gap
-        if (r > SIDE_LIMIT_CM) 
+        // 1. Right is open? TURN RIGHT (Priority 1)
+        if (r > WALL_DIST)
         {
             mazeState = MAZE_TURN_RIGHT_90;
-        } 
-        else if (l > SIDE_LIMIT_CM) 
+        }
+        // 2. Front is open? GO FORWARD (Priority 2)
+        else if (f > WALL_DIST)
+        {
+            mazeState = MAZE_FORWARD_TIMED;
+        }
+        // 3. Left is open? TURN LEFT (Priority 3)
+        else if (l > WALL_DIST)
         {
             mazeState = MAZE_TURN_LEFT_90;
-        } 
-        else 
+        }
+        // 4. Stuck? TURN 180
+        else
         {
             mazeState = MAZE_TURN_180;
         }
+
+        actionTimer.resetTimeout();
         break;
     }
 
     case MAZE_TURN_LEFT_90:
-        if (!actionTimer.timeout(TURN_90_MS)) {
-            moveSpeed(-TURN_SPEED, TURN_SPEED);
-        } else {
+        if (!actionTimer.timeout(TURN_90_MS))
+        {
+            moveStabilized(-TURN_SPEED, TURN_SPEED);
+        }
+        else
+        {
             moveStopAll();
             actionTimer.resetTimeout();
-            mazeState = MAZE_POST_TURN_PAUSE;
+            mazeState = MAZE_FORWARD_TIMED;
         }
         break;
 
     case MAZE_TURN_RIGHT_90:
-        if (!actionTimer.timeout(TURN_90_MS)) {
-            moveSpeed(TURN_SPEED, -TURN_SPEED);
-        } else {
+        if (!actionTimer.timeout(TURN_90_MS))
+        {
+            moveStabilized(TURN_SPEED, -TURN_SPEED);
+        }
+        else
+        {
             moveStopAll();
             actionTimer.resetTimeout();
-            mazeState = MAZE_POST_TURN_PAUSE;
+            mazeState = MAZE_FORWARD_TIMED;
         }
         break;
 
     case MAZE_TURN_180:
-        if (!actionTimer.timeout(TURN_180_MS)) {
-            moveSpeed(TURN_SPEED, -TURN_SPEED);
-        } else {
-            moveStopAll();
-            actionTimer.resetTimeout();
-            mazeState = MAZE_POST_TURN_PAUSE;
+        if (didMoveLeft(TURN_SPEED, 22))
+        {
+            mazeState = MAZE_FORWARD_TIMED;
+            resetMoveLeft();
         }
-        break;
-
-    case MAZE_POST_TURN_PAUSE:
-        if (actionTimer.timeout(PAUSE_MS)) {
-            mazeState = MAZE_FORWARD;
+        else
+        {
+            mazeState = MAZE_TURN_180;
         }
         break;
     }
