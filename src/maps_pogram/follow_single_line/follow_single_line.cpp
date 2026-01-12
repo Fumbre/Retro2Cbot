@@ -19,12 +19,10 @@ bool safeZone = true;
  * @date 15-12-2025
  */
 
+static Timer t;
+
 void followLine()
 {
-  // init timers
-  static Timer t;
-  static Timer t1;
-
   // set poisition of robot
   if (!isMazeStarted)
   {
@@ -37,12 +35,12 @@ void followLine()
 
   if (t.executeOnce(0))
   {
-    moveSpeed(230, 230);
+    moveSpeed(255, 255);
   }
 
   if (!isEndSequence)
   {
-    if (!mazeSequence.start(255))
+    if (!mazeSequence.start(235))
       return;
   }
 
@@ -67,13 +65,20 @@ void followLine()
 
       if (safeZone && distance <= 20 && distance >= 2)
       {
-        safeZone = false;       // exiting safe zone
-        obstacleAvoidance(255); // first step to avoid
+        // dobule check if object is still there
+        if (t.timeout(35))
+        {
+          safeZone = false;       // exiting safe zone
+          obstacleAvoidance(255); // first step to avoid
+        }
       }
       else
       {
         if (distance > 20)
-          safeZone = true; // no objects ahead
+        {
+          safeZone = true;  // no objects ahead
+          t.resetTimeout(); // reset timeout
+        }
 
         // main code
         solvingFollowSingleLine(currnetPattern, fullSpeed, slightConf, hardConf);
@@ -137,7 +142,7 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   };
   case ALL_BLACK:
   {
-    isEndSequence = mazeSequence.isDetecetingBlackSquare(62);
+    isEndSequence = mazeSequence.isDetecetingBlackSquare(100);
 
     moveSpeed(fullSpeed, fullSpeed);
 

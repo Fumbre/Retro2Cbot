@@ -126,7 +126,7 @@ public:
       {
         if (!isRotated)
         {
-          if (didMoveLeft(255, 9) || firstPulsesPassed)
+          if (didMoveLeft(robotSpeed, 9) || firstPulsesPassed)
           {
             resetMoveLeft();
 
@@ -148,7 +148,6 @@ public:
   void end(bool *mazePassed, String robotCode)
   {
     static Timer t;
-    static Timer t1;
 
     if (!t.timeout(1000)) // go back during 1s
     {
@@ -172,12 +171,9 @@ public:
     }
 
     // this is end of sequence (black square)
-    if (t1.timeout(500)) // after 500ms uncatch an object
+    if (t.executeOnce(250))
     {
-      if (t1.executeOnce(0))
-      {
-        gripperUnCatch();
-      }
+      gripperUnCatch();
     }
   }
 };

@@ -23,12 +23,11 @@ bool isEndSequence2 = false;
 bool mazePassed2 = false;
 
 // maybe put it inside roatation function
+// init timers
 static Timer t;
 
 void mazeLine()
 {
-  // init timers
-  static Timer t;
 
   // set poisition of robot
   if (!isMazeStarted2)
