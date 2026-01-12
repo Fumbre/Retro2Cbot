@@ -1,12 +1,11 @@
 /**
- * @name physical maze
- * @author Francisco
- * @date 11-12-2025
+ * @name physical maze - TEST MODE
+ * @description All start sequences disabled. Runs Maze Logic immediately.
 */
 
 #include "physical_maze.h"
 
-// turning
+// --- CONSTANTS ---
 const int OBST_LIMIT_CM = 20;
 const int SIDE_LIMIT_CM = 20;
 
@@ -16,20 +15,7 @@ const int TURN_90_MS = 420;
 const int TURN_180_MS = 840;
 const int PAUSE_MS = 200;
 
-// start sequence
-ReflectiveSensor rsLine3(PINS_RS, PINS_RS_LENGTH, 220, 35);
-Sequence mazeSequence3(&rsLine3);
-
-// maze varialbes
-bool isMazeStarted3 = false;
-bool isEndSequence3 = false;
-bool mazePassed3 = false;
-
-bool wallFront = false;
-
-float slightConf3 = 0.75;
-int baseSpeed3 = 160;
-
+// --- MAZE VARIABLES ---
 enum MazeState
 {
     MAZE_FORWARD,
@@ -42,7 +28,6 @@ enum MazeState
 };
 
 int mazeState = MAZE_FORWARD;
-
 static Timer actionTimer;
 
 void physicalMazeSetup()
@@ -52,91 +37,52 @@ void physicalMazeSetup()
     setupGripper();
 }
 
+// --- SIMPLIFIED MAIN HANDLER ---
 void physicalMaze()
 {
-
-    static Timer t;
-
-    // set poisition of robot
-    if (!isMazeStarted3)
-    {
-        if (mazeSequence3.readyToStart(3))
-        {
-            isMazeStarted3 = true;
-        }
-        return;
-    }
-
-    if (t.executeOnce(0))
-    {
-        moveSpeed(230, 230);
-    }
-
-    if (!isEndSequence3)
-    {
-        if (!mazeSequence3.start(255))
-            return;
-    }
-
-    if (!isEndSequence3)
-    {
-
-        LineState currentStatus = rsLine3.pattern();
-
-        switch (currentStatus)
-        {
-
-        case CENTER:
-            moveSpeed(baseSpeed3, baseSpeed3);
-            break;
-
-        case SLIGHT_LEFT:
-            moveSpeed(baseSpeed3 * slightConf3, baseSpeed3);
-            break;
-
-        case SLIGHT_RIGHT:
-            moveSpeed(baseSpeed3, baseSpeed3 * slightConf3);
-            break;
-
-        case ALL_WHITE:
-            solvingPhysicalMaze();
-            break;
-        case ALL_BLACK:
-            isEndSequence3 = mazeSequence3.isDetecetingBlackSquare(62);
-
-            break;
-        }
-    }
-
-    if (isEndSequence3)
-    {
-        mazeSequence3.end(&mazePassed3, "BB011");
-    }
+    // Jump straight to the maze logic
+    solvingPhysicalMaze();
 }
 
+// --- MAZE SOLVING LOGIC ---
 void solvingPhysicalMaze()
 {
-
     switch (mazeState)
     {
-
-    // ------------------------------------------
     case MAZE_FORWARD:
     {
         float distF = getDistanceCM_Front();
+        float distL = getDistanceCM_Left();
+        float distR = getDistanceCM_Right();
 
-            if (distF > 2.0 && distF < OBST_LIMIT_CM) {
-                moveStopAll();
-                actionTimer.resetTimeout();
-                mazeState = MAZE_STOP_AND_WAIT;
+        // 1. Obstacle Detection (Front)
+        if (distF > 2.0 && distF < OBST_LIMIT_CM) 
+        {
+            moveStopAll();
+            actionTimer.resetTimeout();
+            mazeState = MAZE_STOP_AND_WAIT;
+        }
+        else 
+        {
+            // 2. Centering Logic (The "Nervous System")
+            if (distL < 12.0 && distL > 1.0) 
+            {
+                // Nudge Right
+                moveSpeed(FWD_SPEED - 40, FWD_SPEED + 40); 
             }
-            else {
+            else if (distR < 12.0 && distR > 1.0) 
+            {
+                // Nudge Left
+                moveSpeed(FWD_SPEED + 40, FWD_SPEED - 40);
+            }
+            else 
+            {
                 moveStabilized(FWD_SPEED, FWD_SPEED);
             }
-            break;
         }
+        break;
+    }
 
-    // ------------------------------------------
     case MAZE_STOP_AND_WAIT:
         if (actionTimer.timeout(PAUSE_MS))
         {
@@ -144,88 +90,61 @@ void solvingPhysicalMaze()
         }
         break;
 
-        // ------------------------------------------
-        case MAZE_DECIDE: {
-            
-            float f = getDistanceCM_Front();
-            float l = getDistanceCM_Left();
-            float r = getDistanceCM_Right();
-
-            bool wallFront = (f > 2.0 && f < OBST_LIMIT_CM);
-            bool wallLeft  = (l > 2.0 && l < SIDE_LIMIT_CM);
-            bool wallRight = (r > 2.0 && r < SIDE_LIMIT_CM);
+    case MAZE_DECIDE: 
+    {
+        float l = getDistanceCM_Left();
+        float r = getDistanceCM_Right();
 
         actionTimer.resetTimeout();
 
-            // 3 walls
-            if (wallLeft && wallRight && wallFront) {
-                mazeState = MAZE_TURN_180;
-            }
-            // only wall in front
-            else if (wallFront && !wallLeft && !wallRight) {
-                if (l > r) {
-                    mazeState = MAZE_TURN_LEFT_90;
-                } else {
-                    mazeState = MAZE_TURN_RIGHT_90;
-                }
-            }
-            // left free
-            else if (!wallLeft && wallFront) {
-                mazeState = MAZE_TURN_LEFT_90;
-            }
-            // right free
-            else {
-                mazeState = MAZE_TURN_RIGHT_90;
-            }
-            break;
+        // Right-Hand Rule: Check Right gap, then Left gap
+        if (r > SIDE_LIMIT_CM) 
+        {
+            mazeState = MAZE_TURN_RIGHT_90;
+        } 
+        else if (l > SIDE_LIMIT_CM) 
+        {
+            mazeState = MAZE_TURN_LEFT_90;
+        } 
+        else 
+        {
+            mazeState = MAZE_TURN_180;
         }
+        break;
+    }
 
-    // ------------------------------------------
     case MAZE_TURN_LEFT_90:
-        if (!actionTimer.timeout(TURN_90_MS))
-        {
-            moveStabilized(-TURN_SPEED, TURN_SPEED); // try to see how didMoveLeft works
-        }
-        else
-        {
+        if (!actionTimer.timeout(TURN_90_MS)) {
+            moveSpeed(-TURN_SPEED, TURN_SPEED);
+        } else {
             moveStopAll();
             actionTimer.resetTimeout();
             mazeState = MAZE_POST_TURN_PAUSE;
         }
         break;
 
-    // ------------------------------------------
     case MAZE_TURN_RIGHT_90:
-        if (!actionTimer.timeout(TURN_90_MS))
-        {
-            moveStabilized(TURN_SPEED, -TURN_SPEED);
-        }
-        else
-        {
+        if (!actionTimer.timeout(TURN_90_MS)) {
+            moveSpeed(TURN_SPEED, -TURN_SPEED);
+        } else {
             moveStopAll();
             actionTimer.resetTimeout();
             mazeState = MAZE_POST_TURN_PAUSE;
         }
         break;
 
-    // ------------------------------------------
     case MAZE_TURN_180:
-        if (!actionTimer.timeout(TURN_180_MS))
-        {
-            moveStabilized(TURN_SPEED, -TURN_SPEED);
-        }
-        else
-        {
+        if (!actionTimer.timeout(TURN_180_MS)) {
+            moveSpeed(TURN_SPEED, -TURN_SPEED);
+        } else {
             moveStopAll();
             actionTimer.resetTimeout();
             mazeState = MAZE_POST_TURN_PAUSE;
         }
         break;
 
-    // ------------------------------------------
     case MAZE_POST_TURN_PAUSE:
-        if (actionTimer.timeout(PAUSE_MS))
-        {
+        if (actionTimer.timeout(PAUSE_MS)) {
             mazeState = MAZE_FORWARD;
         }
         break;

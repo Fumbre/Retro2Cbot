@@ -51,7 +51,7 @@ float getDistanceCM_Front()
 float getDistanceCM_Right()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
+  float distance = measureDistance(PIN_SONAR_ECHO_RIGHT);
   // record right sonar distance
   sonarSendDataRightDistance = distance;
   return distance;
@@ -63,7 +63,7 @@ float getDistanceCM_Right()
 float getDistanceCM_Left()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
+  float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
   // record left sonar distance
   sonarSendDataLeftDistance = distance;
   return distance;
