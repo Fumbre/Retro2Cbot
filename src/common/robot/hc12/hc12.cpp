@@ -45,13 +45,14 @@ void sendDataFromHC12(String data)
 
 String receiveDataFromHC12()
 {
-    String data = ""; // create an empty string to store incoming data
 
-    if (hc12.available())
+    if (hc12.available() > 0)
     {
+        String data = ""; // create an empty string to store incoming data
         // check if there is data available to read from the HC-12 module
         data = hc12.readStringUntil('\n');
+        return data;
     }
 
-    return data; // return the received data
+    return ""; // return the received data
 }

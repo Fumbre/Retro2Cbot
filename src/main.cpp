@@ -7,7 +7,7 @@
 #include "maps_pogram/physical_maze/physical_maze.h"
 #include "common/robot/datasend/datasend.h"
 
-int mapInit = 2;
+int mapInit = 1;
 
 void setup()
 {
@@ -42,5 +42,4 @@ void loop()
     physicalMaze();
     break;
   }
-  // dataSend();
 }

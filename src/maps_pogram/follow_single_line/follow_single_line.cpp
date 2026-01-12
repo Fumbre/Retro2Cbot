@@ -40,6 +40,8 @@ void followLine()
 
   if (!isEndSequence)
   {
+    // dataSend();
+
     if (!mazeSequence.start(235))
       return;
   }
@@ -92,6 +94,10 @@ void followLine()
 
   if (isEndSequence)
   {
+    if (!t.timeout(1000))
+    {
+      dataSend();
+    }
     mazeSequence.end(&mazePassed, "BB046");
   }
 }

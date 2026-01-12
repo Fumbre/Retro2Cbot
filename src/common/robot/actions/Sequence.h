@@ -151,6 +151,8 @@ public:
   {
     static Timer t;
 
+    static Timer sendDataTimer;
+
     if (!t.timeout(1000)) // go back during 1s
     {
       moveSpeed(-255, -255);
@@ -161,9 +163,11 @@ public:
       if (!mazePassed)
       {
         *mazePassed = true;
-        // send command to BB046 to start;
-        String msg = "i," + robotCode;
-        sendDataFromHC12(robotCode);
+      }
+
+      if (sendDataTimer.executeOnce(0, 2000))
+      {
+        sendDataFromHC12("i," + robotCode);
       }
       return;
     }
