@@ -40,7 +40,7 @@ void followLine()
 
   if (!isEndSequence)
   {
-    // dataSend();
+    dataSend();
 
     if (!mazeSequence.start(235))
       return;
@@ -98,7 +98,7 @@ void followLine()
     {
       dataSend();
     }
-    mazeSequence.end(&mazePassed, "BB046");
+    mazeSequence.end(&mazePassed, "BB016");
   }
 }
 

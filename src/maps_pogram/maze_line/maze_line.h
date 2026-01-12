@@ -9,6 +9,8 @@
 #include <ArduinoJson.h>
 #include "common/robot/actions/Sequence.h"
 
+#include "common/robot/datasend/datasend.h"
+
 void mazeLineSetup();
 
 void mazeLine();

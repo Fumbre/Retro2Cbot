@@ -55,7 +55,7 @@ public:
       if (data.length() != 0)
       {
         Serial.print(data);
-        return data == "i,BB046";
+        return data == "i,BB016";
       }
 
       return false;
@@ -64,6 +64,13 @@ public:
     if (pos == 3)
     {
       // recieved data return true
+      String data = receiveDataFromHC12();
+      if (data.length() != 0)
+      {
+        Serial.print(data);
+        return data == "i,BB046";
+      }
+
       return true;
     }
 

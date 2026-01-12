@@ -47,6 +47,8 @@ void mazeLine()
 
   if (!isEndSequence2)
   {
+    dataSend();
+
     if (!mazeSequence2.start(230))
       return;
   }
@@ -138,7 +140,11 @@ void mazeLine()
 
   if (isEndSequence2)
   {
-    mazeSequence2.end(&mazePassed2, "BB016");
+    if (!t1.timeout(1000))
+    {
+      dataSend();
+    }
+    mazeSequence2.end(&mazePassed2, "BB046");
   }
 }
 
