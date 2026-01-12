@@ -28,6 +28,8 @@ private:
   bool isRotated = false;
   bool catchObj = false;
 
+  bool firstPulsesPassed = false;
+
 public:
   Sequence(ReflectiveSensor *rsData)
   {
@@ -124,9 +126,12 @@ public:
       {
         if (!isRotated)
         {
-          moveSpeed(-255, 255);
-          if (t.timeout(90))
+          if (didMoveLeft(255, 9) || firstPulsesPassed)
           {
+            resetMoveLeft();
+
+            firstPulsesPassed = true;
+
             LineState pattern = rsData->pattern();
             if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
             {
