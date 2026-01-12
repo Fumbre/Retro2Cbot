@@ -1,3 +1,8 @@
+/**
+ * @name constant of motor
+ * @authors Fumbre (Vladyslav) & Sunny
+ * @date 15-11-2025
+ */
 #pragma once
 
 const int FULL_PWM_VALUE = 255;

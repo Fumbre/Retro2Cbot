@@ -1,12 +1,17 @@
+/**
+ * @name functions of object avoidance
+ * @author Francisco
+ * @date 20-11-2025
+ */
 #include "obstacle_avoidance.h"
 
 bool avoiding = false;
 
-/*
+/**
  * @name obstacleAvoidance
  * @author Francisco
  * @date 20-11-2025
- * @details Executes a non-blocking obstacle avoidance routine using
+ * @details  Executes a non-blocking obstacle avoidance routine using
  * timed movement stages. The robot performs a sequence of turns and
  * short forward movements to bypass an obstacle and then resumes
  * normal operation.

@@ -6,8 +6,9 @@
 #include "maps_pogram/follow_single_line/follow_single_line.h"
 #include "maps_pogram/physical_maze/physical_maze.h"
 #include "common/robot/datasend/datasend.h"
+#include "common/tools/tests/test_sonar/test_sonar.h"
 
-int mapInit = 2;
+int mapInit = 3;
 
 void setup()
 {
@@ -30,6 +31,7 @@ void setup()
 
 void loop()
 {
+  // testSonars();
   switch (mapInit)
   {
   case 1:

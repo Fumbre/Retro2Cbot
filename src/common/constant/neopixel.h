@@ -1,3 +1,8 @@
+/**
+ * @name constant of Neopixels
+ * @author Sunny
+ * @date 15-12-2025
+ */
 #pragma once
 #include "common/constant/board.h"
 

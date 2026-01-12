@@ -1,3 +1,9 @@
+/**
+ * @name Sonar Module
+ * @author Francisco & Uraib
+ * @date 11-12-2025
+ */
+
 #include "sonar.h"
 
 // Basically screaming & listening analogy for distance measurement
@@ -17,25 +23,18 @@ void setupSonar()
 
 float measureDistance(int echo)
 {
-  // Taking a deep breath before screaming
   digitalWrite(PIN_SONAR_TRIG, LOW);
   delayMicroseconds(2);
-  // Letting out a quick scream
-  // P.s HIGH = 5V
   digitalWrite(PIN_SONAR_TRIG, HIGH);
   delayMicroseconds(10);
   digitalWrite(PIN_SONAR_TRIG, LOW);
 
-  // Read and listen to the echo
-  unsigned long duration = pulseIn(echo, HIGH, 25000);
-  // not HABIBI BUT ALL robots that use SONAR!
-  // the habibi waits for 25ms for an echo
+  // Reduced timeout to 15000us (~250cm range) for faster decision making
+  unsigned long duration = pulseIn(echo, HIGH, 15000);
 
-  // If no echo (0) or out of range, return 400
-  if (duration == 0 || duration > 23200)
+  if (duration == 0)
     return 400.0;
 
-  // sound travels to wall AND back, so divide by 2
   return duration * 0.034 / 2;
 }
 
@@ -51,24 +50,22 @@ float getDistanceCM_Front()
 float getDistanceCM_Right()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
-  // record right sonar distance
+  float distance = measureDistance(PIN_SONAR_ECHO_RIGHT);
   sonarSendDataRightDistance = distance;
   return distance;
 #else
-  return 0;
+  return 400.0;
 #endif
 }
 
 float getDistanceCM_Left()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
-  // record left sonar distance
+  float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
   sonarSendDataLeftDistance = distance;
   return distance;
 #else
-  return 0;
+  return 400.0;
 #endif
 }
 
@@ -76,17 +73,17 @@ float getDistanceCM_Left()
 bool isObstacleFront(float limit)
 {
   float d = getDistanceCM_Front();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
 
 bool isObstacleRight(float limit)
 {
   float d = getDistanceCM_Right();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
 
 bool isObstacleLeft(float limit)
 {
   float d = getDistanceCM_Left();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }

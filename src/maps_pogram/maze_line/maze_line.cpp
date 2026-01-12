@@ -136,7 +136,7 @@ void mazeLine()
       break;
     }
   }
-
+  // send start command to BB011
   if (isEndSequence2)
   {
     if (!t1.timeout(1000))
