@@ -1,3 +1,10 @@
+/**
+ * @name Sequence
+ * @author Fumbre (Vladyslav)
+ * @date 16-12-2025
+ * @details Sequence class to start and end sequence
+ */
+
 #pragma once
 
 #include "common/robot/reflective_sensor/reflective_sensor.h"
@@ -7,13 +14,6 @@
 #include "common/robot/sonar/sonar.h"
 
 #include "common/robot/hc12/hc12.h"
-
-/**
- * @name Sequence
- * @author Fumbre (Vladyslav)
- * @date 16-12-2025
- * @details Sequence class to start and end sequence
- */
 
 class Sequence
 {
@@ -26,11 +26,25 @@ private:
   bool firstPulsesPassed = false;
 
 public:
+  /**
+   * @name construct function 
+   * @author Fumbre (Vladyslav)
+   * @date 16-12-2025
+   * @param rsData ReflectiveSensor pointer
+   * @result Sequence instance
+   */
   Sequence(ReflectiveSensor *rsData)
   {
     this->rsData = rsData;
   }
 
+  /**
+   * @name readyToStart
+   * @author Fumbre (Vladyslav)
+   * @date 16-12-2025
+   * @param pos 0=>BB016, 1=>BB046, 2=>BB011
+   * 
+   */
   bool readyToStart(int pos)
   {
     static Timer t;
@@ -55,7 +69,6 @@ public:
       if (data.length() != 0)
       {
         data.trim();
-        Serial.println(data == "i,BB016");
         return data == String("i,BB016");
       }
 
@@ -68,7 +81,6 @@ public:
       String data = receiveDataFromHC12();
       if (data.length() != 0)
       {
-        Serial.print(data);
         return data == "i,BB046";
       }
 

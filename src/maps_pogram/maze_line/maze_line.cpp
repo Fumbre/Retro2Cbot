@@ -8,10 +8,10 @@ LineState lastStatus = CENTER;
 LineState currentStatus;
 
 // speed conf
-int baseSpeed = 255;
-float slightConf = 0.6;
-float hardConf = 0.1;
-float reverseConf = -1;
+int baseSpeed2 = 255;
+float slightConf2 = 0.6;
+float hardConf2 = 0.1;
+float reverseConf2 = -1;
 
 bool doRotationRight = false;
 bool doRotationLeft = false;
@@ -94,19 +94,19 @@ void mazeLine()
     switch (currentStatus)
     {
     case CENTER:
-      moveSpeed(baseSpeed, baseSpeed);
+      moveSpeed(baseSpeed2, baseSpeed2);
       break;
     case SLIGHT_LEFT:
-      moveSpeed(baseSpeed * slightConf, baseSpeed);
+      moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
       break;
     case SLIGHT_RIGHT:
-      moveSpeed(baseSpeed, baseSpeed * slightConf);
+      moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
       break;
     case ALL_BLACK:
       isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
 
       lastStatus = ALL_BLACK;
-      moveSpeed(baseSpeed, baseSpeed);
+      moveSpeed(baseSpeed2, baseSpeed2);
       break;
     case ALL_WHITE:
       if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
@@ -122,13 +122,13 @@ void mazeLine()
       }
       break;
     case HARD_LEFT:
-      moveSpeed(baseSpeed * hardConf, baseSpeed);
+      moveSpeed(baseSpeed2 * hardConf2, baseSpeed2);
     case LEFT_TURN:
       lastStatus = LEFT_TURN;
-      moveSpeed(baseSpeed, baseSpeed);
+      moveSpeed(baseSpeed2, baseSpeed2);
       break;
     case HARD_RIGHT:
-      moveSpeed(baseSpeed, baseSpeed * hardConf);
+      moveSpeed(baseSpeed2, baseSpeed2 * hardConf2);
     case RIGHT_TURN:
       lastStatus = RIGHT_TURN;
       doRotationRight = true;
@@ -154,7 +154,7 @@ void rotate(int dir)
 
   if (!t.timeout(200)) // execute for 200 milliseconds
   {
-    moveSpeed(baseSpeed, baseSpeed);
+    moveSpeed(baseSpeed2, baseSpeed2);
   }
   else
   {
@@ -165,7 +165,7 @@ void rotate(int dir)
       {
         if (t.executeOnce(0, 150))
         {
-          moveSpeed(baseSpeed * .8, baseSpeed * .8 * reverseConf);
+          moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
           return;
         }
         else
@@ -181,7 +181,7 @@ void rotate(int dir)
       {
         if (t.executeOnce(0, 150))
         {
-          moveSpeed(baseSpeed * reverseConf * .8, baseSpeed * .8);
+          moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
           return;
         }
         else

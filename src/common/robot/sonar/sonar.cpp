@@ -23,6 +23,9 @@ void setupSonar()
 
 float measureDistance(int echo)
 {
+  #if defined(BB011)
+  delay(35);
+  #endif
   digitalWrite(PIN_SONAR_TRIG, LOW);
   delayMicroseconds(2);
   digitalWrite(PIN_SONAR_TRIG, HIGH);
@@ -35,7 +38,7 @@ float measureDistance(int echo)
   if (duration == 0)
     return 400.0;
 
-  return duration * 0.034 / 2;
+  return duration * 0.0343 / 2;
 }
 
 float getDistanceCM_Front()

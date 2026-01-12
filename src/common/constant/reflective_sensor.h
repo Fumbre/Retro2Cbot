@@ -1,3 +1,8 @@
+/**
+ * @name constant of reflective sensor
+ * @author Fumbre (Vladyslav)
+ * @date 08-12-2025
+ */
 #pragma once
 #include <Arduino.h>
 #include "common/robot/globalvariable/globalVariable.h"
