@@ -28,6 +28,7 @@ static Timer t;
 
 void mazeLine()
 {
+  static Timer t1;
 
   // set poisition of robot
   if (!isMazeStarted2)
@@ -39,14 +40,14 @@ void mazeLine()
     return;
   }
 
-  if (t.executeOnce(0))
+  if (t1.executeOnce(0))
   {
-    moveSpeed(230, 230);
+    moveSpeed(255, 255);
   }
 
   if (!isEndSequence2)
   {
-    if (!mazeSequence2.start(255))
+    if (!mazeSequence2.start(230))
       return;
   }
 
@@ -77,8 +78,8 @@ void mazeLine()
       {
         if (distance < 20)
         {
-          doRotationRight = true;
-          rotate(0);
+          doRotationLeft = true;
+          rotate(1);
           return;
         }
       }
