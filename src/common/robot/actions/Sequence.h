@@ -54,8 +54,9 @@ public:
       String data = receiveDataFromHC12();
       if (data.length() != 0)
       {
-        Serial.print(data);
-        return data == "i,BB016";
+        data.trim();
+        Serial.println(data == "i,BB016");
+        return data == String("i,BB016");
       }
 
       return false;
