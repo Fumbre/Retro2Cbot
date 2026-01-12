@@ -15,8 +15,7 @@ void setupSonar()
 #endif
 }
 
-float measureDistance(int echo)
-{
+float measureDistance(int echo) {
   // Taking a deep breath before screaming
   digitalWrite(PIN_SONAR_TRIG, LOW);
   delayMicroseconds(2);
@@ -32,15 +31,15 @@ float measureDistance(int echo)
   // the habibi waits for 25ms for an echo
 
   // If no echo (0) or out of range, return 400
-  if (duration == 0 || duration > 23200)
+  if (duration == 0 || duration > 25000) {
     return 400.0;
+  }
 
   // sound travels to wall AND back, so divide by 2
   return duration * 0.034 / 2;
 }
 
-float getDistanceCM_Front()
-{
+float getDistanceCM_Front() {
   float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
   // record front sonar distance
   sonarSendDatafrontDistance = distance;
@@ -51,7 +50,7 @@ float getDistanceCM_Front()
 float getDistanceCM_Right()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
+  float distance = measureDistance(PIN_SONAR_ECHO_RIGHT);
   // record right sonar distance
   sonarSendDataRightDistance = distance;
   return distance;
@@ -63,7 +62,7 @@ float getDistanceCM_Right()
 float getDistanceCM_Left()
 {
 #if defined(BB011)
-  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
+  float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
   // record left sonar distance
   sonarSendDataLeftDistance = distance;
   return distance;

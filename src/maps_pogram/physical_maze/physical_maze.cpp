@@ -7,8 +7,8 @@
 #include "physical_maze.h"
 
 // turning
-const int OBST_LIMIT_CM = 20;
-const int SIDE_LIMIT_CM = 20;
+const int OBST_LIMIT_CM = 15;
+const int SIDE_LIMIT_CM = 15;
 
 const int FWD_SPEED = 150;
 const int TURN_SPEED = 200;
@@ -54,64 +54,64 @@ void physicalMazeSetup()
 
 void physicalMaze()
 {
+    solvingPhysicalMaze();
+    // static Timer t;
 
-    static Timer t;
+    // // set poisition of robot
+    // if (!isMazeStarted3)
+    // {
+    //     if (mazeSequence3.readyToStart(3))
+    //     {
+    //         isMazeStarted3 = true;
+    //     }
+    //     return;
+    // }
 
-    // set poisition of robot
-    if (!isMazeStarted3)
-    {
-        if (mazeSequence3.readyToStart(3))
-        {
-            isMazeStarted3 = true;
-        }
-        return;
-    }
+    // if (t.executeOnce(0))
+    // {
+    //     moveSpeed(230, 230);
+    // }
 
-    if (t.executeOnce(0))
-    {
-        moveSpeed(230, 230);
-    }
+    // if (!isEndSequence3)
+    // {
+    //     if (!mazeSequence3.start(255))
+    //         return;
+    // }
 
-    if (!isEndSequence3)
-    {
-        if (!mazeSequence3.start(255))
-            return;
-    }
+    // if (!isEndSequence3)
+    // {
 
-    if (!isEndSequence3)
-    {
+    //     LineState currentStatus = rsLine3.pattern();
 
-        LineState currentStatus = rsLine3.pattern();
+    //     switch (currentStatus)
+    //     {
 
-        switch (currentStatus)
-        {
+    //     case CENTER:
+    //         moveSpeed(baseSpeed3, baseSpeed3);
+    //         break;
 
-        case CENTER:
-            moveSpeed(baseSpeed3, baseSpeed3);
-            break;
+    //     case SLIGHT_LEFT:
+    //         moveSpeed(baseSpeed3 * slightConf3, baseSpeed3);
+    //         break;
 
-        case SLIGHT_LEFT:
-            moveSpeed(baseSpeed3 * slightConf3, baseSpeed3);
-            break;
+    //     case SLIGHT_RIGHT:
+    //         moveSpeed(baseSpeed3, baseSpeed3 * slightConf3);
+    //         break;
 
-        case SLIGHT_RIGHT:
-            moveSpeed(baseSpeed3, baseSpeed3 * slightConf3);
-            break;
+    //     case ALL_WHITE:
+    //         solvingPhysicalMaze();
+    //         break;
+    //     case ALL_BLACK:
+    //         isEndSequence3 = mazeSequence3.isDetecetingBlackSquare(62);
 
-        case ALL_WHITE:
-            solvingPhysicalMaze();
-            break;
-        case ALL_BLACK:
-            isEndSequence3 = mazeSequence3.isDetecetingBlackSquare(62);
+    //         break;
+    //     }
+    // }
 
-            break;
-        }
-    }
-
-    if (isEndSequence3)
-    {
-        mazeSequence3.end(&mazePassed3, "BB011");
-    }
+    // if (isEndSequence3)
+    // {
+    //     mazeSequence3.end(&mazePassed3, "BB011");
+    // }
 }
 
 void solvingPhysicalMaze()
@@ -170,11 +170,11 @@ void solvingPhysicalMaze()
                 }
             }
             // left free
-            else if (!wallLeft && wallFront) {
+            else if (!wallLeft && wallFront && wallRight) {
                 mazeState = MAZE_TURN_LEFT_90;
             }
             // right free
-            else {
+            else if (wallLeft && wallFront && !wallRight) {
                 mazeState = MAZE_TURN_RIGHT_90;
             }
             break;

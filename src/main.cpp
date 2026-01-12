@@ -7,7 +7,11 @@
 #include "maps_pogram/physical_maze/physical_maze.h"
 #include "common/robot/datasend/datasend.h"
 
+<<<<<<< HEAD
 int mapInit = 2;
+=======
+int mapInit = 3;
+>>>>>>> 3004858 (h)
 
 void setup()
 {
