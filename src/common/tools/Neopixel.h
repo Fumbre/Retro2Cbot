@@ -1,5 +1,7 @@
 /**
  * @name class of Neopixels
+ * @author Sunny
+ * @date 15-12-2025
  */
 
 #pragma once

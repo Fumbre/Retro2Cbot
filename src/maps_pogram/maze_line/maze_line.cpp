@@ -135,7 +135,7 @@ void mazeLine()
       break;
     }
   }
-
+  // send start command to BB011
   if (isEndSequence2)
   {
     mazeSequence2.end(&mazePassed2, "BB016");

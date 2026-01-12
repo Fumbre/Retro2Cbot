@@ -1,3 +1,8 @@
+/**
+ * @name following line
+ * @authors Fumbre (Vladyslav) & Aria & Sunny
+ * @date 15-12-2025
+ */
 #include "follow_single_line.h"
 
 // RS - reflective sensor
@@ -15,7 +20,7 @@ bool safeZone = true;
 
 /**
  * @name followLine
- * @authors Fumbre (Vladyslav) & Aria & Francisco
+ * @authors Fumbre (Vladyslav) & Aria & Sunny
  * @date 15-12-2025
  */
 

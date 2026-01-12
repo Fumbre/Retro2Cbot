@@ -1,3 +1,8 @@
+/**
+ * @name interface of motor
+ * @author Fumbre (Vladyslav)
+ * @date 13-11-2025
+ */
 #pragma once
 #include "common/constant/board.h"
 #include <Arduino.h>
