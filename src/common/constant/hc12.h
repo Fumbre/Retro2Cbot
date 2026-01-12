@@ -12,8 +12,8 @@ const int TX = 13;
 #endif
 
 #ifdef BB046
-const int RX = 13;
-const int TX = 4;
+const int RX = 4;
+const int TX = 13;
 #endif
 
 #ifdef BB011
