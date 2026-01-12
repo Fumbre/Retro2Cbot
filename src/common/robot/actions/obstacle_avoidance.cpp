@@ -33,7 +33,7 @@ void obstacleAvoidance(int speed)
   case 0:
     moveSpeed(-150, speed);
 
-    if (t.interval(400))
+    if (t.interval(250))
     { // after 400 ms
       step++;
       t.resetInterval();
@@ -55,7 +55,7 @@ void obstacleAvoidance(int speed)
   case 2:
     moveSpeed(speed, 160);
 
-    if (t.interval(200))
+    if (t.interval(250))
     { // after 200 ms
       step++;
       t.resetInterval();
@@ -68,45 +68,12 @@ void obstacleAvoidance(int speed)
 
     if (t.interval(400))
     {           // After 200 ms
-      step = 7; // end of avoidng; go to last case;
-      t.resetInterval();
+      step = 4; // end of avoidng; go to last case;
+      t.resetInterval(); 
     }
     break;
 
-  // turn right
   case 4:
-    moveSpeed(160, speed);
-
-    if (t.interval(200))
-    { // After 200 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
-
-  // move forward
-  case 5:
-    moveStabilized(speed, speed);
-
-    if (t.interval(200))
-    { // After 200 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
-
-  // turn left
-  case 6:
-    moveStabilized(-150, speed);
-
-    if (t.interval(400))
-    { // After 400 ms
-      step++;
-      t.resetInterval();
-    }
-    break;
-
-  case 7:
     avoiding = false;
     break;
   }
