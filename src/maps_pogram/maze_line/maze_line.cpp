@@ -73,12 +73,12 @@ void mazeLine()
 
     float distance = getDistanceCM_Front();
 
-    if (distance < 15)
+    if (distance < 18)
     {
       // check if the object is still there after 30 millis
       if (t.interval(45))
       {
-        if (distance < 15)
+        if (distance < 18)
         {
           doRotationLeft = true;
           rotate(1);
@@ -95,8 +95,16 @@ void mazeLine()
     switch (currentStatus)
     {
     case CENTER:
+      if (lastStatus == ALL_BLACK)
+      {
+        doRotationRight = true;
+        rotate(0);
+
+        return;
+      }
+
       moveSpeed(baseSpeed2, baseSpeed2);
-      turnOnAllLeds(0, 255, 0);
+      lastStatus = CENTER;
       break;
     case SLIGHT_LEFT:
       moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
@@ -105,11 +113,18 @@ void mazeLine()
       moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
       break;
     case ALL_BLACK:
-      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
+      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(150);
       lastStatus = ALL_BLACK;
       moveSpeed(baseSpeed2, baseSpeed2);
       break;
     case ALL_WHITE:
+      // because Lady Maria has problems with right wheel
+      if (lastStatus == CENTER)
+      {
+        doRotationLeft = true;
+        rotate(1);
+      }
+
       if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
       {
         doRotationRight = true;
@@ -163,13 +178,7 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (rotationT.executeOnce(100))
-        {
-          int index[2] = {1, 3};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
-        }
-
-        if (t.executeOnce(0, 150))
+        if (t.executeOnce(0, 200)) // 150
         {
           moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
           return;
@@ -185,12 +194,6 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (rotationT.executeOnce(100))
-        {
-          int index[2] = {2, 0};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
-        }
-
         if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
@@ -210,6 +213,7 @@ void rotate(int dir)
 
       if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
       {
+        lastStatus = pattern;
         moveStopAll();
         end = true;
       }
