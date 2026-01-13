@@ -9,7 +9,7 @@
 #include "common/tools/tests/test_sonar/test_sonar.h"
 #include "common/robot/neopixel/neopixel.h"
 
-int mapInit = 1;
+int mapInit = 2;
 
 void setup()
 {
@@ -44,4 +44,6 @@ void loop()
     physicalMaze();
     break;
   }
+  // int index[2] = {1,2}; //right
+  // turnOnSomeLeds(index,2,255,0,0);
 }

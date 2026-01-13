@@ -48,6 +48,7 @@ void followLine()
   if (t.executeOnce(0))
   {
     moveSpeed(255, 255);
+    turnOnAllLeds(0, 255, 0);
   }
 
   // current reflective sensor patter

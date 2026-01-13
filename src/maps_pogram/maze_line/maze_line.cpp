@@ -43,6 +43,7 @@ void mazeLine()
   if (t1.executeOnce(0))
   {
     moveSpeed(255, 255);
+    turnOnAllLeds(0, 255, 0);
   }
 
   if (!isEndSequence2)
@@ -181,6 +182,10 @@ void rotate(int dir)
         if (t.executeOnce(0, 200)) // 150
         {
           moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
+          int index[2] = {1, 2};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
+          int indexOff[2] = {3, 0};
+          turnOffSomeLeds(indexOff, 2);
           return;
         }
         else
@@ -197,6 +202,10 @@ void rotate(int dir)
         if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
+          int index[2] = {0, 3};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
+          int indexOff[2] = {1, 2};
+          turnOffSomeLeds(indexOff, 2);
           return;
         }
         else
