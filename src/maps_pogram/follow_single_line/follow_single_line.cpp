@@ -48,6 +48,8 @@ void followLine()
   if (t.executeOnce(0))
   {
     moveSpeed(255, 255);
+    // show 4 LEDs green
+    turnOnAllLeds(0, 255, 0);
   }
 
   // current reflective sensor patter
@@ -117,39 +119,44 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   case CENTER:
   {
     moveSpeed(fullSpeed, fullSpeed);
-
+    turnOnAllLeds(0, 255, 0);
     break;
   };
   case SLIGHT_LEFT:
   {
     moveSpeed(fullSpeed * slightConf, fullSpeed);
-
+    turnOnAllLeds(0, 230, 0);
     break;
   };
   case SLIGHT_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * slightConf);
-
+    turnOnAllLeds(0, 230, 0);
     break;
   };
   case HARD_LEFT:
   {
     moveSpeed(fullSpeed * hardConf, fullSpeed);
-
+    int index[2] = {0, 3};
+    turnOnSomeLeds(index, 2, 255, 255, 0);
+    int indexOff[2] = {1, 2};
+    turnOffSomeLeds(indexOff, 2);
     break;
   };
   case HARD_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * hardConf);
-
+    int index[2] = {1, 2};
+    turnOnSomeLeds(index, 2, 255, 255, 0);
+    int indexOff[2] = {0, 3};
+    turnOffSomeLeds(indexOff, 2);
     break;
   };
   case ALL_BLACK:
   {
     isEndSequence = mazeSequence.isDetecetingBlackSquare(100);
-
     moveSpeed(fullSpeed, fullSpeed);
-
+    turnOnAllLeds(0, 255, 0);
     break;
   };
   }

@@ -42,6 +42,7 @@ void mazeLine()
   if (t1.executeOnce(0))
   {
     moveSpeed(255, 255);
+    turnOnAllLeds(0, 255, 0);
   }
 
   if (!isEndSequence2)
@@ -95,16 +96,18 @@ void mazeLine()
     {
     case CENTER:
       moveSpeed(baseSpeed2, baseSpeed2);
+      turnOnAllLeds(0, 255, 0);
       break;
     case SLIGHT_LEFT:
       moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
+      turnOnAllLeds(0, 230, 0);
       break;
     case SLIGHT_RIGHT:
       moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
+      turnOnAllLeds(0, 230, 0);
       break;
     case ALL_BLACK:
       isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
-
       lastStatus = ALL_BLACK;
       moveSpeed(baseSpeed2, baseSpeed2);
       break;
@@ -166,6 +169,10 @@ void rotate(int dir)
         if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
+          int index[2] = {0, 1};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
+          int indexoff[2] = {2,3};
+          turnOffSomeLeds(indexoff,2);
           return;
         }
         else
@@ -182,6 +189,10 @@ void rotate(int dir)
         if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
+          int index[2] = {2, 3};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
+          int indexoff[2] = {0,1};
+          turnOffSomeLeds(indexoff,2);
           return;
         }
         else

@@ -11,6 +11,7 @@
 #include "common/robot/reflective_sensor/reflective_sensor.h"
 #include "common/robot/actions/Sequence.h"
 #include "common/robot/datasend/datasend.h"
+#include "common/robot/neopixel/neopixel.h"
 
 void followLine();
 void followLineSetup();

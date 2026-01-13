@@ -8,7 +8,7 @@
 #include "common/robot/hc12/hc12.h"
 #include <ArduinoJson.h>
 #include "common/robot/actions/Sequence.h"
-
+#include "common/robot/neopixel/neopixel.h"
 #include "common/robot/datasend/datasend.h"
 
 void mazeLineSetup();

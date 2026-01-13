@@ -100,3 +100,8 @@ void turnOffSomeLeds(int index[], int length)
 
   pixel.show();
 }
+
+void turnOnOneLed(int index, int R, int G, int B){
+    pixel.setNeoPixelColor(index, R, G, B);
+    pixel.show();
+}
