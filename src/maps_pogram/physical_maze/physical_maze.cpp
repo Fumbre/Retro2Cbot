@@ -7,16 +7,16 @@
 #include "physical_maze.h"
 
 const int FWD_SPEED = 230;
-const int TURN_SPEED = 200;
+const int TURN_SPEED = 210;
 
 const int TURN_90_MS = 450;
 
-const int FORWARD_TIME_MS = 600;
-const int CHECK_PAUSE_MS = 150;
+const int FORWARD_TIME_MS = 700;
+const int CHECK_PAUSE_MS = 200;
 
 const float WALL_DIST = 18.0;
-const float SONAR_MIN = 5.0;
-const float EMERGENCY_STOP_DIST = 5.0;
+const float SONAR_MIN = 2.0;
+const float EMERGENCY_STOP_DIST = 10.0;
 
 enum MazeState
 {
