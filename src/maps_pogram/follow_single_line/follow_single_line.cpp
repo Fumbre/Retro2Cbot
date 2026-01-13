@@ -20,8 +20,8 @@ bool safeZone = true;
 
 // for future possible to make it argument of function
 int fullSpeed = 255;
-float slightConf = .65; // try .8
-float hardConf = -.45;
+float slightConf = .8; // try .8
+float hardConf = -.5;  // -.4
 
 /**
  * @name followLine
@@ -48,8 +48,6 @@ void followLine()
   if (t.executeOnce(0))
   {
     moveSpeed(255, 255);
-    // show 4 LEDs green
-    turnOnAllLeds(0, 255, 0);
   }
 
   // current reflective sensor patter
@@ -61,43 +59,41 @@ void followLine()
     dataSend();
 
     // wait until robot rotate after black square
-    if (!mazeSequence.start(235))
+    if (!mazeSequence.start(255, 11, 180))
       return;
   }
 
   // if it's not end of sequence do it
   if (!isEndSequence)
   {
-    float distance = getDistanceCM_Front();
-
     if (!avoiding)
     {
-
-      if (safeZone && distance <= 15 && distance >= 2)
+      if (t.interval(35, 75))
       {
-        // dobule check if object is still there
-        if (t.interval(35))
+        float distance = getDistanceCM_Front();
+
+        if (safeZone && distance <= 13 && distance >= 2)
         {
-          safeZone = false;       // exiting safe zone
+          safeZone = false;
+          // check if the object is still there after 30 millis
           obstacleAvoidance(255); // first step to avoid
-        }
-      }
-      else
-      {
-        if (distance > 15)
-        {
-          safeZone = true;   // no objects ahead
-          t.resetInterval(); // reset timeout
+          return;
         }
 
-        // main code
-        solvingFollowSingleLine(currnetPattern, fullSpeed, slightConf, hardConf);
+        if (distance > 13)
+        {
+          safeZone = true;
+        }
       }
     }
     else
     {
       obstacleAvoidance(255); // continue avoiding
+      return;
     }
+
+    // main code
+    solvingFollowSingleLine(currnetPattern, fullSpeed, slightConf, hardConf);
   }
 
   if (isEndSequence)
@@ -119,44 +115,41 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   case CENTER:
   {
     moveSpeed(fullSpeed, fullSpeed);
-    turnOnAllLeds(0, 255, 0);
+    // turnOnAllLeds(0, 255, 0);
     break;
   };
   case SLIGHT_LEFT:
   {
     moveSpeed(fullSpeed * slightConf, fullSpeed);
-    turnOnAllLeds(0, 230, 0);
     break;
   };
   case SLIGHT_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * slightConf);
-    turnOnAllLeds(0, 230, 0);
     break;
   };
   case HARD_LEFT:
   {
     moveSpeed(fullSpeed * hardConf, fullSpeed);
-    int index[2] = {0, 3};
-    turnOnSomeLeds(index, 2, 255, 255, 0);
-    int indexOff[2] = {1, 2};
-    turnOffSomeLeds(indexOff, 2);
+    // int index[2] = {0, 3};
+    // turnOnSomeLeds(index, 2, 255, 255, 0);
+    // int indexOff[2] = {1, 2};
+    // turnOnSomeLeds(indexOff, 2, 0, 255, 0);
     break;
   };
   case HARD_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * hardConf);
-    int index[2] = {1, 2};
-    turnOnSomeLeds(index, 2, 255, 255, 0);
-    int indexOff[2] = {0, 3};
-    turnOffSomeLeds(indexOff, 2);
+    // int index[2] = {1, 2};
+    // turnOnSomeLeds(index, 2, 255, 255, 0);
+    // int indexOff[2] = {0, 3};
+    // turnOnSomeLeds(indexOff, 2, 0, 255, 0);
     break;
   };
   case ALL_BLACK:
   {
-    isEndSequence = mazeSequence.isDetecetingBlackSquare(100);
+    isEndSequence = mazeSequence.isDetecetingBlackSquare(65);
     moveSpeed(fullSpeed, fullSpeed);
-    turnOnAllLeds(0, 255, 0);
     break;
   };
   }

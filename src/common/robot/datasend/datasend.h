@@ -11,6 +11,4 @@ void sendSonarData();
 void sendGripperData();
 void sendReflectiveSensorData();
 void sendNeopixelData();
-// void sendPulsesData();
 String getCurrentRobotCode();
-// void setBasicInformation(JsonDocument& doc);
