@@ -31,7 +31,7 @@ void setup()
 
 void loop()
 {
-  // testSonars();
+  testSonars();
   switch (mapInit)
   {
   case 1:
