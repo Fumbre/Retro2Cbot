@@ -8,7 +8,7 @@ LineState lastStatus = CENTER;
 LineState currentStatus;
 
 // speed conf
-int baseSpeed2 = 255;
+int baseSpeed2 = 230;
 float slightConf2 = 0.6;
 float hardConf2 = 0.1;
 float reverseConf2 = -1;
@@ -26,13 +26,15 @@ bool mazePassed2 = false;
 // init timers
 static Timer t;
 static Timer t1;
+static Timer rotationT;
 
 void mazeLine()
 {
+
   // set poisition of robot
   if (!isMazeStarted2)
   {
-    if (mazeSequence2.readyToStart(2))
+    if (mazeSequence2.readyToStart(1)) // !!!change it to 2!!
     {
       isMazeStarted2 = true;
     }
@@ -49,7 +51,7 @@ void mazeLine()
   {
     dataSend();
 
-    if (!mazeSequence2.start(255)) // 230
+    if (!mazeSequence2.start(baseSpeed2, 10)) // 230
       return;
   }
 
@@ -70,48 +72,53 @@ void mazeLine()
 
   if (!isEndSequence2)
   {
-
-    float distance = getDistanceCM_Front();
-
-    if (distance < 15)
+    if (t.interval(35, 70))
     {
-      // check if the object is still there after 30 millis
-      if (t.interval(45))
+
+      float distance = getDistanceCM_Front();
+
+      if (distance < 18)
       {
-        if (distance < 15)
-        {
-          doRotationLeft = true;
-          rotate(1);
-          return;
-        }
+        doRotationLeft = true;
+        rotate(1);
+        return;
       }
-    }
-    else
-    {
-      t.resetInterval();
     }
 
     // main maze line code
     switch (currentStatus)
     {
     case CENTER:
+      if (lastStatus == ALL_BLACK)
+      {
+        doRotationRight = true;
+        rotate(0);
+
+        return;
+      }
+
       moveSpeed(baseSpeed2, baseSpeed2);
-      turnOnAllLeds(0, 255, 0);
+      lastStatus = CENTER;
       break;
     case SLIGHT_LEFT:
       moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
-      turnOnAllLeds(0, 230, 0);
       break;
     case SLIGHT_RIGHT:
       moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
-      turnOnAllLeds(0, 230, 0);
       break;
     case ALL_BLACK:
-      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
+      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(150);
       lastStatus = ALL_BLACK;
       moveSpeed(baseSpeed2, baseSpeed2);
       break;
     case ALL_WHITE:
+      // because Lady Maria has problems with right wheel
+      if (lastStatus == CENTER)
+      {
+        doRotationRight = true;
+        rotate(0);
+      }
+
       if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
       {
         doRotationRight = true;
@@ -161,23 +168,24 @@ void rotate(int dir)
   }
   else
   {
-
     if (dir == 0)
     {
       if (!rotated)
       {
-        if (t.executeOnce(0, 150))
+        if (t.executeOnce(0, 300)) // 150
         {
           moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
-          int index[2] = {0, 1};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
-          int indexoff[2] = {2,3};
-          turnOffSomeLeds(indexoff,2);
-          return;
+          // return;
         }
         else
         {
           rotated = true;
+        }
+
+        if (rotationT.executeOnce(0))
+        {
+          int index[2] = {1, 2};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
         }
       }
     }
@@ -186,18 +194,21 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (t.executeOnce(0, 150))
+
+        if (t.executeOnce(0, 300))
         {
           moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
-          int index[2] = {2, 3};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
-          int indexoff[2] = {0,1};
-          turnOffSomeLeds(indexoff,2);
-          return;
+          // return;
         }
         else
         {
           rotated = true;
+        }
+
+        if (rotationT.executeOnce(0))
+        {
+          int index[2] = {0, 3};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
         }
       }
     }
@@ -209,8 +220,12 @@ void rotate(int dir)
 
       if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
       {
+        lastStatus = pattern;
         moveStopAll();
         end = true;
+        moveSpeed(baseSpeed2, baseSpeed2);
+
+        turnOnAllLeds(0, 255, 0);
       }
     }
   }
@@ -222,6 +237,7 @@ void rotate(int dir)
     doRotationRight = false;
     doRotationLeft = false;
 
+    rotationT.resetExecuteOnce();
     t.resetTimeout();
     t.resetExecuteOnce();
   }

@@ -8,6 +8,7 @@
 
 const int FWD_SPEED = 230;
 const int TURN_SPEED = 210;
+const int TURN_SPEED = 210;
 
 const int TURN_90_MS = 450;
 const int REVERSE_TIME_MS = 500;

@@ -10,7 +10,6 @@ void dataSend()
 {
     sendGripperData();
     sendNeopixelData();
-    // sendPulsesData();
     sendReflectiveSensorData();
     sendSonarData();
 }
@@ -94,29 +93,6 @@ void sendNeopixelData()
         timer.resetTimeout();
     }
 }
-
-// void sendPulsesData()
-// {
-//     if (timer.timeout(interval))
-//     {
-//         doc.clear();
-//         doc["e"] = "pu";
-//         setBasicInformation(doc);
-//         JsonObject data = doc.createNestedObject("d");
-//         doc["rc"] = getCurrentRobotCode();
-//         data["l"] = motor_left_pulses_counter;
-//         data["r"] = motor_right_pulses_counter;
-//         serializeJson(doc, buffer);
-//         Serial.println(buffer);
-//         sendDataFromHC12(buffer);
-//         timer.resetTimeout();
-//     }
-// }
-
-// void setBasicInformation(JsonDocument &doc)
-// {
-//     doc["t"] = type;
-// }
 
 String getCurrentRobotCode()
 {

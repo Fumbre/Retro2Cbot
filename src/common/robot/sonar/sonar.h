@@ -1,3 +1,8 @@
+/**
+ * @name interface of Sonar
+ * @author Francisco & Uraib
+ * @date 11-12-2025
+ */
 #pragma once
 #include <Arduino.h>
 #include "common/constant/sonar.h"
