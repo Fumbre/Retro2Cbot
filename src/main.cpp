@@ -7,8 +7,9 @@
 #include "maps_pogram/physical_maze/physical_maze.h"
 #include "common/robot/datasend/datasend.h"
 #include "common/tools/tests/test_sonar/test_sonar.h"
+#include "common/robot/neopixel/neopixel.h"
 
-int mapInit = 2;
+int mapInit = 1;
 
 void setup()
 {
@@ -30,8 +31,7 @@ void setup()
 }
 
 void loop()
-{
-  // testSonars();
+{ 
   switch (mapInit)
   {
   case 1:

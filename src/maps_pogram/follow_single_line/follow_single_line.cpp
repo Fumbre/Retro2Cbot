@@ -115,7 +115,7 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   case CENTER:
   {
     moveSpeed(fullSpeed, fullSpeed);
-    // turnOnAllLeds(0, 255, 0);
+    turnOnAllLeds(0, 255, 0);
     break;
   };
   case SLIGHT_LEFT:
@@ -131,19 +131,19 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
   case HARD_LEFT:
   {
     moveSpeed(fullSpeed * hardConf, fullSpeed);
-    // int index[2] = {0, 3};
-    // turnOnSomeLeds(index, 2, 255, 255, 0);
-    // int indexOff[2] = {1, 2};
-    // turnOnSomeLeds(indexOff, 2, 0, 255, 0);
+    int index[2] = {3, 0};
+    turnOnSomeLeds(index, 2, 255, 255, 0);
+    int indexOff[2] = {1, 2};
+    turnOffSomeLeds(indexOff, 2);
     break;
   };
   case HARD_RIGHT:
   {
     moveSpeed(fullSpeed, fullSpeed * hardConf);
-    // int index[2] = {1, 2};
-    // turnOnSomeLeds(index, 2, 255, 255, 0);
-    // int indexOff[2] = {0, 3};
-    // turnOnSomeLeds(indexOff, 2, 0, 255, 0);
+    int index[2] = {1, 2};
+    turnOnSomeLeds(index, 2, 255, 255, 0);
+    int indexOff[2] = {3, 0};
+    turnOffSomeLeds(indexOff, 2);
     break;
   };
   case ALL_BLACK:
