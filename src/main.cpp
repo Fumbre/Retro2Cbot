@@ -9,7 +9,7 @@
 #include "common/tools/tests/test_sonar/test_sonar.h"
 #include "common/robot/neopixel/neopixel.h"
 
-int mapInit = 2;
+int mapInit = 3;
 
 void setup()
 {
