@@ -26,13 +26,14 @@ bool mazePassed2 = false;
 // init timers
 static Timer t;
 static Timer t1;
+static Timer rotationT;
 
 void mazeLine()
 {
   // set poisition of robot
   if (!isMazeStarted2)
   {
-    if (mazeSequence2.readyToStart(2))
+    if (mazeSequence2.readyToStart(1)) // !!!change it to 2!!
     {
       isMazeStarted2 = true;
     }
@@ -42,14 +43,13 @@ void mazeLine()
   if (t1.executeOnce(0))
   {
     moveSpeed(255, 255);
-    turnOnAllLeds(0, 255, 0);
   }
 
   if (!isEndSequence2)
   {
     dataSend();
 
-    if (!mazeSequence2.start(255)) // 230
+    if (!mazeSequence2.start(255, 10)) // 230
       return;
   }
 
@@ -100,11 +100,9 @@ void mazeLine()
       break;
     case SLIGHT_LEFT:
       moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
-      turnOnAllLeds(0, 230, 0);
       break;
     case SLIGHT_RIGHT:
       moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
-      turnOnAllLeds(0, 230, 0);
       break;
     case ALL_BLACK:
       isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(62);
@@ -161,18 +159,19 @@ void rotate(int dir)
   }
   else
   {
-
     if (dir == 0)
     {
       if (!rotated)
       {
+        if (rotationT.executeOnce(100))
+        {
+          int index[2] = {1, 3};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
+        }
+
         if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
-          int index[2] = {0, 1};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
-          int indexoff[2] = {2,3};
-          turnOffSomeLeds(indexoff,2);
           return;
         }
         else
@@ -186,13 +185,15 @@ void rotate(int dir)
     {
       if (!rotated)
       {
+        if (rotationT.executeOnce(100))
+        {
+          int index[2] = {2, 0};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
+        }
+
         if (t.executeOnce(0, 150))
         {
           moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
-          int index[2] = {2, 3};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
-          int indexoff[2] = {0,1};
-          turnOffSomeLeds(indexoff,2);
           return;
         }
         else
@@ -222,6 +223,7 @@ void rotate(int dir)
     doRotationRight = false;
     doRotationLeft = false;
 
+    rotationT.resetExecuteOnce();
     t.resetTimeout();
     t.resetExecuteOnce();
   }

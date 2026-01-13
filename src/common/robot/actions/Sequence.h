@@ -27,7 +27,7 @@ private:
 
 public:
   /**
-   * @name construct function 
+   * @name construct function
    * @author Fumbre (Vladyslav)
    * @date 16-12-2025
    * @param rsData ReflectiveSensor pointer
@@ -43,7 +43,7 @@ public:
    * @author Fumbre (Vladyslav)
    * @date 16-12-2025
    * @param pos 0=>BB016, 1=>BB046, 2=>BB011
-   * 
+   *
    */
   bool readyToStart(int pos)
   {
@@ -122,7 +122,7 @@ public:
    * @details pick an object up and do a rotatation to the left
    * @return bool
    */
-  bool start(int robotSpeed)
+  bool start(int robotSpeed, int robotPulses, int goStraightTime = 300)
   {
     static Timer t;
     static Timer t1;
@@ -144,11 +144,11 @@ public:
       }
 
       // stop going forward after timeout
-      if (t1.timeout(300))
+      if (t1.timeout(goStraightTime))
       {
         if (!isRotated)
         {
-          if (didMoveLeft(robotSpeed, 9) || firstPulsesPassed)
+          if (didMoveLeft(robotSpeed, robotPulses) || firstPulsesPassed)
           {
             resetMoveLeft();
 

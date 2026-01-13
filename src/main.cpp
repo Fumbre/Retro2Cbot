@@ -8,7 +8,7 @@
 #include "common/robot/datasend/datasend.h"
 #include "common/tools/tests/test_sonar/test_sonar.h"
 
-int mapInit = 3;
+int mapInit = 2;
 
 void setup()
 {
