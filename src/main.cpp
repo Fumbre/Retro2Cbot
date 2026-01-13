@@ -44,4 +44,6 @@ void loop()
     physicalMaze();
     break;
   }
+  // int index[2] = {1,2}; //right
+  // turnOnSomeLeds(index,2,255,0,0);
 }

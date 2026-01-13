@@ -8,7 +8,7 @@ LineState lastStatus = CENTER;
 LineState currentStatus;
 
 // speed conf
-int baseSpeed2 = 255;
+int baseSpeed2 = 230;
 float slightConf2 = 0.6;
 float hardConf2 = 0.1;
 float reverseConf2 = -1;
@@ -30,6 +30,7 @@ static Timer rotationT;
 
 void mazeLine()
 {
+
   // set poisition of robot
   if (!isMazeStarted2)
   {
@@ -43,13 +44,14 @@ void mazeLine()
   if (t1.executeOnce(0))
   {
     moveSpeed(255, 255);
+    turnOnAllLeds(0, 255, 0);
   }
 
   if (!isEndSequence2)
   {
     dataSend();
 
-    if (!mazeSequence2.start(255, 10)) // 230
+    if (!mazeSequence2.start(baseSpeed2, 10)) // 230
       return;
   }
 
@@ -70,25 +72,17 @@ void mazeLine()
 
   if (!isEndSequence2)
   {
-
-    float distance = getDistanceCM_Front();
-
-    if (distance < 18)
+    if (t.interval(35, 70))
     {
-      // check if the object is still there after 30 millis
-      if (t.interval(45))
+
+      float distance = getDistanceCM_Front();
+
+      if (distance < 18)
       {
-        if (distance < 18)
-        {
-          doRotationLeft = true;
-          rotate(1);
-          return;
-        }
+        doRotationLeft = true;
+        rotate(1);
+        return;
       }
-    }
-    else
-    {
-      t.resetInterval();
     }
 
     // main maze line code
@@ -121,8 +115,8 @@ void mazeLine()
       // because Lady Maria has problems with right wheel
       if (lastStatus == CENTER)
       {
-        doRotationLeft = true;
-        rotate(1);
+        doRotationRight = true;
+        rotate(0);
       }
 
       if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
@@ -178,14 +172,20 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (t.executeOnce(0, 200)) // 150
+        if (t.executeOnce(0, 300)) // 150
         {
           moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
-          return;
+          // return;
         }
         else
         {
           rotated = true;
+        }
+
+        if (rotationT.executeOnce(0))
+        {
+          int index[2] = {1, 2};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
         }
       }
     }
@@ -194,14 +194,21 @@ void rotate(int dir)
     {
       if (!rotated)
       {
-        if (t.executeOnce(0, 150))
+
+        if (t.executeOnce(0, 300))
         {
           moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
-          return;
+          // return;
         }
         else
         {
           rotated = true;
+        }
+
+        if (rotationT.executeOnce(0))
+        {
+          int index[2] = {0, 3};
+          turnOnSomeLeds(index, 2, 255, 255, 0);
         }
       }
     }
@@ -216,6 +223,9 @@ void rotate(int dir)
         lastStatus = pattern;
         moveStopAll();
         end = true;
+        moveSpeed(baseSpeed2, baseSpeed2);
+
+        turnOnAllLeds(0, 255, 0);
       }
     }
   }
