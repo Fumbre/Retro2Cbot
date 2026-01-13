@@ -1,7 +1,7 @@
 #include "maze_line.h"
 
 // RS - reflective sensor
-ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 35);
+ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 25);
 Sequence mazeSequence2(&rsLine2);
 
 LineState lastStatus = CENTER;
@@ -9,8 +9,8 @@ LineState currentStatus;
 
 // speed conf
 int baseSpeed2 = 230;
-float slightConf2 = 0.6;
-float hardConf2 = 0.1;
+float slightConf2 = 0.7;
+float hardConf2 = 0;
 float reverseConf2 = -1;
 
 bool doRotationRight = false;
@@ -21,6 +21,7 @@ bool rotated = false;
 bool isMazeStarted2 = false;
 bool isEndSequence2 = false;
 bool mazePassed2 = false;
+bool startOnce = false;
 
 // maybe put it inside roatation function
 // init timers
@@ -37,25 +38,24 @@ void mazeLine()
     if (mazeSequence2.readyToStart(1)) // !!!change it to 2!!
     {
       isMazeStarted2 = true;
+      startOnce = true;
     }
     return;
   }
 
-  if (t1.executeOnce(0))
+  if (startOnce)
   {
-    moveSpeed(255, 255);
-    turnOnAllLeds(0, 255, 0);
+    moveSpeed(baseSpeed2, baseSpeed2);
+    startOnce = false;
   }
 
   if (!isEndSequence2)
   {
     dataSend();
 
-    if (!mazeSequence2.start(baseSpeed2, 10)) // 230
+    if (!mazeSequence2.start(220, 10)) // 230
       return;
   }
-
-  currentStatus = rsLine2.pattern();
 
   // if rotation do only rotation
   if (doRotationRight)
@@ -79,11 +79,13 @@ void mazeLine()
 
       if (distance < 18)
       {
-        doRotationLeft = true;
-        rotate(1);
+        doRotationRight = true;
+        rotate(0);
         return;
       }
     }
+
+    currentStatus = rsLine2.pattern();
 
     // main maze line code
     switch (currentStatus)
@@ -101,25 +103,35 @@ void mazeLine()
       lastStatus = CENTER;
       break;
     case SLIGHT_LEFT:
+      if (lastStatus == ALL_BLACK)
+      {
+        doRotationRight = true;
+        rotate(0);
+
+        return;
+      }
+      lastStatus = CENTER;
       moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
       break;
     case SLIGHT_RIGHT:
+      if (lastStatus == ALL_BLACK)
+      {
+        doRotationRight = true;
+        rotate(0);
+
+        return;
+      }
+      lastStatus = CENTER;
       moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
       break;
     case ALL_BLACK:
       isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(150);
+
       lastStatus = ALL_BLACK;
-      moveSpeed(baseSpeed2, baseSpeed2);
+      moveSpeed(baseSpeed2 * .8, baseSpeed2 * .9);
       break;
     case ALL_WHITE:
-      // because Lady Maria has problems with right wheel
-      if (lastStatus == CENTER)
-      {
-        doRotationRight = true;
-        rotate(0);
-      }
-
-      if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
+      if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN || lastStatus == CENTER)
       {
         doRotationRight = true;
         rotate(0);
@@ -143,6 +155,10 @@ void mazeLine()
       lastStatus = RIGHT_TURN;
       doRotationRight = true;
       rotate(0);
+      break;
+    default:
+      lastStatus = OTHER;
+
       break;
     }
   }
