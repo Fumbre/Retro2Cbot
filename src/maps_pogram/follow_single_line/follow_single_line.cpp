@@ -47,8 +47,7 @@ void followLine()
   // go only once after signal
   if (t.executeOnce(0))
   {
-    moveSpeed(255, 255);
-    turnOnAllLeds(0, 255, 0);
+    moveSpeed(230, 230);
   }
 
   // current reflective sensor patter
@@ -60,7 +59,7 @@ void followLine()
     dataSend();
 
     // wait until robot rotate after black square
-    if (!mazeSequence.start(255, 11, 180))
+    if (!mazeSequence.start(255, 8, 180))
       return;
   }
 
@@ -135,7 +134,7 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
     int index[2] = {3, 0};
     turnOnSomeLeds(index, 2, 255, 255, 0);
     int indexOff[2] = {1, 2};
-    turnOffSomeLeds(indexOff, 2);
+    turnOnSomeLeds(indexOff, 2, 0, 255, 0);
     break;
   };
   case HARD_RIGHT:
@@ -144,12 +143,12 @@ void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slig
     int index[2] = {1, 2};
     turnOnSomeLeds(index, 2, 255, 255, 0);
     int indexOff[2] = {3, 0};
-    turnOffSomeLeds(indexOff, 2);
+    turnOnSomeLeds(indexOff, 2, 0, 255, 0);
     break;
   };
   case ALL_BLACK:
   {
-    isEndSequence = mazeSequence.isDetecetingBlackSquare(65);
+    isEndSequence = mazeSequence.isDetecetingBlackSquare(80);
     moveSpeed(fullSpeed, fullSpeed);
     break;
   };

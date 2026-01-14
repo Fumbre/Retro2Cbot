@@ -51,6 +51,7 @@ public:
     // the easiest approach to start sequence
     if (pos == 1)
     {
+      return true;
       if (t.intervalStart(100))
       {
         Serial.print(getDistanceCM_Front());

@@ -49,7 +49,7 @@ void obstacleAvoidance(int speed)
   case 1:
     moveSpeed(speed, speed);
 
-    if (t.interval(100))
+    if (t.interval(150))
     { // after 100 ms
       step++;
       t.resetInterval();
@@ -60,7 +60,7 @@ void obstacleAvoidance(int speed)
   case 2:
     moveSpeed(speed, -150);
 
-    if (t.interval(150)) // 250
+    if (t.interval(100)) // 250
     {                    // after 200 ms
       step++;
       t.resetInterval();

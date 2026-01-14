@@ -7,16 +7,22 @@
 #include "physical_maze.h"
 
 const int FWD_SPEED = 230;
-const int TURN_SPEED = 210;
+const int TURN_SPEED = 180;
 
-const int TURN_90_MS = 450;
+const int TURN_90_MS = 520;
+const int TURN_180_MS = 850;
+const int FORWARD_TIME_MS = 600;
+const int REVERSE_TIME_MS = 600; // Increased to ensure it clears the wall
+const int CHECK_PAUSE_MS = 250;
 
-const int FORWARD_TIME_MS = 700;
-const int CHECK_PAUSE_MS = 200;
-
-const float WALL_DIST = 18.0;
-const float SONAR_MIN = 2.0;
+const float WALL_DIST = 16.0;
 const float EMERGENCY_STOP_DIST = 10.0;
+
+const float MAX_DIF = 2.0;
+
+float lastF = -1;
+float lastR = -1;
+float lastL = -1;
 
 enum MazeState
 {
@@ -24,16 +30,31 @@ enum MazeState
     MAZE_CHECK,
     MAZE_TURN_LEFT_90,
     MAZE_TURN_RIGHT_90,
-    MAZE_TURN_180
+    MAZE_TURN_180,
+    MAZE_REVERSE
 };
 
 int mazeState = MAZE_FORWARD_TIMED;
 static Timer actionTimer;
 
+// The "Snapshots"
+float distBeforeMove = -1;
+
+// RS - reflective sensor
+ReflectiveSensor rsLine3(PINS_RS, PINS_RS_LENGTH, 200, 25);
+Sequence mazeSequence3(&rsLine3);
+
+// maze variables
+bool isMazeStarted3 = false;
+bool isEndSequence3 = false;
+bool mazePassed3 = false;
+bool startOnce2 = true;
+
 bool turn180Left = true;
 
 void physicalMazeSetup()
 {
+    buildHC12Connection();
     setupSonar();
     setupMotor();
     setupGripper();
@@ -41,21 +62,97 @@ void physicalMazeSetup()
 
 void physicalMaze()
 {
-    solvingPhysicalMaze();
-}
+    static Timer t;
 
+    // set poisition of robot
+    if (!isMazeStarted3)
+    {
+        if (mazeSequence3.readyToStart(1))
+        {
+            isMazeStarted3 = true;
+        }
+        return;
+    }
+
+    if (startOnce2)
+    {
+        moveSpeed(FWD_SPEED, FWD_SPEED);
+        startOnce2 = false;
+    }
+
+    if (!isEndSequence3)
+    {
+        if (!mazeSequence3.start(230, 9, 280))
+            return;
+    }
+
+    if (!isEndSequence3)
+    {
+
+        LineState currentStatus = rsLine3.pattern();
+
+        switch (currentStatus)
+        {
+
+        case CENTER:
+            moveSpeed(FWD_SPEED, FWD_SPEED);
+            break;
+
+        case SLIGHT_LEFT:
+            moveSpeed(FWD_SPEED * .8, FWD_SPEED);
+            break;
+
+        case SLIGHT_RIGHT:
+            moveSpeed(FWD_SPEED, FWD_SPEED * .8);
+            break;
+        case HARD_LEFT:
+        {
+            moveSpeed(FWD_SPEED * 0, FWD_SPEED);
+            break;
+        };
+        case HARD_RIGHT:
+        {
+            moveSpeed(FWD_SPEED, FWD_SPEED * 0);
+            break;
+        };
+
+        case ALL_WHITE:
+            solvingPhysicalMaze();
+            break;
+        case ALL_BLACK:
+            isEndSequence3 = mazeSequence3.isDetecetingBlackSquare(80);
+
+            break;
+        }
+    }
+
+    if (isEndSequence3)
+    {
+        mazeSequence3.end(&mazePassed3, "BB011");
+    }
+}
 void solvingPhysicalMaze()
 {
     switch (mazeState)
     {
-    // forward
+
     case MAZE_FORWARD_TIMED:
+        // Snapshot 1: Right when the state starts
+        if (distBeforeMove < 0)
+        {
+            distBeforeMove = getDistanceCM_Front();
+            actionTimer.resetTimeout();
+        }
+
         if (!actionTimer.timeout(FORWARD_TIME_MS))
         {
-            if (getDistanceCM_Front() < EMERGENCY_STOP_DIST)
+            float currentF = getDistanceCM_Front();
+
+            // Emergency stop if we get too close
+            if (currentF < EMERGENCY_STOP_DIST)
             {
                 moveStopAll();
-                actionTimer.resetTimeout();
+                distBeforeMove = -1;
                 mazeState = MAZE_CHECK;
             }
             else
@@ -65,50 +162,94 @@ void solvingPhysicalMaze()
         }
         else
         {
+            // TIMER ENDED: Snapshot 2
             moveStopAll();
+            float distAfterMove = getDistanceCM_Front();
+
+            // LOGIC: If we traveled less than 4cm in 600ms, we are DEFINITELY stuck.
+            // (A healthy robot should move ~15-20cm in this time)
+            if (abs(distBeforeMove - distAfterMove) < 4.0 && distAfterMove < 30.0)
+            {
+                mazeState = MAZE_REVERSE;
+            }
+            else
+            {
+                mazeState = MAZE_CHECK;
+            }
+
+            distBeforeMove = -1; // Reset for next time
             actionTimer.resetTimeout();
-            mazeState = MAZE_CHECK;
         }
         break;
 
-    // check
     case MAZE_CHECK:
     {
+        moveStopAll();
+        delay(CHECK_PAUSE_MS);
         float r = getDistanceCM_Right();
         float f = getDistanceCM_Front();
         float l = getDistanceCM_Left();
 
-        // right
-        if (r > WALL_DIST)
+        if (lastF < 0)
         {
-            mazeState = MAZE_TURN_RIGHT_90;
+            lastF = f;
+            lastR = r;
+            lastL = l;
         }
-        // front
-        else if (f > WALL_DIST)
+
+        // only reverse if passed grace period
+        if (abs(f - lastF) < MAX_DIF && abs(l - lastL) < MAX_DIF && abs(r - lastR) < MAX_DIF)
         {
-            mazeState = MAZE_FORWARD_TIMED;
+            actionTimer.resetTimeout();
+            mazeState = MAZE_REVERSE;
         }
-        // left
-        else if (l > WALL_DIST)
-        {
-            mazeState = MAZE_TURN_LEFT_90;
-        }
-        // 3 walls 
         else
         {
-            turn180Left = (l > r);
-            mazeState = MAZE_TURN_180;
+            // right free
+            if (r > WALL_DIST)
+            {
+                mazeState = MAZE_TURN_RIGHT_90;
+            }
+            else if (f > WALL_DIST)
+            { // front free
+                mazeState = MAZE_FORWARD_TIMED;
+            }
+            else if (l > WALL_DIST)
+            { // left free
+                mazeState = MAZE_TURN_LEFT_90;
+            }
+            else
+            {
+                mazeState = MAZE_TURN_180; // 3 walls
+            }
         }
+
+        // update last values
+        lastF = f;
+        lastL = l;
+        lastR = r;
 
         actionTimer.resetTimeout();
         break;
     }
 
+    case MAZE_REVERSE:
+        if (!actionTimer.timeout(REVERSE_TIME_MS))
+        {
+            moveStabilized(-FWD_SPEED, -FWD_SPEED);
+        }
+        else
+        {
+            moveStopAll();
+            actionTimer.resetTimeout();
+            // Force a turn so it doesn't just hit the same wall again
+            mazeState = MAZE_TURN_LEFT_90;
+        }
+        break;
+
     case MAZE_TURN_LEFT_90:
         if (!actionTimer.timeout(TURN_90_MS))
-        {
             moveStabilized(-TURN_SPEED, TURN_SPEED);
-        }
         else
         {
             moveStopAll();
@@ -119,9 +260,7 @@ void solvingPhysicalMaze()
 
     case MAZE_TURN_RIGHT_90:
         if (!actionTimer.timeout(TURN_90_MS))
-        {
             moveStabilized(TURN_SPEED, -TURN_SPEED);
-        }
         else
         {
             moveStopAll();
@@ -131,21 +270,13 @@ void solvingPhysicalMaze()
         break;
 
     case MAZE_TURN_180:
-        if (turn180Left)
-        {
-            if (didMoveLeft(TURN_SPEED, 22))
-            {
-                resetMoveLeft();
-                mazeState = MAZE_FORWARD_TIMED;
-            }
-        }
+        if (!actionTimer.timeout(TURN_180_MS))
+            moveStabilized(TURN_SPEED, -TURN_SPEED);
         else
         {
-            if (didMoveRight(TURN_SPEED, 22))
-            {
-                resetMoveRight();
-                mazeState = MAZE_FORWARD_TIMED;
-            }
+            moveStopAll();
+            actionTimer.resetTimeout();
+            mazeState = MAZE_CHECK;
         }
         break;
     }
