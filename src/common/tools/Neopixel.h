@@ -1,9 +1,13 @@
 /**
  * @name class of Neopixels
+ * @author Sunny
+ * @date 15-12-2025
  */
 
 #pragma once
+
 #include <Arduino.h>
+
 #define MAX_COLOUR_VALUE 255
 
 struct RGB
@@ -19,6 +23,7 @@ private:
   int PIN_NI;             // data pin
   int NUMBER_OF_LED;      // number of led
   RGB *color;             // RGB color pointer
+  RGB *lastColor;         // last color pointer
   volatile uint8_t *port; // Arduino pin pointers (PORTD = D0~D7, PORTB = D8~D13, PORTC = A0~A7 )
   uint8_t bitMask;        // the position binary code of Arduino pins
 
@@ -75,12 +80,7 @@ private:
    */
   void sendBytes(uint8_t *ptr, int count)
   {
-    uint8_t b;
-    uint8_t bit;
-    uint8_t next = 0; 
-    uint8_t hi = bitMask;
-    uint8_t lo = 0;
-
+    uint8_t b, bit, next, hi = bitMask, lo = 0;
     bit = 8;
     b = *ptr++;
     asm volatile("head20%=:\n\t"            // loop 1 byte => while(bit>0) {
@@ -104,7 +104,7 @@ private:
                  "st %a[port], %[lo]\n\t"   // digitalWrite(pin, LOW)
                  "nop\n\t"
                  "sbiw %[count], 1\n\t" // count--
-                 "brne head20%=\n\t" : [port] "+e"(port), [byte] "+r"(b), [bit] "+r"(bit), [next] "=r"(next), [count] "+w"(count) : [ptr] "e"(ptr), [hi] "r"(hi), [lo] "r"(lo));
+                 "brne head20%=\n\t" : [port] "+e"(port), [byte] "+r"(b), [bit] "+r"(bit), [next] "+r"(next), [count] "+w"(count) : [ptr] "e"(ptr), [hi] "r"(hi), [lo] "r"(lo));
     // brne head20% go back to loop beginning
   }
 
@@ -122,10 +122,12 @@ public:
     PIN_NI = dataPin;
     NUMBER_OF_LED = numberOfLeds;
     color = new RGB[NUMBER_OF_LED];
+    lastColor = new RGB[NUMBER_OF_LED];
     // turn off leds
     for (int i = 0; i < NUMBER_OF_LED; i++)
     {
       color[i] = {0, 0, 0};
+      lastColor[i] = {0, 0, 0};
     }
   }
 
@@ -138,6 +140,7 @@ public:
   ~Neopixel()
   {
     delete[] color;
+    delete[] lastColor;
   }
 
   /**
@@ -206,11 +209,14 @@ public:
    */
   void show()
   {
+    if (!canShow())
+      return;
+    memcpy(lastColor, color, NUMBER_OF_LED * sizeof(RGB));
     noInterrupts();
     sendBytes((uint8_t *)color, NUMBER_OF_LED * 3);
-    interrupts();
     // resetting signal, In WS2812B, if low voltage last 50µs at least, WS2812B should get last LED color status
     delayMicroseconds(300);
+    interrupts();
   }
 
   /**
@@ -227,5 +233,24 @@ public:
   {
     RGB rgb = checkRGBvalue(R, G, B);
     color[index] = rgb;
+  }
+
+  /**
+   * @name canShow
+   * @author Sunny
+   * @date 27-11-2025
+   */
+  bool canShow()
+  {
+    bool flag = false;
+    for (int i = 0; i < NUMBER_OF_LED; i++)
+    {
+      if (color[i].R != lastColor[i].R || color[i].G != lastColor[i].G || color[i].B != lastColor[i].B)
+      {
+        flag = true;
+        break;
+      }
+    }
+    return flag;
   }
 };

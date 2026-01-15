@@ -1,82 +1,106 @@
-#include "test_basic_movements.h"
+// #include "test_basic_movements.h"
 
-Timer timestampTestBasicMovementForward;
-Timer timestampTestBasicMovementForward1;
-Timer timestampTestBasicMovementForward2;
+// enum BasicMovementState {
+//   MOVE_FORWARD,
+//   MOVE_BACKWARD,
+//   MOVE_FORWARD_SHORT,
+//   TURN_RIGHT_1,
+//   TURN_RIGHT_2,
+//   TURN_LEFT_1,
+//   TURN_LEFT_2,
+//   MOVE_FORWARD_LONG,
+//   ROTATE_LEFT_CHECK,
+//   DONE
+// };
 
-Timer timestampTestBasicMovementBackward;
+// BasicMovementState currentState = MOVE_FORWARD;
+// Timer stateTimer;
 
-Timer timestampTestBasicMovementRight;
-Timer timestampTestBasicMovementRight1;
+// void testBasicMovement() {
 
-Timer timestampTestBasicMovementLeft;
-Timer timestampTestBasicMovementLeft1;
+//   switch (currentState) {
 
-Timer timestampTestBasicMovementRotateLeft;
+//     case MOVE_FORWARD:
+//       moveStabilized(240, 240);
 
-Timer timestampTestBasicMovementStopMotors;
+//       if (stateTimer.executeOnce(3000)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = MOVE_BACKWARD;
+//       }
+//       break;
 
-/**
- * @name testBasicMovement
- * @author Fumbre (Vladyslav)
- * @date 21-11-2025
- * @details make test for basic movements
- */
-void testBasicMovement()
-{
-  if (timestampTestBasicMovementForward.executeOnce(0, 3000))
-  {
-    moveStabilized(240, 240);
-    // moveForward(100);
-  }
+//     case MOVE_BACKWARD:
+//       moveStabilized(-240, -240);
 
-  if (timestampTestBasicMovementBackward.executeOnce(1000 + 2000, 3000))
-  {
-    moveStabilized(-240, -240);
-    // moveBackward(100);
-  }
+//       if (stateTimer.executeOnce(3000)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = MOVE_FORWARD_SHORT;
+//       }
+//       break;
 
-  if (timestampTestBasicMovementForward1.executeOnce(2000 + 4000, 500))
-  {
-    moveStabilized(240, 240);
-    // moveForward(100);
-  }
+//     case MOVE_FORWARD_SHORT:
+//       moveStabilized(240, 240);
 
-  if (timestampTestBasicMovementRight.executeOnce(2500 + 4000))
-  {
-    writeSpeed(240, 120);
-  }
+//       if (stateTimer.executeOnce(500)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = TURN_RIGHT_1;
+//       }
+//       break;
 
-  if (timestampTestBasicMovementRight1.executeOnce(3500 + 4000))
-  {
-    writeSpeed(240, 130);
-  }
+//     case TURN_RIGHT_1:
+//       moveStabilized(240, 120);
 
-  if (timestampTestBasicMovementLeft.executeOnce(3700 + 4000))
-  {
-    writeSpeed(120, 240);
-  }
+//       if (stateTimer.executeOnce(1000)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = TURN_RIGHT_2;
+//       }
+//       break;
 
-  if (timestampTestBasicMovementLeft1.executeOnce(4000 + 4000))
-  {
-    writeSpeed(125, 240);
-  }
+//     case TURN_RIGHT_2:
+//       moveStabilized(240, 130);
 
-  if (timestampTestBasicMovementForward2.executeOnce(5500 + 4000, 2000))
-  {
-    moveStabilized(240, 240);
-    // moveForward(100);
-  }
+//       if (stateTimer.executeOnce(1000)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = TURN_LEFT_1;
+//       }
+//       break;
 
-  if (timestampTestBasicMovementRotateLeft.timeout(7500 + 4000))
-  {
-    // moveStabilized(240, -240);
+//     case TURN_LEFT_1:
+//       moveStabilized(120, 240);
 
-    // moveForward(100);
+//       if (stateTimer.executeOnce(300)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = TURN_LEFT_2;
+//       }
+//       break;
 
-    if (didMoveLeft(255, 22))
-    {
-      moveStopAll();
-    }
-  }
-}
+//     case TURN_LEFT_2:
+//       moveStabilized(125, 240);
+
+//       if (stateTimer.executeOnce(300)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = MOVE_FORWARD_LONG;
+//       }
+//       break;
+
+//     case MOVE_FORWARD_LONG:
+//       moveStabilized(240, 240);
+
+//       if (stateTimer.executeOnce(2000)) {
+//         stateTimer.resetExecuteOnce();
+//         currentState = ROTATE_LEFT_CHECK;
+//       }
+//       break;
+
+//     case ROTATE_LEFT_CHECK:
+
+//       if (didMoveLeft(255, 22)) {
+//         moveStopAll();
+//         currentState = DONE;
+//       }
+//       break;
+
+//     case DONE:
+//       break;
+//   }
+// }

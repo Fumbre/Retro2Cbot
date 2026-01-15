@@ -39,6 +39,7 @@ int resetMoveRight()
  */
 bool didMoveRight(int speed, int pulses)
 {
+
   if (didMoveRightTimer.executeOnce(0))
   {
     prevPulsesLeft = motor_left_pulses_counter;
@@ -52,7 +53,7 @@ bool didMoveRight(int speed, int pulses)
   }
   else
   {
-    moveStabilized(speed, -speed);
+    moveStabilized(speed, speed * -1);
     return false;
   }
 }
@@ -68,6 +69,7 @@ bool didMoveRight(int speed, int pulses)
  */
 bool didMoveLeft(int speed, int pulses)
 {
+
   if (didMoveLeftTimer.executeOnce(0))
   {
     prevPulsesRigt = motor_right_pulses_counter;
@@ -81,7 +83,7 @@ bool didMoveLeft(int speed, int pulses)
   }
   else
   {
-    moveStabilized(-speed, speed);
+    moveStabilized(speed * -1, speed);
     return false;
   }
 }
@@ -170,11 +172,13 @@ void moveStabilized(int speedLeft, int speedRight)
 
   switch (step)
   {
+
   case 0:
     if (stampForward.interval(20))
     {
       writeSpeed(speedLeft, speedRight);
     }
+
     if (stampForward.executeOnce(40))
     {
       step++;
@@ -188,6 +192,7 @@ void moveStabilized(int speedLeft, int speedRight)
       {
         writeSpeed(speedLeft, speedRight / 1.8);
       }
+
       if (stampRotateLeft.executeOnce(20))
       {
         step++;
@@ -237,6 +242,7 @@ void moveStabilized(int speedLeft, int speedRight)
  */
 void writeSpeed(int speedLeft, int speedRight)
 {
+
   for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
   {
     analogWrite(PINS_MOTOR[i], LOW);

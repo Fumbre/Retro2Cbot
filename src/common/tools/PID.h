@@ -2,10 +2,9 @@
  * @name PID class
  * @author Sunny
  * @date 27-11-2025
- */
+*/
 
-class PID
-{
+class PID {
 private:
   float kp;            // Proportional factor
   float ki;            // Integral factor
@@ -22,9 +21,9 @@ public:
    * @param kp Proportional factor
    * @param ki Integral factor
    * @param kd Derivative factor
-   */
-  PID(float kp, float ki, float kd)
-  {
+  */
+  
+  PID(float kp, float ki, float kd) {
     this->kp = kp;
     this->ki = ki;
     this->kd = kd;
@@ -37,15 +36,19 @@ public:
    * @param v1 first value
    * @param v2 second value
    * @return correction
-   */
-  float caculateCorrection(float v1, float v2)
+  */
+  
+  float caculateCorrection(float v1, float v2) 
   {
     // caculate error
     float error = v1 - v2;
+
     // plus error to integeral
     integral += error;
+
     // caculate derivative
     float derivative = (error - lastError);
+
     // caculate correction
     float correction = kp * error + ki * integral + kd * derivative;
     return correction;

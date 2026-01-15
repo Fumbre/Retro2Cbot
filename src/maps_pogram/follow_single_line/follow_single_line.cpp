@@ -1,159 +1,157 @@
+/**
+ * @name following line
+ * @authors Fumbre (Vladyslav) & Aria & Sunny
+ * @date 15-12-2025
+ */
 #include "follow_single_line.h"
 
 // RS - reflective sensor
 ReflectiveSensor rsLine(PINS_RS, PINS_RS_LENGTH, 220, 35);
-StartSequence entryPoint(&rsLine);
+Sequence mazeSequence(&rsLine);
 
-// variable to send data to next robot when maze is passed
-bool mazePassed = false;
-
+// maze variables
+bool mazePassed = false; // send data to next robot when maze is passed
 // end sequence variable
 bool isEndSequence = false;
+bool isMazeStarted = false;
 
 // variable for avoiding
 bool safeZone = true;
 
+// for future possible to make it argument of function
+int fullSpeed = 255;
+float slightConf = .8; // try .8
+float hardConf = -.5;  // -.4
+
 /**
  * @name followLine
- * @authors Fumbre (Vladyslav) & Aria & Francisco
+ * @authors Fumbre (Vladyslav) & Aria & Sunny
  * @date 15-12-2025
  */
+
+static Timer t;
+
 void followLine()
 {
-  // init timers
-  static Timer t;
-  static Timer t1;
+  // wait until recieve a signal to start a maze
+  if (!isMazeStarted)
+  {
+    // set poisition of robot to start properly in order
+    if (mazeSequence.readyToStart(1))
+    {
+      isMazeStarted = true;
+    }
+    return;
+  }
 
-  // set poisition of robot
+  // go only once after signal
   if (t.executeOnce(0))
   {
-    entryPoint.onPossition(1); // this is first robot so it will go immediately
+    moveSpeed(230, 230);
   }
 
+  // current reflective sensor patter
+  LineState currnetPattern = rsLine.pattern();
+
+  // if it's not end of maze
   if (!isEndSequence)
   {
-    if (!entryPoint.pickUp())
+    dataSend();
+
+    // wait until robot rotate after black square
+    if (!mazeSequence.start(255, 8, 180))
       return;
   }
-
-  // previous pattern | if robot is too fast keep going with previous status |
-  LineState prevPattern;
-
-  // for future possible to make it argument of function
-  int fullSpeed = 255;
-  float slightConf = .6;
-  float hardConf = -.7;
-
-  // current patter
-  LineState currnetPattern = rsLine.pattern();
 
   // if it's not end of sequence do it
   if (!isEndSequence)
   {
-
-    float distance = getDistanceCM_Front();
-
     if (!avoiding)
     {
-
-      if (safeZone && distance <= 20 && distance >= 2)
+      if (t.interval(35, 75))
       {
-        safeZone = false;       // exiting safe zone
-        obstacleAvoidance(255); // first step to avoid
-      }
-      else
-      {
-        if (distance > 20)
-          safeZone = true; // no objects ahead
+        float distance = getDistanceCM_Front();
 
-        // main code
-        switch (currnetPattern)
+        if (safeZone && distance <= 13 && distance >= 2)
         {
-        case CENTER:
-        {
-          moveSpeed(fullSpeed, fullSpeed);
-          prevPattern = CENTER;
-          Serial.println("center");
-          break;
-        };
-        case SLIGHT_LEFT:
-        {
-          moveSpeed(fullSpeed * slightConf, fullSpeed);
-          prevPattern = SLIGHT_LEFT;
-          Serial.println("SLIGHT_LEFT");
-          break;
-        };
-        case SLIGHT_RIGHT:
-        {
-          moveSpeed(fullSpeed, fullSpeed * slightConf);
-          prevPattern = SLIGHT_RIGHT;
-
-          Serial.println("SLIGHT_RIGHT");
-          break;
-        };
-        case HARD_LEFT:
-        {
-          moveSpeed(fullSpeed * hardConf, fullSpeed);
-          prevPattern = HARD_LEFT;
-          Serial.println("HARD_LEFT");
-          break;
-        };
-        case HARD_RIGHT:
-        {
-          moveSpeed(fullSpeed, fullSpeed * hardConf);
-
-          prevPattern = HARD_RIGHT;
-          Serial.println("HARD_RIGHT");
-          break;
-        };
-          // we don't need case for all white
-          // case ALL_WHITE:
-          // {
-          //   moveSpeed(fullSpeed * slightConf, fullSpeed * slightConf);
-
-          //   Serial.println("ALL_WHITE");
-          //   break;
-          // };
-
-        case ALL_BLACK:
-        {
-          isEndSequence = entryPoint.isDetecetingBlackSquare(62);
-
-          moveSpeed(fullSpeed, fullSpeed);
-
-          Serial.println("ALL_BLACK");
-          break;
-        };
-
-        default:
-        {
-          // if no match go to previous action
-          currnetPattern = prevPattern;
-          break;
+          safeZone = false;
+          // check if the object is still there after 30 millis
+          obstacleAvoidance(255); // first step to avoid
+          return;
         }
+
+        if (distance > 13)
+        {
+          safeZone = true;
         }
       }
     }
     else
     {
       obstacleAvoidance(255); // continue avoiding
+      return;
     }
+
+    // main code
+    solvingFollowSingleLine(currnetPattern, fullSpeed, slightConf, hardConf);
   }
-  else
+
+  if (isEndSequence)
   {
-    // this is end of sequence (black square)
-    if (t1.timeout(500)) // after 500ms uncatch an object
+    if (!t.timeout(1000))
     {
-      gripperUnCatch();
+      dataSend();
     }
-    if (!t.timeout(1000)) // go back during 1s
-    {
-      moveSpeed(fullSpeed * hardConf, fullSpeed * hardConf);
-    }
-    else // after 1s stop all motors
-    {
-      stopMotors();
-    }
+    mazeSequence.end(&mazePassed, "BB016");
+  }
+}
+
+// the buisness logic of follow single line
+void solvingFollowSingleLine(LineState currnetPattern, int fullSpeed, float slightConf, float hardConf)
+{
+  // depending on current pattern use logic
+  switch (currnetPattern)
+  {
+  case CENTER:
+  {
+    moveSpeed(fullSpeed, fullSpeed);
+    turnOnAllLeds(0, 255, 0);
+    break;
+  };
+  case SLIGHT_LEFT:
+  {
+    moveSpeed(fullSpeed * slightConf, fullSpeed);
+    break;
+  };
+  case SLIGHT_RIGHT:
+  {
+    moveSpeed(fullSpeed, fullSpeed * slightConf);
+    break;
+  };
+  case HARD_LEFT:
+  {
+    moveSpeed(fullSpeed * hardConf, fullSpeed);
+    int index[2] = {3, 0};
+    turnOnSomeLeds(index, 2, 255, 255, 0);
+    int indexOff[2] = {1, 2};
+    turnOnSomeLeds(indexOff, 2, 0, 255, 0);
+    break;
+  };
+  case HARD_RIGHT:
+  {
+    moveSpeed(fullSpeed, fullSpeed * hardConf);
+    int index[2] = {1, 2};
+    turnOnSomeLeds(index, 2, 255, 255, 0);
+    int indexOff[2] = {3, 0};
+    turnOnSomeLeds(indexOff, 2, 0, 255, 0);
+    break;
+  };
+  case ALL_BLACK:
+  {
+    isEndSequence = mazeSequence.isDetecetingBlackSquare(80);
+    moveSpeed(fullSpeed, fullSpeed);
+    break;
+  };
   }
 }
 

@@ -1,69 +1,74 @@
+/**
+ * @name Sonar Module
+ * @author Francisco & Uraib
+ * @date 11-12-2025
+ */
+
 #include "sonar.h"
 
-/**
- * @name setupSonar
- * @author Francisco
- * @date 15-11-2025
- * @details Initializes the ultrasonic sensor (HC-SR04) by configuring the TRIG
- * pin as OUTPUT and the ECHO pin as INPUT. This setup enables the robot to send
- * ultrasonic pulses and detect their reflections for distance measurement.
- */
+// Basically screaming & listening analogy for distance measurement
 
 void setupSonar()
 {
-
 #if defined(BB011)
   pinMode(PIN_SONAR_TRIG, OUTPUT);      // Shared Trigger
-  pinMode(PIN_SONAR_ECHO, INPUT);       // Front Echo
+  pinMode(PIN_SONAR_ECHO_FRONT, INPUT); // Front Echo
   pinMode(PIN_SONAR_ECHO_RIGHT, INPUT); // Right Echo
   pinMode(PIN_SONAR_ECHO_LEFT, INPUT);  // Left
 #else
-  pinMode(PIN_SONAR_TRIG, OUTPUT); // Trigger
-  pinMode(PIN_SONAR_ECHO, INPUT);  // Echo
+  pinMode(PIN_SONAR_TRIG, OUTPUT);      // Trigger
+  pinMode(PIN_SONAR_ECHO_FRONT, INPUT); // Echo
 #endif
 }
 
 float measureDistance(int echo)
 {
-
-  // Clean trigger pulse
+  #if defined(BB011)
+  delay(35);
+  #endif
   digitalWrite(PIN_SONAR_TRIG, LOW);
   delayMicroseconds(2);
   digitalWrite(PIN_SONAR_TRIG, HIGH);
   delayMicroseconds(10);
   digitalWrite(PIN_SONAR_TRIG, LOW);
 
-  // Read the bounce back
-  unsigned long duration = pulseIn(echo, HIGH, 25000); // timeout 25ms
+  // Reduced timeout to 15000us (~250cm range) for faster decision making
+  unsigned long duration = pulseIn(echo, HIGH, 15000);
 
-  // If no echo (0) or out of range, return 400
-  if (duration == 0 || duration > 23200)
+  if (duration == 0)
     return 400.0;
 
-  return duration * 0.034 / 2;
+  return duration * 0.0343 / 2;
 }
 
 float getDistanceCM_Front()
 {
-  return measureDistance(PIN_SONAR_ECHO);
+  float distance = measureDistance(PIN_SONAR_ECHO_FRONT);
+  // record front sonar distance
+  sonarSendDatafrontDistance = distance;
+  return distance;
 }
 
 // two additional sonar for BB011 robot
 float getDistanceCM_Right()
 {
 #if defined(BB011)
-  return measureDistance(PIN_SONAR_ECHO_RIGHT);
+  float distance = measureDistance(PIN_SONAR_ECHO_RIGHT);
+  sonarSendDataRightDistance = distance;
+  return distance;
 #else
-  return 0;
+  return 400.0;
 #endif
 }
 
 float getDistanceCM_Left()
 {
 #if defined(BB011)
-  return measureDistance(PIN_SONAR_ECHO_LEFT);
+  float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
+  sonarSendDataLeftDistance = distance;
+  return distance;
 #else
-  return 0;
+  return 400.0;
 #endif
 }
 
@@ -71,17 +76,17 @@ float getDistanceCM_Left()
 bool isObstacleFront(float limit)
 {
   float d = getDistanceCM_Front();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
 
 bool isObstacleRight(float limit)
 {
   float d = getDistanceCM_Right();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }
 
 bool isObstacleLeft(float limit)
 {
   float d = getDistanceCM_Left();
-  return (d > 1.0 && d <= limit);
+  return (d > 2.0 && d <= limit);
 }

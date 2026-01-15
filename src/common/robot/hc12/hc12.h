@@ -4,6 +4,7 @@
  * @date 15-12-2025
  */
 #pragma once
+
 #include "common/constant/hc12.h"
 #include <Arduino.h>
 #include <SoftwareSerial.h>

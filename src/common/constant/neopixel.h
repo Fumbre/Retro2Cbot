@@ -1,11 +1,15 @@
+/**
+ * @name constant of Neopixels
+ * @author Sunny
+ * @date 15-12-2025
+ */
 #pragma once
 #include "common/constant/board.h"
-
-// PIN of data input
 
 // ======================BB011=======================
 #ifdef BB011
 
+// NI = NeoPixel Input
 const int PIN_NI = 5;
 
 #endif
@@ -14,6 +18,7 @@ const int PIN_NI = 5;
 // ======================BB016======================
 #ifdef BB016
 
+// NI = NeoPixel Input
 const int PIN_NI = 4;
 
 #endif
@@ -22,6 +27,7 @@ const int PIN_NI = 4;
 // ======================BB046=======================
 #ifdef BB046
 
+// NI = NeoPixel Input
 const int PIN_NI = 5;
 
 #endif
