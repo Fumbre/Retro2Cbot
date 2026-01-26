@@ -48,7 +48,7 @@ public:
 
     // caculate derivative
     float derivative = (error - lastError);
-
+    lastError = error;
     // caculate correction
     float correction = kp * error + ki * integral + kd * derivative;
     return correction;
