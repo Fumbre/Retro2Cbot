@@ -55,12 +55,12 @@ void gripper(int pulseMicroseconds)
 void gripperCatch()
 {
 
-    gripper(1000); // Close the gripper
-    gripperStatus = true;
+    gripper(1000);        // Close the gripper
+    gripperStatus = true; // update global variable
 }
 
 void gripperUnCatch()
 {
-    gripper(2000); // Open the gripper
-    gripperStatus = false;
+    gripper(2000);         // Open the gripper
+    gripperStatus = false; // update global variable
 }

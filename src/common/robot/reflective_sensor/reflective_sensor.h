@@ -74,7 +74,6 @@ enum LineState
  * @authors Uraib
  * @date 04-12-2025
  */
-
 struct ReflectiveRead
 {
 
@@ -106,6 +105,11 @@ struct ReflectiveRead
     }
 };
 
+/**
+ * @name ReflectiveSensor
+ * @authors Fumbre (Vladyslav)
+ * @date 08-12-2025
+ */
 class ReflectiveSensor
 {
 
@@ -122,7 +126,7 @@ private:
     bool isBlackCalibrated = false;        // is Black collor fully calibrated
 
     /**
-     * @name ReflectiveRead
+     * @name getRSValue
      * @authors Fumbre (Vladyslav)
      * @date 04-12-2025
      * @return ReflectiveRead array (analog read data of reflective sensor)
@@ -171,6 +175,7 @@ private:
 
         if (this->blackCalibratedLength < this->pins_rs_length)
         {
+            // 1 0
             uint8_t reflectiveReadChange = this->getLineDifference(this->reflectiveReadInit, this->threshold);
 
             for (int i = 0; i < pins_rs_length; i++)
@@ -196,12 +201,12 @@ private:
      * @authors Fumbre (Vladyslav) & Sunny
      * @date 04-12-2025
      * @param compare use ReflectiveRead pointer (array) and compare it with current data
-     * @param reflectiveDifferenceMargin use this value to not consider small difference, currentRS is 700 + reflectiveDifferenceMargin > compare
+     * @param thresholdMargin use this value to not consider small difference, currentRS is 700 + thresholdMargin > compare
      * @return uint8_t as 1 for true 0 for false
      * @details return line status as BIN
      */
 
-    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMargin)
+    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int thresholdMargin)
     {
         uint8_t status = 0;
 
@@ -209,7 +214,8 @@ private:
         this->currentSensors = getRSValue();
         for (int i = 0; i < pins_rs_length; i++)
         {
-            if (currentSensors[i].mean + reflectiveDifferenceMargin >= compare[i].mean)
+
+            if (currentSensors[i].mean + thresholdMargin >= compare[i].mean)
             {
                 status |= (128 >> i);
             }
@@ -227,10 +233,10 @@ private:
      * @date 10-12-2025
      * @details get first line status with difference
      * @param compare (ReflectiveRead instecnce, to compare with current surface data)
-     * @param reflectiveDifference(how much difference will be okay as the same data)
-     * @return uint8_t if there's some difference return 1 otherwise 0
+     * @param threshold(how much difference will be okay as the same data)
+     * @return uint8_t if there's some difference return 0 otherwise 1
      */
-    uint8_t getLineDifference(ReflectiveRead *compare, int reflectiveDifference)
+    uint8_t getLineDifference(ReflectiveRead *compare, int threshold)
     {
         uint8_t status = 0;
 
@@ -240,14 +246,16 @@ private:
         for (int i = 0; i < pins_rs_length; i++)
         {
             if ((
-                    (currentSensors[i].mean - reflectiveDifference <= compare[i].mean) &&
-                    (currentSensors[i].mean + reflectiveDifference >= compare[i].mean)))
+                    // 451 - 150 ;  300; false 300 gap( 150 + 300 - 150) == true 50  450
+                    // 400 + 150 ; > 300; true
+                    (currentSensors[i].mean - threshold <= compare[i].mean) &&
+                    (currentSensors[i].mean + threshold >= compare[i].mean)))
             {
-                status |= (128 >> i);
+                status |= (128 >> i); // 0001 0000 == 0001
             }
             else
             {
-                status &= ~(128 >> i);
+                status &= ~(128 >> i); // 1000000 & 0111111 = 0
             }
         }
         return status;

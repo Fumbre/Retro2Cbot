@@ -1,8 +1,5 @@
 #include "motor.h"
 
-// volatile long motor_left_pulses_counter = 0;
-// volatile long motor_right_pulses_counter = 0;
-
 Timer timestampCountPulsesRight;
 Timer timestampCountPulsesLeft;
 
@@ -11,10 +8,11 @@ Timer timestampCountPulsesLeft;
  * @author Fumbre (Vladyslav)
  * @date 13-11-2025
  * @details count pulses for left motor
-*/
-
-void countLeftPulses() {
-  if (timestampCountPulsesLeft.executeOnce(0)) {
+ */
+void countLeftPulses()
+{
+  if (timestampCountPulsesLeft.executeOnce(0))
+  {
     motor_left_pulses_counter++;
   }
   setupPulseCounter();
@@ -25,10 +23,11 @@ void countLeftPulses() {
  * @author Fumbre (Vladyslav)
  * @date 13-11-2025
  * @details count pulses for right motor
-*/
-
-void countRightPulses() {
-  if (timestampCountPulsesRight.executeOnce(0)) {
+ */
+void countRightPulses()
+{
+  if (timestampCountPulsesRight.executeOnce(0))
+  {
     motor_right_pulses_counter++;
   }
   setupPulseCounter();
@@ -39,10 +38,11 @@ void countRightPulses() {
  * @author Fumbre (Vladyslav)
  * @date 13-11-2025
  * @details configurate pins for motor
-*/
-
-void setupMotor() {
-  for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
+ */
+void setupMotor()
+{
+  for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
+  {
     pinMode(PINS_MOTOR[i], OUTPUT);
     digitalWrite(PINS_MOTOR[i], LOW);
   }
@@ -53,7 +53,14 @@ void setupMotor() {
   attachInterrupt(digitalPinToInterrupt(PIN_MOTOR_RIGHT_PULSE), countRightPulses, RISING);
 };
 
-void setupPulseCounter() {
+/**
+ * @name setupPulseCounter
+ * @author Fumbre (Vladyslav)
+ * @date 13-11-2025
+ * @details reset pulses timer
+ */
+void setupPulseCounter()
+{
   timestampCountPulsesLeft.resetExecuteOnce();
   timestampCountPulsesRight.resetExecuteOnce();
 }

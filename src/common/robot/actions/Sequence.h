@@ -51,10 +51,8 @@ public:
     // the easiest approach to start sequence
     if (pos == 1)
     {
-      return true;
       if (t.intervalStart(100))
       {
-        Serial.print(getDistanceCM_Front());
         if (getDistanceCM_Front() > 20)
         {
           return true;
@@ -82,7 +80,7 @@ public:
       String data = receiveDataFromHC12();
       if (data.length() != 0)
       {
-        return data == "i,BB046";
+        return data == String("i,BB046");
       }
 
       return true;
