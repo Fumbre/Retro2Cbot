@@ -1,9 +1,3 @@
-/**
- * @name HC-12
- * @author Sunny
- * @date 15-12-2025
- */
-
 #include "hc12.h"
 
 // Create a SoftwareSerial object to communicate with the HC-12 module
@@ -14,10 +8,9 @@ SoftwareSerial hc12(RX, TX);
  * @author Sunny
  * @date 15-12-2025
  * @details build connection between HC-12 and Arduino
- */
+*/
 
-void buildHC12Connection()
-{
+void buildHC12Connection() {
     hc12.begin(9600);
 }
 
@@ -27,9 +20,9 @@ void buildHC12Connection()
  * @date 15-12-2025
  * @details send data through HC-12
  * @param data the data that needs send
- */
-void sendDataFromHC12(String data)
-{
+*/
+
+void sendDataFromHC12(String data) {
     if (!data)
         return;
     hc12.println(data);
@@ -39,20 +32,17 @@ void sendDataFromHC12(String data)
  * @name receiveDataFromHC12
  * @author Sunny
  * @date 23-12-2025
- * @details receive data from HC-12
- * @return Json string
- */
+ * @details Reads data from the HC-12 wireless module.
+ * @details Checks if data is available, and if so, reads a complete line terminated by '\n'.
+ * @details Returns an empty string if no data is available.
+ * @return String containing the received data. If no data is received, returns an empty string.
+*/
 
-String receiveDataFromHC12()
-{
-
-    if (hc12.available() > 0)
-    {
-        String data = ""; // create an empty string to store incoming data
-        // check if there is data available to read from the HC-12 module
-        data = hc12.readStringUntil('\n');
-        return data;
+String receiveDataFromHC12() {
+    if (hc12.available() > 0) {
+        return hc12.readStringUntil('\n');
     }
 
-    return ""; // return the received data
+    return "";
 }
+

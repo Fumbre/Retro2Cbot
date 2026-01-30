@@ -11,7 +11,5 @@
 #include "common/robot/datasend/datasend.h"
 
 void mazeLineSetup();
-
 void mazeLine();
-
 void rotate(int dir);

@@ -2,7 +2,8 @@
  * @name constant of Gripper
  * @author Francisco
  * @date 25-10-2025
- */
+*/
+
 #pragma once
 #include "common/constant/board.h"
 

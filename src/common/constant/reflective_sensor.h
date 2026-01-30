@@ -2,12 +2,13 @@
  * @name constant of reflective sensor
  * @author Fumbre (Vladyslav)
  * @date 08-12-2025
- */
+*/
+
 #pragma once
 #include <Arduino.h>
 #include "common/robot/globalvariable/globalVariable.h"
 
-// RS = reflective sensor
+// RS = Reflective Sensor
 const int PIN_RS_D8 = A0;
 const int PIN_RS_D7 = A1;
 const int PIN_RS_D6 = A2;
@@ -17,8 +18,8 @@ const int PIN_RS_D3 = A5;
 const int PIN_RS_D2 = A6;
 const int PIN_RS_D1 = A7;
 
-// difference between initial surface and next read
-// example: first value is 255 after 255 + THRESHOLD next surface value
+// Difference between initial surface and next read
+// Example: first value is 255 after 255 + THRESHOLD next surface value
 const int THRESHOLD = 275;
 
 // Second RS data margin of error
@@ -35,6 +36,5 @@ const int PINS_RS[] = {
     PIN_RS_D1,
 };
 
-// store array length dynamically
+// Store array length dynamically
 const int PINS_RS_LENGTH = sizeof(PINS_RS) / sizeof(int);
-// to store array length dynamically

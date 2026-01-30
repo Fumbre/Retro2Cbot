@@ -2,7 +2,8 @@
  * @name interface of motor
  * @author Fumbre (Vladyslav)
  * @date 13-11-2025
- */
+*/
+
 #pragma once
 #include "common/constant/board.h"
 #include <Arduino.h>
@@ -17,8 +18,7 @@ void countLeftPulses();
 void countRightPulses();
 void setupPulseCounter();
 
-struct Stability
-{
+struct Stability {
   int speedLeft;
   int speedRight;
 };

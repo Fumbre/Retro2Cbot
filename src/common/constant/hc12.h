@@ -2,7 +2,8 @@
  * @name constants of HC-12
  * @author Sunny
  * @date 15-12-2025
- */
+*/
+
 #pragma once
 #include "common/constant/board.h"
 
@@ -17,6 +18,6 @@ const int TX = 13;
 #endif
 
 #ifdef BB011
-const int RX = 11;
-const int TX = 13;
+const int RX = 13;
+const int TX = 1;
 #endif

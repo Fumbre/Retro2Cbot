@@ -1,126 +1,125 @@
 #include "maze_line.h"
 
-// RS - reflective sensor
-ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 35);
+ReflectiveSensor rsLine2(PINS_RS, PINS_RS_LENGTH, 200, 25);
 Sequence mazeSequence2(&rsLine2);
 
 LineState lastStatus = CENTER;
 LineState currentStatus;
 
-// speed conf
+// Speed configuration
 int baseSpeed2 = 230;
-float slightConf2 = 0.6;
-float hardConf2 = 0.1;
+float slightConf2 = 0.7;
+float hardConf2 = 0;
 float reverseConf2 = -1;
 
 bool doRotationRight = false;
 bool doRotationLeft = false;
 bool rotated = false;
 
-// maze variables
+// Maze variables
 bool isMazeStarted2 = false;
 bool isEndSequence2 = false;
 bool mazePassed2 = false;
+bool startOnce = false;
 
-// maybe put it inside roatation function
-// init timers
 static Timer t;
 static Timer t1;
-static Timer rotationT;
 
-void mazeLine()
-{
+void mazeLine() {
 
   // set poisition of robot
-  if (!isMazeStarted2)
-  {
-    if (mazeSequence2.readyToStart(1)) // !!!change it to 2!!
-    {
+  if (!isMazeStarted2) {
+    if (mazeSequence2.readyToStart(2)) {        
       isMazeStarted2 = true;
+      startOnce = true;
     }
     return;
   }
 
-  if (t1.executeOnce(0))
-  {
-    moveSpeed(255, 255);
-    turnOnAllLeds(0, 255, 0);
+  if (startOnce) {
+    moveSpeed(baseSpeed2, baseSpeed2);
+    startOnce = false;
   }
 
-  if (!isEndSequence2)
-  {
+  if (!isEndSequence2) {
     dataSend();
 
-    if (!mazeSequence2.start(baseSpeed2, 10)) // 230
+    if (!mazeSequence2.start(220, 10)) 
       return;
   }
 
-  currentStatus = rsLine2.pattern();
-
-  // if rotation do only rotation
-  if (doRotationRight)
-  {
+  // If rotation do only rotation
+  if (doRotationRight) {
     rotate(0);
     return;
   }
-  // left one
-  if (doRotationLeft)
-  {
+
+  // Left one
+  if (doRotationLeft) {
     rotate(1);
     return;
   }
 
-  if (!isEndSequence2)
-  {
-    if (t.interval(35, 70))
-    {
+  if (!isEndSequence2) {
+    if (t.interval(35, 70)) {
 
       float distance = getDistanceCM_Front();
 
-      if (distance < 18)
-      {
-        doRotationLeft = true;
-        rotate(1);
+      if (distance < 18) {
+        doRotationRight = true;
+        rotate(0);
         return;
       }
     }
 
-    // main maze line code
-    switch (currentStatus)
-    {
+    currentStatus = rsLine2.pattern();
+
+    // Main maze line code
+    switch (currentStatus) {
     case CENTER:
-      if (lastStatus == ALL_BLACK)
-      {
+      if (lastStatus == ALL_BLACK) {
+        doRotationRight = true;
+        rotate(0);
+        break;
+      }
+
+      lastStatus = CENTER;
+      moveSpeed(baseSpeed2, baseSpeed2);
+      break;
+
+    case SLIGHT_LEFT:
+      if (lastStatus == ALL_BLACK) {
         doRotationRight = true;
         rotate(0);
 
         return;
       }
 
-      moveSpeed(baseSpeed2, baseSpeed2);
       lastStatus = CENTER;
-      break;
-    case SLIGHT_LEFT:
       moveSpeed(baseSpeed2 * slightConf2, baseSpeed2);
       break;
+
     case SLIGHT_RIGHT:
-      moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
-      break;
-    case ALL_BLACK:
-      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(150);
-      lastStatus = ALL_BLACK;
-      moveSpeed(baseSpeed2, baseSpeed2);
-      break;
-    case ALL_WHITE:
-      // because Lady Maria has problems with right wheel
-      if (lastStatus == CENTER)
-      {
+      if (lastStatus == ALL_BLACK) {
         doRotationRight = true;
         rotate(0);
+
+        return;
       }
 
-      if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN)
-      {
+      lastStatus = CENTER;
+      moveSpeed(baseSpeed2, baseSpeed2 * slightConf2);
+      break;
+
+    case ALL_BLACK:
+      isEndSequence2 = mazeSequence2.isDetecetingBlackSquare(150);
+
+      lastStatus = ALL_BLACK;
+      moveSpeed(baseSpeed2 * .8, baseSpeed2 * .9);
+      break;
+
+    case ALL_WHITE:
+      if (lastStatus == ALL_BLACK || lastStatus == RIGHT_TURN || lastStatus == CENTER) {
         doRotationRight = true;
         rotate(0);
       }
@@ -130,27 +129,34 @@ void mazeLine()
         doRotationLeft = true;
         rotate(1);
       }
+
       break;
+
     case HARD_LEFT:
-      moveSpeed(baseSpeed2 * hardConf2, baseSpeed2);
+      moveSpeed(baseSpeed2 * hardConf2, baseSpeed2 * slightConf2);
+      break;
+
     case LEFT_TURN:
       lastStatus = LEFT_TURN;
       moveSpeed(baseSpeed2, baseSpeed2);
       break;
+
     case HARD_RIGHT:
-      moveSpeed(baseSpeed2, baseSpeed2 * hardConf2);
+      moveSpeed(baseSpeed2 * slightConf2, baseSpeed2 * hardConf2);
+      break;
+
     case RIGHT_TURN:
       lastStatus = RIGHT_TURN;
       doRotationRight = true;
+      delay(15);
       rotate(0);
       break;
     }
   }
-  // send start command to BB011
-  if (isEndSequence2)
-  {
-    if (!t1.timeout(1000))
-    {
+
+  // Send start command to BB011
+  if (isEndSequence2) {
+    if (!t1.timeout(1000)) {
       dataSend();
     }
     mazeSequence2.end(&mazePassed2, "BB046");
@@ -158,93 +164,67 @@ void mazeLine()
 }
 
 // dir == 0 -right; dir == 1 -left
-void rotate(int dir)
-{
+void rotate(int dir) {
+
   bool end = false;
 
-  if (!t.timeout(200)) // execute for 200 milliseconds
-  {
+  if (!t.timeout(200)) {                  // execute for 200 milliseconds
     moveSpeed(baseSpeed2, baseSpeed2);
   }
-  else
-  {
-    if (dir == 0)
-    {
-      if (!rotated)
-      {
-        if (t.executeOnce(0, 300)) // 150
-        {
-          moveSpeed(baseSpeed2 * .8, baseSpeed2 * .8 * reverseConf2);
+  else {
+    if (dir == 0) {
+      if (!rotated) {
+        if (t.executeOnce(0, 300)) {
+          moveSpeed(200, -200);
           // return;
         }
-        else
-        {
+        else {
           rotated = true;
-        }
-
-        if (rotationT.executeOnce(0))
-        {
-          int index[2] = {1, 2};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
         }
       }
     }
 
-    if (dir == 1)
-    {
-      if (!rotated)
-      {
+    if (dir == 1) {
+      if (!rotated) {
 
-        if (t.executeOnce(0, 300))
-        {
-          moveSpeed(baseSpeed2 * reverseConf2 * .8, baseSpeed2 * .8);
-          // return;
+        if (t.executeOnce(0, 300)) {
+          moveSpeed(-200, 200);
         }
-        else
-        {
+        else {
           rotated = true;
-        }
-
-        if (rotationT.executeOnce(0))
-        {
-          int index[2] = {0, 3};
-          turnOnSomeLeds(index, 2, 255, 255, 0);
         }
       }
     }
 
-    if (rotated)
-    {
+    if (rotated) {
 
       LineState pattern = rsLine2.pattern();
 
-      if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
-      {
-        lastStatus = pattern;
+      if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT) {
         moveStopAll();
         end = true;
-        moveSpeed(baseSpeed2, baseSpeed2);
+
+        lastStatus = CENTER;
+
+        moveSpeed(170, 170);
 
         turnOnAllLeds(0, 255, 0);
       }
     }
   }
 
-  if (end)
-  {
+  if (end) {
     rotated = false;
 
     doRotationRight = false;
     doRotationLeft = false;
 
-    rotationT.resetExecuteOnce();
     t.resetTimeout();
     t.resetExecuteOnce();
   }
 }
 
-void mazeLineSetup()
-{
+void mazeLineSetup() {
   buildHC12Connection();
   setupMotor();
   setupGripper();

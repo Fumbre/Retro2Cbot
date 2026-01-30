@@ -7,13 +7,11 @@
 #pragma once
 #include "board.h"
 
-// distance between robot center and wheels center (cm)
+// Distance between robot's center and wheels' center (cm)
 const float ROBOT_RADUIS = 6.5;
 
-// radius per wheel (cm)
+// Radius per wheel (cm)
 const float WHEEL_RADUIS = 3.6;
-
-// what map this robot for
 
 // Follow Line
 #ifdef BB046

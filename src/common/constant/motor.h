@@ -2,11 +2,12 @@
  * @name constant of motor
  * @authors Fumbre (Vladyslav) & Sunny
  * @date 15-11-2025
- */
+*/
+
 #pragma once
 
 const int FULL_PWM_VALUE = 255;
-const int FULL_SPEED = 100;                         // in precentage
+const int FULL_SPEED = 100;                  // In precentage
 
 // 20 pulses per wheel rotation
 const int PULSES_PER_ROTATION = 20;
@@ -73,13 +74,13 @@ const int PIN_MOTOR_RIGHT_BACKWARD = 6;
 const int PIN_MOTOR_LEFT_FORWARD = 10;
 const int PIN_MOTOR_LEFT_BACKWARD = 11;
 
-const int PIN_MOTOR_LEFT_PULSE = 3;  // shoud be 3 !
-const int PIN_MOTOR_RIGHT_PULSE = 2; // shoud be 2 !
+const int PIN_MOTOR_LEFT_PULSE = 3; 
+const int PIN_MOTOR_RIGHT_PULSE = 2; 
 
 // PID factors
-const float Kp_front = 4.0;  // Proportional
-const float Ki_front = 1.9;  // Integral
-const float Kd_front = 0.12; // Derivative
+const float Kp_front = 4.0;  
+const float Ki_front = 1.9;  
+const float Kd_front = 0.12; 
 
 const float Kp_back = 5.9;
 const float Ki_back = 2.2;
@@ -91,7 +92,7 @@ const float Kd_back = 0.12;
 
 #if defined(BB046) || defined(BB011) || defined(BB016)
 
-//  PINS MOTOR ARRAY
+// Pins Motor's Array
 const int PINS_MOTOR[] = {
     PIN_MOTOR_RIGHT_FORWARD,
     PIN_MOTOR_RIGHT_BACKWARD,
@@ -99,8 +100,6 @@ const int PINS_MOTOR[] = {
     PIN_MOTOR_LEFT_BACKWARD,
 };
 
-//  PINS MOTOR ARRAY LENGTH
-// To store array length dynamically
+// Pins Motor's Array Lenght
 const int PINS_MOTOR_LENGTH = sizeof(PINS_MOTOR) / sizeof(int);
-
 #endif

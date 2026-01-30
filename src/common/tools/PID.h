@@ -6,13 +6,14 @@
 
 class PID {
 private:
-  float kp;            // Proportional factor
-  float ki;            // Integral factor
-  float kd;            // Derivative factor
-  float lastError = 0; // error in last time
+  float kp;                               // Proportional factor
+  float ki;                               // Integral factor
+  float kd;                               // Derivative factor
+  float lastError = 0;                    // Error in last time
 
 public:
-  float integral = 0; // record total error
+  float integral = 0;                     // record total error
+  
   /**
    * @name PID
    * @name Sunny
@@ -38,18 +39,19 @@ public:
    * @return correction
   */
   
-  float caculateCorrection(float v1, float v2) 
-  {
-    // caculate error
+  float caculateCorrection(float v1, float v2) {
+    
+    // Caculate error
     float error = v1 - v2;
 
-    // plus error to integeral
+    // Plus error to integeral
     integral += error;
 
-    // caculate derivative
+    // Caculate derivative
     float derivative = (error - lastError);
+    lastError = error;
 
-    // caculate correction
+    // Caculate correction
     float correction = kp * error + ki * integral + kd * derivative;
     return correction;
   }

@@ -6,11 +6,12 @@
  * @author Fumbre (Vladyslav)
  * @date 14-11-2025
  * @details Timer class for easier access to millis calculation
- */
-class Timer
-{
+*/
+
+class Timer {
 private:
-  // timestamp for timer methods
+  
+  // Timestamp for timer methods
   unsigned long timestampInterval = 0;
   unsigned long timestampIntervalStart = 0;
   unsigned long timestampExecuteOnce = 0;
@@ -28,19 +29,19 @@ public:
    * @details Timer.interval(200, 500) wait 200 milliseconds and return True for 500 milliseconds
    * @details Timer.interval(0, 500) WRONG!!! RETURNS FOREVER TRUE
    * @return bool
-   */
-  bool interval(unsigned long milliseconds, unsigned long executionTime = 0)
-  {
-    if (timestampInterval == 0)
-    {
+  */
+ 
+  bool interval(unsigned long milliseconds, unsigned long executionTime = 0) {
+    
+    if (timestampInterval == 0) {
       timestampInterval = millis();
     }
 
     unsigned long now = millis();
-    if (now - timestampInterval >= milliseconds)
-    {
-      if (now - timestampInterval >= milliseconds + executionTime)
-      {
+    
+    if (now - timestampInterval >= milliseconds) {
+      
+      if (now - timestampInterval >= milliseconds + executionTime) {
         timestampInterval = now;
       }
       return true;
@@ -59,23 +60,20 @@ public:
    * @details Timer.intervalStart(200, 500) wait 200 milliseconds and return True for 500 milliseconds
    * @details Timer.intervalStart(0, 500) WRONG!!! RETURNS FOREVER TRUE
    * @return bool
-   */
-  bool intervalStart(unsigned long milliseconds, unsigned long executionTime = 0)
-  {
+  */
 
-    if (timestampIntervalStart == 0)
-    {
+  bool intervalStart(unsigned long milliseconds, unsigned long executionTime = 0) {
+
+    if (timestampIntervalStart == 0) {
       timestampIntervalStart = millis();
       return true;
     }
 
     unsigned long now = millis();
 
-    if (now - timestampIntervalStart >= milliseconds)
-    {
+    if (now - timestampIntervalStart >= milliseconds) {
 
-      if (now - timestampIntervalStart >= milliseconds + executionTime)
-      {
+      if (now - timestampIntervalStart >= milliseconds + executionTime) {
         timestampIntervalStart = now;
       }
       return true;
@@ -90,26 +88,23 @@ public:
    * @param milliseconds returns true after milliseconds only once
    * @details Timer.executeOnce(500) will return True once and only once! even in a loop it will be executed once after n milliseconds!!
    * @return bool
-   */
-  bool executeOnce(unsigned long milliseconds, unsigned long executedTime = 0)
-  {
-    if (isTriggeredExecuteOnce)
-    {
+  */
+
+  bool executeOnce(unsigned long milliseconds, unsigned long executedTime = 0) {
+    
+    if (isTriggeredExecuteOnce) {
       return false;
     }
 
     unsigned long now = millis();
 
-    if (timestampExecuteOnce == 0)
-    {
+    if (timestampExecuteOnce == 0) {
       timestampExecuteOnce = now;
     }
 
-    if (now - timestampExecuteOnce >= milliseconds)
-    {
+    if (now - timestampExecuteOnce >= milliseconds) {
 
-      if (now - timestampExecuteOnce >= milliseconds + executedTime)
-      {
+      if (now - timestampExecuteOnce >= milliseconds + executedTime) {
         isTriggeredExecuteOnce = true;
       }
       return true;
@@ -124,19 +119,17 @@ public:
    * @param milliseconds use time in milliseconds
    * @details Timer.timeout(300) returns true forever after 300 milliseconds
    * @return bool
-   */
-  bool timeout(unsigned long shouldPass)
-  {
+  */
 
-    if (timestampTimeout == 0)
-    {
+  bool timeout(unsigned long shouldPass) {
+
+    if (timestampTimeout == 0) {
       timestampTimeout = millis();
     }
 
     unsigned long now = millis();
 
-    if (now - timestampTimeout >= shouldPass)
-    {
+    if (now - timestampTimeout >= shouldPass) {
       return true;
     }
     return false;
@@ -147,9 +140,9 @@ public:
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
    * @details RESET ALL TIMERS
-   */
-  void hardReset()
-  {
+  */
+
+  void hardReset() {
     timestampInterval = 0;
     timestampExecuteOnce = 0;
     timestampTimeout = 0;
@@ -162,9 +155,9 @@ public:
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
    * @details reset interval timer
-   */
-  void resetInterval()
-  {
+  */
+
+  void resetInterval() {
     timestampInterval = 0;
   }
 
@@ -173,9 +166,9 @@ public:
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
    * @details reset intervalStart timer
-   */
-  void resetIntervalStart()
-  {
+  */
+
+  void resetIntervalStart() {
     timestampIntervalStart = 0;
   }
 
@@ -184,9 +177,9 @@ public:
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
    * @details reset executeOnce timer
-   */
-  void resetExecuteOnce()
-  {
+  */
+
+  void resetExecuteOnce() {
     timestampExecuteOnce = 0;
     isTriggeredExecuteOnce = false;
   }
@@ -196,9 +189,9 @@ public:
    * @author Fumbre (Vladyslav)
    * @date 14-11-2025
    * @details reset timeout timer
-   */
-  void resetTimeout()
-  {
+  */
+
+  void resetTimeout() {
     timestampTimeout = 0;
   }
 };

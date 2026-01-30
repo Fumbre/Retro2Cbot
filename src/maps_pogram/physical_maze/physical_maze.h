@@ -7,8 +7,8 @@
 #include "common/tools/Timer.h"
 #include "common/robot/actions/Sequence.h"
 
+#include "common/robot/actions/Sequence.h"
+
 void physicalMaze();
-
 void physicalMazeSetup();
-
 void solvingPhysicalMaze();

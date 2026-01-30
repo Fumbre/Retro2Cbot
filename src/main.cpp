@@ -9,15 +9,14 @@
 #include "common/tools/tests/test_sonar/test_sonar.h"
 #include "common/robot/neopixel/neopixel.h"
 
-int mapInit = 3;
+int mapInit = 1;
 
-void setup()
-{
+void setup() {
   Serial.begin(9600);
   blueTooth.begin(9600);
   initNeopixelPins();
-  switch (mapInit)
-  {
+
+  switch (mapInit) {
   case 1:
     followLineSetup();
     break;
@@ -30,11 +29,10 @@ void setup()
   }
 }
 
-void loop()
-{
+void loop() {
   testSonars();
-  switch (mapInit)
-  {
+
+  switch (mapInit) {
   case 1:
     followLine();
     break;
@@ -43,8 +41,7 @@ void loop()
     break;
   case 3:
     physicalMaze();
+    dataSend();
     break;
   }
-  // int index[2] = {1,2}; //right
-  // turnOnSomeLeds(index,2,255,0,0);
 }

@@ -3,7 +3,7 @@
  * @author Fumbre (Vladyslav)
  * @date 16-12-2025
  * @details Sequence class to start and end sequence
- */
+*/
 
 #pragma once
 
@@ -15,8 +15,7 @@
 
 #include "common/robot/hc12/hc12.h"
 
-class Sequence
-{
+class Sequence {
 private:
   ReflectiveSensor *rsData;
 
@@ -32,9 +31,9 @@ public:
    * @date 16-12-2025
    * @param rsData ReflectiveSensor pointer
    * @result Sequence instance
-   */
-  Sequence(ReflectiveSensor *rsData)
-  {
+  */
+
+  Sequence(ReflectiveSensor *rsData) {
     this->rsData = rsData;
   }
 
@@ -44,30 +43,32 @@ public:
    * @date 16-12-2025
    * @param pos 0=>BB016, 1=>BB046, 2=>BB011
    *
-   */
-  bool readyToStart(int pos)
-  {
+  */
+
+  bool readyToStart(int pos) {
     static Timer t;
-    // the easiest approach to start sequence
-    if (pos == 1)
-    {
-      if (t.intervalStart(100))
-      {
+
+    // The easiest approach to start sequence
+    if (pos == 1) {
+      return true;
+
+      if (t.intervalStart(100)) {
         Serial.print(getDistanceCM_Front());
-        if (getDistanceCM_Front() > 20)
-        {
+
+        if (getDistanceCM_Front() > 20) {
           return true;
         }
       }
 
       return false;
     }
-    if (pos == 2)
-    {
-      // recieved data return true
+
+    if (pos == 2) {
+      
+      // Recieved data return true
       String data = receiveDataFromHC12();
-      if (data.length() != 0)
-      {
+
+      if (data.length() != 0) {
         data.trim();
         return data == String("i,BB016");
       }
@@ -75,12 +76,12 @@ public:
       return false;
     }
 
-    if (pos == 3)
-    {
-      // recieved data return true
+    if (pos == 3) {
+      
+      // Recieved data return true
       String data = receiveDataFromHC12();
-      if (data.length() != 0)
-      {
+
+      if (data.length() != 0) {
         return data == "i,BB046";
       }
 
@@ -97,19 +98,17 @@ public:
    * @param time int time 0-999
    * @details if black squeare (11111111) detected longer than @param time return true, otherwise false
    * @return bool
-   */
-  bool isDetecetingBlackSquare(int time)
-  {
+  */
+
+  bool isDetecetingBlackSquare(int time) {
     static Timer t;
 
-    if (t.timeout(time) && this->rsData->readBlackLine() == 255)
-    {
+    if (t.timeout(time) && this->rsData->readBlackLine() == 255) {
       return true;
     }
-    else if (this->rsData->readBlackLine() != 255)
-    {
+    else if (this->rsData->readBlackLine() != 255) {
 
-      // reset timeout if rsData recieve not black
+      // Reset timeout if rsData doesn't recieve black
       t.resetTimeout();
     }
     return false;
@@ -121,42 +120,40 @@ public:
    * @date 16-12-2025
    * @details pick an object up and do a rotatation to the left
    * @return bool
-   */
-  bool start(int robotSpeed, int robotPulses, int goStraightTime = 300)
-  {
+  */
+  
+  bool start(int robotSpeed, int robotPulses, int goStraightTime = 300) {
     static Timer t;
     static Timer t1;
 
-    // if blackSquereDetected longer than 125ms return true
+    // If blackSquereDetected longer than 125 ms return true
     bool blackSquereDetected = this->isDetecetingBlackSquare(125);
-    if (blackSquereDetected)
-    {
-      catchObj = true; // object catched
+
+    if (blackSquereDetected) {
+      catchObj = true;                                  // Object catched
     }
-    if (catchObj)
-    {
+
+    if (catchObj) {
       gripperCatch();
 
-      // after catch go forward
-      if (t1.executeOnce(0))
-      {
+      // After catch go forward
+      if (t1.executeOnce(0)) {
         moveSpeed(robotSpeed, robotSpeed);
       }
 
-      // stop going forward after timeout
-      if (t1.timeout(goStraightTime))
-      {
-        if (!isRotated)
-        {
-          if (didMoveLeft(robotSpeed, robotPulses) || firstPulsesPassed)
-          {
+      // Stop going forward after timeout
+      if (t1.timeout(goStraightTime)) {
+
+        if (!isRotated) {
+
+          if (didMoveLeft(robotSpeed, robotPulses) || firstPulsesPassed) {
             resetMoveLeft();
 
             firstPulsesPassed = true;
 
             LineState pattern = rsData->pattern();
-            if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT)
-            {
+
+            if (pattern == CENTER || pattern == SLIGHT_LEFT || pattern == SLIGHT_RIGHT) {
               moveStopAll();
               isRotated = true;
             }
@@ -167,34 +164,28 @@ public:
     return isRotated;
   }
 
-  void end(bool *mazePassed, String robotCode)
-  {
+  void end(bool *mazePassed, String robotCode) {
     static Timer t;
 
     static Timer sendDataTimer;
 
-    if (!t.timeout(1000)) // go back during 1s
-    {
+    if (!t.timeout(1000)) {                         // Go back during 1 s
       moveSpeed(-255, -255);
     }
-    else // after 1s stop all motors
-    {
+    else {                                          // After 1s stop all motors
       moveStopAll();
-      if (!mazePassed)
-      {
+      if (!mazePassed) {
         *mazePassed = true;
       }
 
-      if (sendDataTimer.executeOnce(0, 2000))
-      {
+      if (sendDataTimer.executeOnce(0, 2000)) {
         sendDataFromHC12("i," + robotCode);
       }
       return;
     }
 
-    // this is end of sequence (black square)
-    if (t.executeOnce(250))
-    {
+    // End of Sequence (black square)
+    if (t.executeOnce(250)) {
       gripperUnCatch();
     }
   }

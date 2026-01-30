@@ -2,7 +2,7 @@
  * @name ReflectiveSensor
  * @authors Fumbre (Vladyslav) & Aria & Sunny & Uraib
  * @date 08-12-2025
- */
+*/
 
 #pragma once
 
@@ -11,7 +11,7 @@
 #include "common/constant/reflective_sensor.h"
 #include "common/tools/Timer.h"
 
-// bitmask tables
+// Bitmask tables
 const uint8_t centerPatterns[] = {
     0b00011000,
     0b00111100};
@@ -46,26 +46,20 @@ const uint8_t allWhite[] = {0b00000000};
 
 const uint8_t allBlack[] = {0b11111111};
 
-// 0b11111110 //
 const uint8_t leftTurn[] = {0b11111000, 0b11110000, 0b11111100};
 
-// 0b01111111 //
 const uint8_t rightTurn[] = {0b00011111, 0b00001111, 0b00111111};
 
-enum LineState
-{
+enum LineState {
     CENTER,
     SLIGHT_LEFT,
     SLIGHT_RIGHT,
     HARD_LEFT,
     HARD_RIGHT,
-
     ALL_WHITE,
     ALL_BLACK,
-
     LEFT_TURN,
     RIGHT_TURN,
-
     OTHER
 };
 
@@ -73,19 +67,28 @@ enum LineState
  * @name ReflectiveRead
  * @authors Uraib
  * @date 04-12-2025
- */
+ * @details Structure to maintain running statistics for reflective sensor readings.
+ * @details Tracks the number of readings, the mean, variance (using Welford's algorithm),
+ * and the minimum and maximum values observed.
+ * @details The update() method incorporates a new sensor reading into the statistics efficiently,
+ * updating mean, variance, minimum, and maximum without storing all previous values.
+*/
 
-struct ReflectiveRead
-{
+struct ReflectiveRead {
 
-    unsigned long count = 0;
-    double mean = 0.0;
-    double m2 = 0.0; // sum of squares of differences for variance
-    int minimum = 1023;
-    int maximum = 0;
+    unsigned long count = 0;                // Number of readings processed
+    double mean = 0.0;                      // Current mean of the readings
+    double m2 = 0.0;                        // Sum of squares of differences from the current mean 
+    int minimum = 1023;                     // Minimum value observed
+    int maximum = 0;                        // Maximum value observed
 
-    void update(int x)
-    {
+    /**
+     * @name update
+     * @param x New sensor reading to incorporate
+     * @details Updates the running statistics (mean, variance, min, max) with the new value x.
+    */
+
+    void update(int x) {
         count = 1;
         double dx = x - mean;
 
@@ -94,50 +97,57 @@ struct ReflectiveRead
 
         m2 += dx * dx2;
 
-        if (x < minimum)
-        {
+        if (x < minimum) {
             minimum = x;
         }
 
-        if (x > maximum)
-        {
+        if (x > maximum) {
             maximum = x;
         }
     }
 };
 
-class ReflectiveSensor
-{
+
+/**
+ * @name ReflectiveSensor
+ * @authors Sunny & Vlad
+ * @date 08-12-2025
+ * @details Class to manage reflective sensors for line detection.
+ * @details Handles calibration, reading of surfaces, and comparison to predefined patterns.
+ * @details Supports two-surface detection (first and second surface) 
+ * and provides bitmask status for black line detection.
+*/
+
+class ReflectiveSensor {
 
 private:
-    const int *pins;    // reflective sensor pins
-    int pins_rs_length; // length of pins array
-    float threshold;    // range to consider as a second value for reflective sensor
-    int marginError;    // margin surface THRESHOLD
+    const int *pins;                                // Array of reflective sensor pins
+    int pins_rs_length;                             // Number of reflective sensor pins
+    float threshold;                                // Threshold for detecting second surface
+    int marginError;                                // Margin to ignore small differences in surface detection
 
-    ReflectiveRead *reflectiveReadInit;    // init surface
-    ReflectiveRead reflectiveReadBlack[8]; // second surface
-    uint8_t blackCalibration;              // check how much pins are calibrated
-    int blackCalibratedLength = 0;         // how much sensor are calibreted for black color
-    bool isBlackCalibrated = false;        // is Black collor fully calibrated
+    ReflectiveRead *reflectiveReadInit;             // Initial surface data
+    ReflectiveRead reflectiveReadBlack[8];          // Calibrated second surface data
+    uint8_t blackCalibration;                       // Bitmask of calibrated sensors for black surface
+    int blackCalibratedLength = 0;                  // Number of sensors calibrated for black
+    bool isBlackCalibrated = false;                 // True if black calibration completed
+
+    ReflectiveRead *currentSensors;                 // Current sensor readings
 
     /**
-     * @name ReflectiveRead
-     * @authors Fumbre (Vladyslav)
+     * @name getRSValue
+     * @authors Fumbre
      * @date 04-12-2025
-     * @return ReflectiveRead array (analog read data of reflective sensor)
-     */
+     * @details Reads analog values from reflective sensors and updates running statistics.
+     * @return Pointer to an array of 8 ReflectiveRead objects containing current statistics.
+    */
 
-    ReflectiveRead *getRSValue()
-    {
+    ReflectiveRead *getRSValue() {
+
         ReflectiveRead *stats = new ReflectiveRead[8];
 
-        // Read and update stats
-        for (int i = 0; i < PINS_RS_LENGTH; ++i)
-        {
-
+        for (int i = 0; i < PINS_RS_LENGTH; ++i) {
             int v = analogRead(PINS_RS[i]);
-            // update a0 ~ a7 value
             *RS_SEND_DATA_RAW_ARRAY[i] = v;
             stats[i].update(v);
         }
@@ -148,73 +158,59 @@ private:
      * @name calibrationInit
      * @authors Sunny & Vlad
      * @date 10-12-2025
-     * @details get first surface data to reflectiveRead property
-     */
+     * @details Performs initial calibration for the first surface 
+     * and stores it in reflectiveReadInit.
+    */
 
-    void calibrationInit()
-    {
-
-        // calibrate for first surface
+    void calibrationInit() {
         free(this->reflectiveReadInit);
         this->reflectiveReadInit = getRSValue();
     }
 
     /**
      * @name calibrationBlack
-     * @authors Fumbre (Vladyslav)
+     * @authors Fumbre
      * @date 10-12-2025
-     * @details calibration for second surface data
-     */
+     * @details Performs calibration for the black surface, updating reflectiveReadBlack and calibration status.
+    */
 
-    void calibrationBlack()
-    {
+    void calibrationBlack() {
 
-        if (this->blackCalibratedLength < this->pins_rs_length)
-        {
+        if (this->blackCalibratedLength < this->pins_rs_length) {
             uint8_t reflectiveReadChange = this->getLineDifference(this->reflectiveReadInit, this->threshold);
 
-            for (int i = 0; i < pins_rs_length; i++)
-            {
-                if (!(reflectiveReadChange & (128 >> i)) && !(this->blackCalibration & (128 >> i)))
-                {
+            for (int i = 0; i < pins_rs_length; i++) {
+
+                if (!(reflectiveReadChange & (128 >> i)) && !(this->blackCalibration & (128 >> i))) {
                     this->reflectiveReadBlack[i].mean = analogRead(PINS_RS[i]);
-
                     this->blackCalibration |= (128 >> i);
-
                     this->blackCalibratedLength++;
                 }
             }
-        }
-        else
-        {
+        } else {
             this->isBlackCalibrated = true;
         }
     }
 
     /**
      * @name getLineStatusMoreThan
-     * @authors Fumbre (Vladyslav) & Sunny
+     * @authors Fumbre & Sunny
      * @date 04-12-2025
-     * @param compare use ReflectiveRead pointer (array) and compare it with current data
-     * @param reflectiveDifferenceMargin use this value to not consider small difference, currentRS is 700 + reflectiveDifferenceMargin > compare
-     * @return uint8_t as 1 for true 0 for false
-     * @details return line status as BIN
-     */
+     * @param compare Pointer to array of ReflectiveRead objects to compare against
+     * @param reflectiveDifferenceMargin Margin to ignore small differences
+     * @details Compares current sensor readings to 'compare' and returns bitmask status.
+     * @return uint8_t Bitmask where 1 indicates current reading >= compare + margin.
+    */
 
-    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMargin)
-    {
+    uint8_t getLineStatusMoreThan(ReflectiveRead *compare, int reflectiveDifferenceMargin) {
         uint8_t status = 0;
-
         free(this->currentSensors);
         this->currentSensors = getRSValue();
-        for (int i = 0; i < pins_rs_length; i++)
-        {
-            if (currentSensors[i].mean + reflectiveDifferenceMargin >= compare[i].mean)
-            {
+        
+        for (int i = 0; i < pins_rs_length; i++) {
+            if (currentSensors[i].mean + reflectiveDifferenceMargin >= compare[i].mean) {
                 status |= (128 >> i);
-            }
-            else
-            {
+            } else {
                 status &= ~(128 >> i);
             }
         }
@@ -223,30 +219,24 @@ private:
 
     /**
      * @name getLineDifference
-     * @authors Fumbre (Vladyslav) & Sunny
+     * @authors Fumbre & Sunny
      * @date 10-12-2025
-     * @details get first line status with difference
-     * @param compare (ReflectiveRead instecnce, to compare with current surface data)
-     * @param reflectiveDifference(how much difference will be okay as the same data)
-     * @return uint8_t if there's some difference return 1 otherwise 0
-     */
-    uint8_t getLineDifference(ReflectiveRead *compare, int reflectiveDifference)
-    {
-        uint8_t status = 0;
+     * @param compare Pointer to array of ReflectiveRead objects to compare against
+     * @param reflectiveDifference Allowed difference to consider readings equal
+     * @details Compares current sensor readings to 'compare' within a tolerance and returns a bitmask.
+     * @return uint8_t Bitmask where 1 indicates current reading within difference range of compare.
+    */
 
+    uint8_t getLineDifference(ReflectiveRead *compare, int reflectiveDifference) {
+        uint8_t status = 0;
         free(this->currentSensors);
         this->currentSensors = getRSValue();
-
-        for (int i = 0; i < pins_rs_length; i++)
-        {
-            if ((
-                    (currentSensors[i].mean - reflectiveDifference <= compare[i].mean) &&
-                    (currentSensors[i].mean + reflectiveDifference >= compare[i].mean)))
-            {
+        
+        for (int i = 0; i < pins_rs_length; i++) {
+            if ((currentSensors[i].mean - reflectiveDifference <= compare[i].mean) &&
+                (currentSensors[i].mean + reflectiveDifference >= compare[i].mean)) {
                 status |= (128 >> i);
-            }
-            else
-            {
+            } else {
                 status &= ~(128 >> i);
             }
         }
@@ -254,19 +244,18 @@ private:
     }
 
 public:
-    ReflectiveRead *currentSensors; // current Reflective Sensors data
-
     /**
      * @name ReflectiveSensor
      * @authors Sunny & Vlad
      * @date 08-12-2025
-     * @details construction function
-     * @param pins pins of reflective sensor
-     * @param pins_rs_length length of pins array
-     * @param threshold after what value second surface will be read
-     */
-    ReflectiveSensor(const int *pins, const int pins_rs_length, const float threshold, const int marginError)
-    {
+     * @details Constructor for ReflectiveSensor class.
+     * @param pins Array of sensor pins
+     * @param pins_rs_length Length of pins array
+     * @param threshold Threshold for second surface detection
+     * @param marginError Margin to ignore minor differences in detection
+    */
+
+    ReflectiveSensor(const int *pins, const int pins_rs_length, const float threshold, const int marginError) {
         this->pins = pins;
         this->pins_rs_length = pins_rs_length;
         this->threshold = threshold;
@@ -277,68 +266,63 @@ public:
      * @name setup
      * @authors Sunny & Vlad
      * @date 08-12-2025
-     */
-    void setup()
-    {
-        for (int i = 0; i < pins_rs_length; i++)
-        {
+     * @details Initializes the reflective sensor pins as INPUT.
+    */
+
+    void setup() {
+        for (int i = 0; i < pins_rs_length; i++) {
             pinMode(pins[i], INPUT);
         }
     }
 
     /**
      * @name readBlackLine
-     * @authors Fumbre (Vladyslav)
+     * @authors Fumbre
      * @date 08-12-2025
-     * @return uint8_t if black is detecter return 1 otherwise 0 as bit mask
-     * @details first surface is written than we calibrate second one, and return uint8_t based on second surface data and current rs data
-     */
+     * @details Reads the black line using the calibrated second surface.
+     * @details If black surface is not fully calibrated, returns 0. Updates RSSendDataStatus.
+     * @return uint8_t Bitmask representing current black line status.
+    */
 
-    uint8_t readBlackLine()
-    {
+    uint8_t readBlackLine() {
         static Timer t;
 
-        if (t.executeOnce(0))
-        {
+        if (t.executeOnce(0)) {
             this->calibrationInit();
         }
 
         this->calibrationBlack();
 
-        if (!this->isBlackCalibrated)
-        {
+        if (!this->isBlackCalibrated) {
             return 0;
         }
 
         uint8_t currentBlackStatus = this->getLineStatusMoreThan(this->reflectiveReadBlack, this->marginError);
-        // update current status
         String statusStr = "";
-        for (int i = 7; i >= 0; i--)
-        {
+
+        for (int i = 7; i >= 0; i--) {
             statusStr += (currentBlackStatus & (1 << i)) ? '1' : '0';
         }
+
         RSSendDataStatus = statusStr;
-        return currentBlackStatus; // 0b00011000
+        return currentBlackStatus;
     }
 
     /**
      * @name match
-     * @authors Aria & Fumbre (Vladyslav)
+     * @authors Aria & Fumbre
      * @date 12-12-2025
-     * @param patterns uint8_t
-     * @param elementCount int Length of pattern array
-     * @return bool
-     * @details compare pattern list with current uint8_t Black line read (second surface)
-     */
+     * @param patterns Array of patterns to match
+     * @param elementCount Length of the patterns array
+     * @details Compares current black line status against a list of patterns.
+     * @return bool True if any pattern matches, otherwise false
+    */
 
-    bool match(const uint8_t *patterns, int elementCount)
-    {
+    bool match(const uint8_t *patterns, int elementCount) {
 
-        for (int i = 0; i < elementCount; i++)
-        {
+        for (int i = 0; i < elementCount; i++) {
 
-            if (this->readBlackLine() == patterns[i])
-            {
+            if (this->readBlackLine() == patterns[i]) {
                 return true;
             }
         }
@@ -349,40 +333,20 @@ public:
      * @name pattern
      * @authors Aria
      * @date 12-12-2025
-     * @return LineState
-     * @details return enum position if current pattern match array list of patterns, if no patterns found return CENTER
-     */
+     * @details Determines the line state based on current black line pattern.
+     * @return LineState Enum indicating position (CENTER, SLIGHT_LEFT, SLIGHT_RIGHT, etc.)
+    */
 
-    LineState pattern()
-    {
-
-        if (match(centerPatterns, ARRAY_SIZE(centerPatterns)))
-            return CENTER;
-
-        if (match(slightLeftPatterns, ARRAY_SIZE(slightLeftPatterns)))
-            return SLIGHT_LEFT;
-
-        if (match(slightRightPatterns, ARRAY_SIZE(slightRightPatterns)))
-            return SLIGHT_RIGHT;
-
-        if (match(hardLeftPatterns, ARRAY_SIZE(hardLeftPatterns)))
-            return HARD_LEFT;
-
-        if (match(hardRightPatterns, ARRAY_SIZE(hardRightPatterns)))
-            return HARD_RIGHT;
-
-        if (match(leftTurn, ARRAY_SIZE(leftTurn)))
-            return LEFT_TURN;
-
-        if (match(rightTurn, ARRAY_SIZE(rightTurn)))
-            return RIGHT_TURN;
-
-        if (match(allWhite, ARRAY_SIZE(allWhite)))
-            return ALL_WHITE;
-
-        if (match(allBlack, ARRAY_SIZE(allBlack)))
-            return ALL_BLACK;
-
+    LineState pattern() {
+        if (match(centerPatterns, ARRAY_SIZE(centerPatterns))) return CENTER;
+        if (match(slightLeftPatterns, ARRAY_SIZE(slightLeftPatterns))) return SLIGHT_LEFT;
+        if (match(slightRightPatterns, ARRAY_SIZE(slightRightPatterns))) return SLIGHT_RIGHT;
+        if (match(hardLeftPatterns, ARRAY_SIZE(hardLeftPatterns))) return HARD_LEFT;
+        if (match(hardRightPatterns, ARRAY_SIZE(hardRightPatterns))) return HARD_RIGHT;
+        if (match(leftTurn, ARRAY_SIZE(leftTurn))) return LEFT_TURN;
+        if (match(rightTurn, ARRAY_SIZE(rightTurn))) return RIGHT_TURN;
+        if (match(allWhite, ARRAY_SIZE(allWhite))) return ALL_WHITE;
+        if (match(allBlack, ARRAY_SIZE(allBlack))) return ALL_BLACK;
         return OTHER;
     }
 };

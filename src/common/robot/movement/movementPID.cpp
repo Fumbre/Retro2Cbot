@@ -1,9 +1,3 @@
-/**
- * @name the basic functions of robots
- * @authors Sunny
- * @date 10-11-2025
-*/
-
 #include "movementPID.h"
 
 PID forwardPID(Kp_front, Ki_front, Kd_front);
@@ -25,17 +19,16 @@ float rightPWM = 0;
  * @author Sunny
  * @date 11-11-2025
  * @param speed
- *
- * @details  that function calclulate procantage of speed for analogWrite(255) is max speed is in procatage
- * so we will have correcrt procatage based on max value of PWM_VALUE
- *
+ * @details that function calclulates procantage of speed. 
+ * analogWrite(255) is max speed is in procatage so we will have correcrt procatage 
+ * based on max value of PWM_VALUE
  * @return PWM value
 */
 
 float getPWMvalue(int speed) {
-    speed = constrain(speed, 0, FULL_SPEED);            // if more than full speed put full speed variable [100%]
+    speed = constrain(speed, 0, FULL_SPEED);            
     float value = (float)speed / 100.0;
-    return roundf(value * FULL_PWM_VALUE);              // 0.80 * 255 = 204 * 0.97
+    return roundf(value * FULL_PWM_VALUE);              
 }
 
 /**
@@ -83,13 +76,8 @@ void moveBackward(int speed) {
 
     isMovingForward = false;
 
-    // get PWM value
+    // Get PWM value
     Stability stability = adjustPWMvalueByPulse(&leftPWM, &rightPWM);
-
-    // Serial.print("left: ");
-    // Serial.println(stability.speedLeft);
-    // Serial.print("right: ");
-    // Serial.println(stability.speedRight);
 
     analogWrite(PIN_MOTOR_LEFT_BACKWARD, stability.speedLeft);
     digitalWrite(PIN_MOTOR_LEFT_FORWARD, LOW);
@@ -111,11 +99,11 @@ void switchDirection(int leftSpeed, int rightSpeed) {
     rightPWM = getPWMvalue(rightSpeed);
     adjustPWMvalueByPulse(&leftPWM, &rightPWM);
 
-    // put left wheel pin
+    // Put left wheel pin
     analogWrite(PIN_MOTOR_LEFT_FORWARD, leftPWM);
     digitalWrite(PIN_MOTOR_LEFT_BACKWARD, LOW);
 
-    // put right wheel pin
+    // Put right wheel pin
     analogWrite(PIN_MOTOR_RIGHT_FORWARD, rightPWM);
     digitalWrite(PIN_MOTOR_RIGHT_BACKWARD, LOW);
 }
@@ -127,8 +115,7 @@ void switchDirection(int leftSpeed, int rightSpeed) {
 */
 
 void stopMotors() {
-    for (int i = 0; i < PINS_MOTOR_LENGTH; i++)
-    {
+    for (int i = 0; i < PINS_MOTOR_LENGTH; i++) {
         digitalWrite(PINS_MOTOR[i], LOW);
     }
 }
@@ -187,7 +174,7 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue) {
     unsigned long now = millis();
     Stability stability;
 
-    // Ensure PID runs at a fixed interval
+    // Ensures PID runs at a fixed interval
     if (now - lastPIDTime < INTERNAL) {
         stability.speedLeft = *leftPWMValue;
         stability.speedRight = *rightPWMValue;
@@ -196,7 +183,7 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue) {
 
     lastPIDTime = now;
 
-    // stop interrupting functions to avoid pulses value changing when getting current pulses
+    // Stop interrupting functions to avoid pulses value changing when getting current pulses
     noInterrupts();
     
     long leftP = motor_left_pulses_counter;
@@ -205,14 +192,14 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue) {
     motor_left_pulses_counter = 0;
     motor_right_pulses_counter = 0;
 
-    // start interrupting functions
+    // Start interrupting functions
     interrupts();
 
-    // get the distance of left and right wheels running with current pulses. unit:cm
+    // Get the distance of left and right wheels running with current pulses. unit:cm
     float leftD = ((float)leftP / (float)PULSES_PER_ROTATION) * (2 * PI * WHEEL_RADUIS);
     float rightD = ((float)rightP / (float)PULSES_PER_ROTATION) * (2 * PI * WHEEL_RADUIS);
 
-    // caculate correction value
+    // Caculate correction value
     float correction;
     if (isMovingForward) {
         correction = forwardPID.caculateCorrection(leftD, rightD);
@@ -220,18 +207,10 @@ Stability adjustPWMvalueByPulse(float *leftPWMValue, float *rightPWMValue) {
         correction = backwardPID.caculateCorrection(leftD, rightD);
     }
 
-    // if(fabs(correction) < 0.5) correction = 0;
-    // correction = constrain(correction,-20,20);
-    // Serial.print("correction: ");
-    // Serial.println(correction);
-    // get new pwm value
+    // Get new pwm value
     *leftPWMValue = constrain(*leftPWMValue - correction, 0, FULL_PWM_VALUE);
     *rightPWMValue = constrain(*rightPWMValue + correction, 0, FULL_PWM_VALUE);
     
-    // Serial.print("inside Left: ");
-    // Serial.println(*leftPWMValue);
-    // Serial.print("inside right: ");
-    // Serial.println(*rightPWMValue);
     stability.speedLeft = *leftPWMValue;
     stability.speedRight = *rightPWMValue;
 

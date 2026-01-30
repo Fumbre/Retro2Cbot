@@ -1,5 +1,5 @@
 #pragma once
 #include <SoftwareSerial.h>
 
-// init bluetooth pins
+// Init bluetooth pins
 SoftwareSerial blueTooth(1, 0);
