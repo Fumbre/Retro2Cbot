@@ -2,7 +2,8 @@
  * @name constant of robot
  * @author Fumbre (Vladyslav)
  * @date 11-11-2025
- */
+*/
+
 #pragma once
 
 // choose your type of robot

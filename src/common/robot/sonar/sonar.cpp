@@ -61,8 +61,7 @@ float getDistanceCM_Right()
 #endif
 }
 
-float getDistanceCM_Left()
-{
+float getDistanceCM_Left() {
 #if defined(BB011)
   float distance = measureDistance(PIN_SONAR_ECHO_LEFT);
   sonarSendDataLeftDistance = distance;
@@ -73,20 +72,17 @@ float getDistanceCM_Left()
 }
 
 // Obstacle Logic
-bool isObstacleFront(float limit)
-{
+bool isObstacleFront(float limit) {
   float d = getDistanceCM_Front();
   return (d > 2.0 && d <= limit);
 }
 
-bool isObstacleRight(float limit)
-{
+bool isObstacleRight(float limit) {
   float d = getDistanceCM_Right();
   return (d > 2.0 && d <= limit);
 }
 
-bool isObstacleLeft(float limit)
-{
+bool isObstacleLeft(float limit) {
   float d = getDistanceCM_Left();
   return (d > 2.0 && d <= limit);
 }

@@ -94,7 +94,9 @@ bool didMoveLeft(int speed, int pulses)
  * @date 13-11-2025
  * @details stop specific motor pin
  */
-void moveStop(int motor_pin) { digitalWrite(motor_pin, LOW); };
+void moveStop(int motor_pin) { 
+  digitalWrite(motor_pin, LOW); 
+};
 
 /**
  * @name moveStopAll
